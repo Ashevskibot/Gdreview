@@ -36,31 +36,55 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ==========================================
-// 1. СИСТЕМА РЕГИСТРАЦИИ (API)
+// 1. СИСТЕМА АВТОРИЗАЦИИ (API)
 // ==========================================
+const JWT_SECRET = 'gd_review_super_secret_key'; // Ключ для защиты сессий
+
+// Регистрация
 app.post('/api/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
         
-        // Проверяем, не занят ли email или никнейм
         const userExists = await pool.query('SELECT * FROM users WHERE email = $1 OR username = $2', [email, username]);
         if (userExists.rows.length > 0) {
             return res.status(400).json({ error: 'Пользователь с таким email или никнеймом уже существует' });
         }
 
-        // Надежно шифруем пароль
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(password, salt);
 
-        // Сохраняем нового пользователя в базу
         const newUser = await pool.query(
             'INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3) RETURNING id, username, email',
             [username, email, passwordHash]
         );
 
-        res.json({ message: 'Вы успешно зарегистрированы!', user: newUser.rows[0] });
+        // Выдаем "билет" (токен) на 7 дней
+        const token = jwt.sign({ userId: newUser.rows[0].id }, JWT_SECRET, { expiresIn: '7d' });
+        res.json({ message: 'Успешная регистрация!', token, username });
     } catch (err) {
         console.error('Ошибка при регистрации:', err.message);
+        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
+});
+
+// Вход (Логин)
+app.post('/api/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        
+        const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        if (result.rows.length === 0) return res.status(400).json({ error: 'Пользователь не найден' });
+        
+        const user = result.rows[0];
+        // Проверяем пароль
+        const isMatch = await bcrypt.compare(password, user.password_hash);
+        if (!isMatch) return res.status(400).json({ error: 'Неверный пароль' });
+        
+        // Выдаем "билет"
+        const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
+        res.json({ message: 'Успешный вход!', token, username: user.username });
+    } catch (err) {
+        console.error('Ошибка при входе:', err.message);
         res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
 });
