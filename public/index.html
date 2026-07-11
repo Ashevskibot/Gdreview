@@ -1912,6 +1912,18 @@ body.loaded #global-loader { opacity: 0; pointer-events: none; transform: transl
       </nav>
     </header>
 
+    <button id="open-reg-btn" style="background:var(--white); color:var(--black); padding:5px 15px; border-radius:6px; cursor:pointer;">Регистрация</button>
+
+<div id="reg-modal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Регистрация</h3>
+    <input type="text" id="reg-user" placeholder="Никнейм" class="modal-input">
+    <input type="email" id="reg-email" placeholder="Email" class="modal-input">
+    <input type="password" id="reg-pass" placeholder="Пароль" class="modal-input">
+    <button id="submit-reg" class="modal-btn solid">Создать аккаунт</button>
+    <button onclick="document.getElementById('reg-modal').classList.remove('show')" class="modal-btn ghost">Отмена</button>
+  </div>
+</div>
     <section class="screen active" id="screen-create">
       <div class="search-row">
         <input id="level-id-input" type="text" placeholder="Enter Level Name or ID" data-i18n-ph="searchPlaceholder" inputmode="search">
@@ -3746,6 +3758,33 @@ body.loaded #global-loader { opacity: 0; pointer-events: none; transform: transl
   });
   /* === КОНЕЦ: Скрипт загрузочного экрана === */
 })();
+</script>
+  <script>
+document.getElementById('open-reg-btn').addEventListener('click', () => {
+    document.getElementById('reg-modal').classList.add('show');
+});
+
+document.getElementById('submit-reg').addEventListener('click', async () => {
+    const data = {
+        username: document.getElementById('reg-user').value,
+        email: document.getElementById('reg-email').value,
+        password: document.getElementById('reg-pass').value
+    };
+
+    const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+        alert('Успешно! Теперь вы зарегистрированы.');
+        document.getElementById('reg-modal').classList.remove('show');
+    } else {
+        alert('Ошибка: ' + result.error);
+    }
+});
 </script>
 </body>
 </html>
