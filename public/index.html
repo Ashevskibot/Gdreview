@@ -3079,20 +3079,24 @@ body.loaded #global-loader { opacity: 0; pointer-events: none; transform: transl
           audioTitle.textContent = currentLang === 'en' ? 'Downloading audio...' : 'Скачивание трека...';
           audioTime.textContent = '...';
 
-          // Используем наш собственный сервер для загрузки музыки
-          audioEl.src = `/api/audio?url=${encodeURIComponent(secureLink)}`;
-          audioEl.load();
-          
-          audioEl.oncanplay = () => {
-              audioBtn.classList.remove('disabled');
-              audioTitle.textContent = data.songName || 'Unknown Track';
-          };
-          audioEl.onerror = () => {
-              audioTitle.textContent = currentLang === 'en' ? "Audio unavailable" : "Трек недоступен";
-              audioBtn.classList.add('disabled');
-              iconPlay.style.display = 'block'; iconPause.style.display = 'none';
-              audioTime.textContent = 'Error';
-          };
+          // Список ссылок: сначала наш сервер, потом запасные публичные прокси
+                  fallbackUrls = [
+                      `/api/audio?url=${encodeURIComponent(secureLink)}`,
+                      `https://corsproxy.io/?url=${encodeURIComponent(secureLink)}`,
+                      `https://api.allorigins.win/raw?url=${encodeURIComponent(secureLink)}`
+                  ];
+                  currentProxyIndex = 0;
+
+                  // Запускаем первую ссылку (наш сервер)
+                  audioEl.src = fallbackUrls[currentProxyIndex];
+                  audioEl.load();
+                  
+                  audioEl.oncanplay = () => {
+                      audioBtn.classList.remove('disabled');
+                      audioTitle.textContent = data.songName || 'Unknown Track';
+                  };
+                  // Мы убрали audioEl.onerror отсюда, потому что в твоем коде 
+                  // уже есть глобальный обработчик, который сам переключает ссылки!
 
       } else {
           audioBtn.classList.add('disabled');
