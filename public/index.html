@@ -3079,43 +3079,20 @@ body.loaded #global-loader { opacity: 0; pointer-events: none; transform: transl
           audioTitle.textContent = currentLang === 'en' ? 'Downloading audio...' : 'Скачивание трека...';
           audioTime.textContent = '...';
 
-          // Функция жесткого скачивания аудио в память (Blob)
-          async function fetchAudioBlob() {
-              const proxies = [
-                  `https://api.allorigins.win/raw?url=${encodeURIComponent(secureLink)}`,
-                  `https://corsproxy.io/?${encodeURIComponent(secureLink)}`,
-                  `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(secureLink)}`
-              ];
-              
-              for (let proxy of proxies) {
-                  try {
-                      const response = await fetch(proxy);
-                      if (response.ok) {
-                          const blob = await response.blob();
-                          // Проверяем, что скачалась именно музыка (больше 100 КБ), а не страница с ошибкой
-                          if (blob.size > 100000) {
-                              return URL.createObjectURL(blob); // Превращаем скачанный файл во внутреннюю ссылку
-                          }
-                      }
-                  } catch (e) {
-                      console.warn('Proxy failed:', proxy);
-                  }
-              }
-              throw new Error('All proxies blocked');
-          }
-
-          // Запускаем скачивание
-          fetchAudioBlob().then(blobUrl => {
-              audioEl.src = blobUrl;
-              audioEl.load();
+          // Используем наш собственный сервер для загрузки музыки
+          audioEl.src = `/api/audio?url=${encodeURIComponent(secureLink)}`;
+          audioEl.load();
+          
+          audioEl.oncanplay = () => {
               audioBtn.classList.remove('disabled');
               audioTitle.textContent = data.songName || 'Unknown Track';
-          }).catch(err => {
+          };
+          audioEl.onerror = () => {
               audioTitle.textContent = currentLang === 'en' ? "Audio unavailable" : "Трек недоступен";
               audioBtn.classList.add('disabled');
               iconPlay.style.display = 'block'; iconPause.style.display = 'none';
               audioTime.textContent = 'Error';
-          });
+          };
 
       } else {
           audioBtn.classList.add('disabled');
