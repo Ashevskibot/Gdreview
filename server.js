@@ -1,33 +1,80 @@
 const express = require('express');
 const path = require('path');
 const https = require('https');
-const { Pool } = require('pg'); // Подключаем библиотеку базы данных
+const { Pool } = require('pg');
+const bcrypt = require('bcryptjs'); // Библиотека для шифрования паролей
+const jwt = require('jsonwebtoken'); // Библиотека для сессий
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Подключаемся к базе данных PostgreSQL, которую создал Railway
+// Подключаемся к базе данных
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
 });
 
-// Проверяем, работает ли подключение к базе
+// Автоматически создаем таблицы при запуске сервера
 pool.connect()
-    .then(() => console.log('✅ Успешно подключились к базе данных PostgreSQL!'))
-    .catch(err => console.error('❌ Ошибка подключения к базе:', err.stack));
+    .then(() => {
+        console.log('✅ Успешно подключились к базе данных PostgreSQL!');
+        // Создаем таблицу пользователей (если её еще нет)
+        return pool.query(`
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                username VARCHAR(100) UNIQUE NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password_hash VARCHAR(255) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
+    })
+    .then(() => console.log('✅ Таблицы в базе данных готовы к работе!'))
+    .catch(err => console.error('❌ Ошибка базы данных:', err.stack));
 
-// Чтобы сервер понимал данные, которые мы будем отправлять при регистрации
+// Настройки сервера
 app.use(express.json()); 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Наш прокси для музыки (оставляем как есть)
+// ==========================================
+// 1. СИСТЕМА РЕГИСТРАЦИИ (API)
+// ==========================================
+app.post('/api/register', async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
+        
+        // Проверяем, не занят ли email или никнейм
+        const userExists = await pool.query('SELECT * FROM users WHERE email = $1 OR username = $2', [email, username]);
+        if (userExists.rows.length > 0) {
+            return res.status(400).json({ error: 'Пользователь с таким email или никнеймом уже существует' });
+        }
+
+        // Надежно шифруем пароль
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(password, salt);
+
+        // Сохраняем нового пользователя в базу
+        const newUser = await pool.query(
+            'INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3) RETURNING id, username, email',
+            [username, email, passwordHash]
+        );
+
+        res.json({ message: 'Вы успешно зарегистрированы!', user: newUser.rows[0] });
+    } catch (err) {
+        console.error('Ошибка при регистрации:', err.message);
+        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
+});
+
+// ==========================================
+// 2. ПРОКСИ ДЛЯ МУЗЫКИ (Оставили как было)
+// ==========================================
 app.get('/api/audio', (req, res) => {
     const audioUrl = req.query.url;
     if (!audioUrl) return res.status(400).send('URL не указан');
 
     const options = {
         headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Referer': 'https://www.newgrounds.com/',
             'Accept': '*/*'
         }
@@ -44,14 +91,15 @@ app.get('/api/audio', (req, res) => {
             if (!res.headersSent) res.status(500).send('Ошибка');
         });
     };
-
     fetchAudio(audioUrl);
 });
 
-app.get('/', (req, res) => {
+// Отдаем сайт при любом запросе
+app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Запуск
 app.listen(PORT, () => {
     console.log(`🚀 Сервер запущен на порту ${PORT}`);
 });
