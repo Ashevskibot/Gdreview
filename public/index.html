@@ -1887,7 +1887,118 @@ body.loaded #global-loader { opacity: 0; pointer-events: none; transform: transl
   <div class="loader-brand">GD<span>/</span>REVIEW</div>
   <div class="loader-progress"></div>
 </div>
+<style>
+  #auth-overlay {
+    position: fixed; inset: 0; z-index: 999990;
+    background: var(--black);
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.6s var(--ease), visibility 0.6s;
+  }
+  #auth-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  .auth-box {
+    width: 100%; max-width: 380px; padding: 40px 32px;
+    background: var(--panel); border: 1px solid var(--line);
+    border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+    text-align: center;
+  }
+  .auth-box .brand { margin-bottom: 30px; font-size: 24px; font-family: 'Archivo Black', sans-serif; color: var(--white); }
+  .auth-box .brand span { color: var(--dim2); }
+  .auth-tabs { display: flex; gap: 4px; background: var(--black2); padding: 4px; border-radius: 8px; margin-bottom: 24px; }
+  .auth-tab { flex: 1; padding: 10px; background: transparent; border: none; color: var(--dim); font-size: 11px; text-transform: uppercase; font-weight: 700; cursor: pointer; border-radius: 6px; transition: 0.2s; }
+  .auth-tab.active { background: var(--white); color: var(--black); box-shadow: 0 0 10px rgba(255,255,255,0.2); }
+  .auth-form { display: none; flex-direction: column; gap: 16px; }
+  .auth-form.active { display: flex; animation: fadeIn 0.4s ease; }
+  .auth-error { color: #e05555; font-size: 12px; margin-top: 16px; min-height: 14px; font-family: 'Space Mono', monospace; }
+</style>
 
+<div id="auth-overlay">
+  <div class="auth-box">
+    <div class="brand">GD<span>/</span>REVIEW</div>
+    
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login">Вход</button>
+      <button class="auth-tab" id="tab-register">Регистрация</button>
+    </div>
+    
+    <div id="form-login" class="auth-form active">
+      <input type="email" id="auth-email-log" placeholder="Email" class="modal-input">
+      <input type="password" id="auth-pass-log" placeholder="Пароль" class="modal-input">
+      <button id="btn-do-login" class="modal-btn solid">Войти в аккаунт</button>
+    </div>
+
+    <div id="form-register" class="auth-form">
+      <input type="text" id="auth-user-reg" placeholder="Никнейм" class="modal-input">
+      <input type="email" id="auth-email-reg" placeholder="Email" class="modal-input">
+      <input type="password" id="auth-pass-reg" placeholder="Пароль" class="modal-input">
+      <button id="btn-do-register" class="modal-btn solid">Создать аккаунт</button>
+    </div>
+    
+    <div id="auth-error" class="auth-error"></div>
+  </div>
+</div>
+
+<script>
+  const authOverlay = document.getElementById('auth-overlay');
+  const tabLogin = document.getElementById('tab-login');
+  const tabReg = document.getElementById('tab-register');
+  const formLogin = document.getElementById('form-login');
+  const formReg = document.getElementById('form-register');
+  const authError = document.getElementById('auth-error');
+
+  tabLogin.addEventListener('click', () => {
+      tabLogin.classList.add('active'); tabReg.classList.remove('active');
+      formLogin.classList.add('active'); formReg.classList.remove('active');
+      authError.textContent = '';
+  });
+  tabReg.addEventListener('click', () => {
+      tabReg.classList.add('active'); tabLogin.classList.remove('active');
+      formReg.classList.add('active'); formLogin.classList.remove('active');
+      authError.textContent = '';
+  });
+
+  window.addEventListener('load', () => {
+      if (localStorage.getItem('gd_token')) {
+          authOverlay.classList.add('hidden'); 
+      }
+  });
+
+  document.getElementById('btn-do-login').addEventListener('click', async () => {
+      authError.style.color = '#fff'; authError.textContent = 'Загрузка...';
+      const data = { email: document.getElementById('auth-email-log').value, password: document.getElementById('auth-pass-log').value };
+      try {
+          const res = await fetch('/api/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+          const result = await res.json();
+          if (res.ok) {
+              localStorage.setItem('gd_token', result.token);
+              localStorage.setItem('gd_username', result.username);
+              authOverlay.classList.add('hidden');
+          } else {
+              authError.style.color = '#e05555'; authError.textContent = result.error;
+          }
+      } catch(e) { authError.textContent = 'Ошибка сети'; }
+  });
+
+  document.getElementById('btn-do-register').addEventListener('click', async () => {
+      authError.style.color = '#fff'; authError.textContent = 'Загрузка...';
+      const data = { 
+          username: document.getElementById('auth-user-reg').value, 
+          email: document.getElementById('auth-email-reg').value, 
+          password: document.getElementById('auth-pass-reg').value 
+      };
+      try {
+          const res = await fetch('/api/register', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+          const result = await res.json();
+          if (res.ok) {
+              localStorage.setItem('gd_token', result.token);
+              localStorage.setItem('gd_username', result.username);
+              authOverlay.classList.add('hidden');
+          } else {
+              authError.style.color = '#e05555'; authError.textContent = result.error;
+          }
+      } catch(e) { authError.textContent = 'Ошибка сети'; }
+  });
+</script>
+  
 <div id="site-wrapper">
   <div id="bg-grid"></div>
   <div id="bg-glow"></div>
@@ -1912,18 +2023,7 @@ body.loaded #global-loader { opacity: 0; pointer-events: none; transform: transl
       </nav>
     </header>
 
-    <button id="open-reg-btn" style="background:var(--white); color:var(--black); padding:5px 15px; border-radius:6px; cursor:pointer;">Регистрация</button>
 
-<div id="reg-modal" class="modal-overlay">
-  <div class="modal-box">
-    <h3>Регистрация</h3>
-    <input type="text" id="reg-user" placeholder="Никнейм" class="modal-input">
-    <input type="email" id="reg-email" placeholder="Email" class="modal-input">
-    <input type="password" id="reg-pass" placeholder="Пароль" class="modal-input">
-    <button id="submit-reg" class="modal-btn solid">Создать аккаунт</button>
-    <button onclick="document.getElementById('reg-modal').classList.remove('show')" class="modal-btn ghost">Отмена</button>
-  </div>
-</div>
     <section class="screen active" id="screen-create">
       <div class="search-row">
         <input id="level-id-input" type="text" placeholder="Enter Level Name or ID" data-i18n-ph="searchPlaceholder" inputmode="search">
@@ -3758,33 +3858,6 @@ body.loaded #global-loader { opacity: 0; pointer-events: none; transform: transl
   });
   /* === КОНЕЦ: Скрипт загрузочного экрана === */
 })();
-</script>
-  <script>
-document.getElementById('open-reg-btn').addEventListener('click', () => {
-    document.getElementById('reg-modal').classList.add('show');
-});
-
-document.getElementById('submit-reg').addEventListener('click', async () => {
-    const data = {
-        username: document.getElementById('reg-user').value,
-        email: document.getElementById('reg-email').value,
-        password: document.getElementById('reg-pass').value
-    };
-
-    const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    });
-
-    const result = await response.json();
-    if (response.ok) {
-        alert('Успешно! Теперь вы зарегистрированы.');
-        document.getElementById('reg-modal').classList.remove('show');
-    } else {
-        alert('Ошибка: ' + result.error);
-    }
-});
 </script>
 </body>
 </html>
