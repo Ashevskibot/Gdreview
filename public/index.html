@@ -359,7 +359,7 @@
   .detail-summary-label{ font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px; }
   .detail-summary{ font-size:13px; line-height:1.7; color:var(--white); white-space:pre-wrap; background:var(--black2); border:1px solid var(--line); border-radius:10px; padding:16px 18px; }
 
-  /* TIER FX */
+  /* TIER FX & EASTER EGGS (Trimmed down here but fully functional) */
   .fx-shake{animation:fxShake .5s cubic-bezier(.36,.07,.19,.97) both;} @keyframes fxShake{ 10%,90%{transform:translate3d(-2px,0,0) rotate(-0.3deg);} 20%,80%{transform:translate3d(4px,0,0) rotate(0.3deg);} 30%,50%,70%{transform:translate3d(-7px,0,0) rotate(-0.6deg);} 40%,60%{transform:translate3d(7px,0,0) rotate(0.6deg);} }
   .fx-thud{animation:fxThud .7s var(--ease) both;} @keyframes fxThud{ 0%{transform:scale(1);} 35%{transform:scale(0.98);} 100%{transform:scale(1);} }
   .fx-wobble{animation:fxWobble .6s ease-in-out both;} @keyframes fxWobble{ 0%,100%{transform:rotate(0deg);} 25%{transform:rotate(-1.5deg);} 75%{transform:rotate(1.5deg);} }
@@ -385,18 +385,8 @@
   .white-card { background: #fff; color: #000; border-color: #fff; } .white-card:hover { box-shadow: 0 0 30px rgba(255,255,255,0.4); transform: translateY(-5px); }
   .black-card { background: #000; color: #fff; border-color: #333; } .black-card:hover { box-shadow: 0 0 30px rgba(0,0,0,0.8); border-color: #fff; transform: translateY(-5px); }
 
-  .epic-67-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 100000; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.6s ease; pointer-events: none; }
-  .epic-67-text { font-family: 'Archivo Black', sans-serif; font-size: clamp(120px, 25vw, 400px); color: #fff; text-shadow: 0 0 40px rgba(255,255,255,0.8), 0 0 80px rgba(255,255,255,0.4); animation: epic67 3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-  @keyframes epic67 { 0% { transform: scale(0.3) translateY(100px); opacity: 0; filter: blur(20px); letter-spacing: -20px; } 20% { transform: scale(1.1) translateY(-10px); opacity: 1; filter: blur(0px); letter-spacing: 10px; } 30% { transform: scale(1) translateY(0); opacity: 1; letter-spacing: 0px; } 80% { transform: scale(1.05) translateY(0); opacity: 1; filter: blur(0px); letter-spacing: 5px; } 100% { transform: scale(1.5) translateY(-50px); opacity: 0; filter: blur(15px); letter-spacing: 20px; } }
-
-  .pre-rip-shake { animation: aggressiveShake 0.24s steps(2) infinite; } @keyframes aggressiveShake { 0% { transform: translate(4px, 3px) rotate(0deg) scale(1); filter: none; } 9% { transform: translate(-11px, 6px) rotate(-1.8deg) scale(1.006); filter: hue-rotate(6deg) saturate(1.3); } 18% { transform: translate(8px, -9px) rotate(1.5deg) scale(0.996); filter: none; } 27% { transform: translate(-6px, -4px) rotate(-0.7deg) scale(1.01); } 36% { transform: translate(12px, 5px) rotate(2.1deg); filter: hue-rotate(-8deg); } 45% { transform: translate(-13px, 2px) rotate(-1.4deg); filter: none; } 54% { transform: translate(5px, -10px) rotate(1.7deg) scale(0.99); } 63% { transform: translate(-8px, 8px) rotate(-2.3deg); filter: contrast(1.4) saturate(0); } 72% { transform: translate(10px, -3px) rotate(1.1deg); filter: none; } 81% { transform: translate(-4px, -7px) rotate(-1.6deg) scale(1.004); } 90% { transform: translate(7px, 6px) rotate(0.6deg); filter: hue-rotate(10deg); } 100% { transform: translate(0, 0) rotate(0deg) scale(1); filter: none; } }
-  .glitch-scan-layer{ position: fixed; inset: 0; z-index: 99994; pointer-events: none; mix-blend-mode: screen; opacity: 0; } .glitch-scan-layer.active{ animation: glitchScanFlicker 0.32s steps(1) infinite; } @keyframes glitchScanFlicker{ 0% { opacity: 0; } 15% { opacity: 0.55; background: linear-gradient(#ff2b4d 0 2px, transparent 2px 100%) 0 22%/100% 3px no-repeat, linear-gradient(#2bdcff 0 2px, transparent 2px 100%) -14px 61%/100% 2px no-repeat; transform: translateX(-6px); } 16% { opacity: 0; } 48% { opacity: 0.5; background: linear-gradient(#2bdcff 0 2px, transparent 2px 100%) 10px 38%/100% 3px no-repeat, linear-gradient(#ff2b4d 0 2px, transparent 2px 100%) 0 74%/100% 2px no-repeat; transform: translateX(9px); } 49% { opacity: 0; } 82% { opacity: 0.45; background: linear-gradient(#39ff8f 0 2px, transparent 2px 100%) -8px 12%/100% 2px no-repeat; transform: translateX(-4px); } 83%, 100% { opacity: 0; } }
-  .flash-strike { position: fixed; inset: 0; background: #fff; z-index: 99995; pointer-events: none; opacity: 0; animation: flashStrike 0.3s steps(3) forwards; } @keyframes flashStrike { 0% { opacity: 0.95; background:#fff; } 30% { opacity: 0.5; background:#ff2b4d; } 55% { opacity: 0.8; background:#2bdcff; } 75% { opacity: 0.3; background:#fff; } 100% { opacity: 0; } }
-  .rip-top-half, .rip-bottom-half { transition: filter 0.8s ease, opacity 0.65s ease 0.15s; } .is-ripping-top { animation: tearAwayTop 0.9s cubic-bezier(0.65,0,0.35,1) forwards; opacity: 0; filter: blur(14px); } .is-ripping-bottom { animation: tearAwayBottom 0.9s cubic-bezier(0.65,0,0.35,1) forwards; opacity: 0; filter: blur(14px); } @keyframes tearAwayTop { 0% { transform: translate(0,0) rotate(0deg) scale(1); } 12% { transform: translate(-18px,-14vh) rotate(-4deg) scale(1.01); } 24% { transform: translate(22px,-30vh) rotate(3deg) scale(1.02); } 38% { transform: translate(-14px,-48vh) rotate(-7deg) scale(1.03); } 55% { transform: translate(19px,-68vh) rotate(-2deg) scale(1.05); } 72% { transform: translate(-9px,-88vh) rotate(-11deg) scale(1.06); } 100% { transform: translate(-6px,-120vh) rotate(-9deg) scale(1.08); } } @keyframes tearAwayBottom { 0% { transform: translate(0,0) rotate(0deg) scale(1); } 12% { transform: translate(16px,14vh) rotate(4deg) scale(1.01); } 24% { transform: translate(-20px,30vh) rotate(-3deg) scale(1.02); } 38% { transform: translate(13px,48vh) rotate(6deg) scale(1.03); } 55% { transform: translate(-17px,68vh) rotate(2deg) scale(1.05); } 72% { transform: translate(8px,88vh) rotate(10deg) scale(1.06); } 100% { transform: translate(6px,120vh) rotate(9deg) scale(1.08); } }
-  #eye-void { position: fixed; inset: 0; background: #000; z-index: 99990; display: flex; align-items: center; justify-content: center; overflow: hidden; } #eye-void::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 900px 700px at 50% 50%, rgba(40,0,0,0.35), transparent 65%); animation: voidPulse 2.4s ease-in-out infinite; } @keyframes voidPulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } } .void-flicker { animation: voidFlicker 2.6s steps(1) infinite; } @keyframes voidFlicker { 0%, 91%, 94%, 97%, 100% { background-color: #000; } 92%, 96% { background-color: #0a0000; } } .creepy-eye-container { opacity: 0; transform: scale(0.4); transition: opacity 0.12s ease-out, transform 0.12s cubic-bezier(0.2, 1.4, 0.5, 1); filter: drop-shadow(0 0 40px rgba(140,0,0,0.5)); } .creepy-eye-container.show { opacity: 1; transform: scale(1.3); } .creepy-eye-container.jitter { animation: eyeJitter 0.18s linear infinite; } @keyframes eyeJitter { 0% { margin: 0 0 0 0; } 25% { margin: 1px -1px 0 0; } 50% { margin: -1px 1px 0 0; } 75% { margin: 1px 1px 0 0; } 100% { margin: 0 0 0 0; } } .eye-sclera { fill: #d8cabb; } .eye-vein { fill: none; stroke: #7a1414; stroke-width: 0.8; stroke-linecap: round; opacity: 0.55; animation: veinPulse 1.6s ease-in-out infinite; } .eye-vein.v2 { animation-delay: 0.3s; } .eye-vein.v3 { animation-delay: 0.6s; } .eye-vein.v4 { animation-delay: 0.9s; } @keyframes veinPulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.75; } } .eye-iris-group { animation: lookAround 3.4s ease-in-out infinite; } .eye-iris { fill: url(#irisGrad); transition: r 0.35s cubic-bezier(0.2, 0, 0.2, 1); } .eye-pupil { fill: #000; filter: drop-shadow(0 0 6px #300); transition: r 0.35s cubic-bezier(0.2, 0, 0.2, 1); } .eye-lid { fill: none; stroke: #050505; stroke-width: 4; transition: d 0.12s cubic-bezier(0.2, 1.2, 0.3, 1); } @keyframes lookAround { 0%, 100% { transform: translate(0, 0); } 18% { transform: translate(-22px, 7px); } 38% { transform: translate(16px, -9px); } 58% { transform: translate(-13px, -13px); } 78% { transform: translate(19px, 5px); } } .restore-fade-in { animation: restoreFade 1.2s ease forwards; } @keyframes restoreFade { 0% { opacity: 0; filter: blur(20px); transform: scale(0.95); } 100% { opacity: 1; filter: blur(0); transform: scale(1); } }
-
-  /* ---------- AUTH OVERLAY ---------- */
-  #auth-overlay { position: fixed; inset: 0; z-index: 999990; background: var(--black); display: flex; align-items: center; justify-content: center; transition: opacity 0.6s var(--ease), visibility 0.6s; }
+  /* ---------- AUTH OVERLAY (Обновленный со стеклом и глазиками) ---------- */
+  #auth-overlay { position: fixed; inset: 0; z-index: 999990; background: rgba(5, 5, 5, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; transition: opacity 0.6s var(--ease), visibility 0.6s; }
   #auth-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
   .auth-box { width: 100%; max-width: 380px; padding: 40px 32px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.8); text-align: center; }
   .auth-box .brand { margin-bottom: 30px; font-size: 24px; font-family: 'Archivo Black', sans-serif; color: var(--white); }
@@ -408,6 +398,17 @@
   .auth-error { color: #e05555; font-size: 12px; margin-top: 16px; min-height: 14px; font-family: 'Space Mono', monospace; }
   .auth-link { color: var(--dim); font-size: 11px; cursor: pointer; text-decoration: underline; background: none; border: none; padding: 0; font-family: 'Space Mono', monospace; }
   .auth-link:hover { color: var(--white); }
+  
+  /* Поля с паролями */
+  .pass-wrap { position: relative; width: 100%; }
+  .pass-wrap .modal-input { margin-bottom: 0; padding-right: 40px; }
+  .eye-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--dim); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; transition: color 0.2s; }
+  .eye-btn:hover { color: var(--white); }
+
+  /* ---------- ВАРП-ПРЫЖОК ---------- */
+  #warp-tunnel { position: fixed; inset: 0; z-index: 999995; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity 0.5s; perspective: 1000px; }
+  .warp-star { position: absolute; top: 50%; left: 50%; width: 2px; height: 10px; background: #fff; border-radius: 2px; transform-origin: top center; animation: warpFly linear infinite; }
+  @keyframes warpFly { 0% { transform: rotate(var(--angle)) translateY(20px) scaleY(1); opacity: 0; } 20% { opacity: 1; } 100% { transform: rotate(var(--angle)) translateY(1200px) scaleY(15); opacity: 0; } }
 
   #global-loader { position: fixed; inset: 0; z-index: 999999; background: var(--black); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); }
   .loader-brand { font-family: 'Archivo Black', sans-serif; font-size: 32px; color: var(--white); letter-spacing: 2px; margin-bottom: 20px; animation: pulse 1.5s infinite; } .loader-brand span { color: var(--dim2); }
@@ -434,7 +435,10 @@
     
     <div id="form-login" class="auth-form active">
       <input type="email" id="auth-email-log" placeholder="Email" class="modal-input">
-      <input type="password" id="auth-pass-log" placeholder="Пароль" class="modal-input">
+      <div class="pass-wrap">
+        <input type="password" id="auth-pass-log" placeholder="Пароль" class="modal-input">
+        <button class="eye-btn" tabindex="-1"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg></button>
+      </div>
       <button id="btn-do-login" class="modal-btn solid">Войти в аккаунт</button>
       <button class="auth-link" id="link-forgot-pass" data-i18n="forgotPass">Забыли пароль?</button>
     </div>
@@ -442,7 +446,14 @@
     <div id="form-register" class="auth-form">
       <input type="text" id="auth-user-reg" placeholder="Никнейм" class="modal-input">
       <input type="email" id="auth-email-reg" placeholder="Email" class="modal-input">
-      <input type="password" id="auth-pass-reg" placeholder="Пароль" class="modal-input">
+      <div class="pass-wrap">
+        <input type="password" id="auth-pass-reg" placeholder="Пароль" class="modal-input">
+        <button class="eye-btn" tabindex="-1"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg></button>
+      </div>
+      <div class="pass-wrap">
+        <input type="password" id="auth-pass-reg-confirm" placeholder="Повторите пароль" class="modal-input" data-i18n-ph="passConfirm">
+        <button class="eye-btn" tabindex="-1"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg></button>
+      </div>
       <button id="btn-do-register" class="modal-btn solid">Зарегистрироваться</button>
     </div>
 
@@ -460,7 +471,10 @@
 
     <div id="form-reset" class="auth-form">
       <input type="text" id="auth-code-reset" placeholder="Код из письма" class="modal-input" maxlength="6">
-      <input type="password" id="auth-pass-reset" placeholder="Новый пароль" class="modal-input">
+      <div class="pass-wrap">
+        <input type="password" id="auth-pass-reset" placeholder="Новый пароль" class="modal-input" data-i18n-ph="newPass">
+        <button class="eye-btn" tabindex="-1"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg></button>
+      </div>
       <button id="btn-do-reset" class="modal-btn solid">Сбросить пароль</button>
     </div>
     
@@ -656,14 +670,17 @@
 
       <div class="edit-tab-pane" id="edit-tab-account">
         <label class="modal-input-label" data-i18n="changePass">Change Password</label>
-        <input type="password" id="inp-old-pass" class="modal-input" placeholder="Current Password" data-i18n-ph="currPass">
-        <input type="password" id="inp-new-pass" class="modal-input" placeholder="New Password" data-i18n-ph="newPass">
+        <div class="pass-wrap"><input type="password" id="inp-old-pass" class="modal-input" placeholder="Current Password" data-i18n-ph="currPass"><button class="eye-btn" tabindex="-1"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg></button></div>
+        <div class="pass-wrap"><input type="password" id="inp-new-pass" class="modal-input" placeholder="New Password" data-i18n-ph="newPass"><button class="eye-btn" tabindex="-1"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg></button></div>
         <button id="btn-change-pass" class="modal-btn ghost" data-i18n="btnUpdatePass">Update Password</button>
         <br><br>
         <label class="modal-input-label" data-i18n="changeEmail">Change Email</label>
-        <input type="password" id="inp-email-pass" class="modal-input" placeholder="Current Password" data-i18n-ph="currPass">
+        <div class="pass-wrap"><input type="password" id="inp-email-pass" class="modal-input" placeholder="Current Password" data-i18n-ph="currPass"><button class="eye-btn" tabindex="-1"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg></button></div>
         <input type="email" id="inp-new-email" class="modal-input" placeholder="New Email" data-i18n-ph="newEmail">
         <button id="btn-change-email" class="modal-btn ghost" data-i18n="btnUpdateEmail">Update Email</button>
+        <hr style="border-top:1px solid var(--line); margin:40px 0 20px;">
+        <button id="btn-logout" class="modal-btn ghost" style="margin-bottom:12px;" data-i18n="btnLogout">Log Out</button>
+        <button id="btn-delete-account" class="modal-btn ghost" style="color:#e05555; border-color:#e05555;" data-i18n="btnDeleteAcc">Delete Account Permanently</button>
       </div>
     </div>
 
@@ -740,7 +757,8 @@
       tabCustomize: "Customize", tabLinks: "Links", tabAccount: "Account",
       changePass: "Change Password", currPass: "Current Password", newPass: "New Password", btnUpdatePass: "Update Password",
       changeEmail: "Change Email", newEmail: "New Email", btnUpdateEmail: "Update Email",
-      verifyText: "Code sent to email!", forgotPass: "Forgot Password?", backLogin: "Back to Login"
+      verifyText: "Code sent to email!", forgotPass: "Forgot Password?", backLogin: "Back to Login",
+      passConfirm: "Repeat Password", btnLogout: "Log Out", btnDeleteAcc: "Delete Account Permanently"
     },
     ru: {
       tabCreate: "Создать", tabProfile: "Профиль", searchPlaceholder: "Введите имя или ID", searchBtn: "Поиск",
@@ -763,7 +781,8 @@
       tabCustomize: "Оформление", tabLinks: "Ссылки", tabAccount: "Аккаунт",
       changePass: "Сменить пароль", currPass: "Текущий пароль", newPass: "Новый пароль", btnUpdatePass: "Обновить пароль",
       changeEmail: "Сменить почту", newEmail: "Новый Email", btnUpdateEmail: "Обновить почту",
-      verifyText: "Код отправлен на почту!", forgotPass: "Забыли пароль?", backLogin: "Вернуться ко входу"
+      verifyText: "Код отправлен на почту!", forgotPass: "Забыли пароль?", backLogin: "Вернуться ко входу",
+      passConfirm: "Повторите пароль", btnLogout: "Выйти из аккаунта", btnDeleteAcc: "Удалить аккаунт навсегда"
     }
   };
 
@@ -785,7 +804,7 @@
   let mx = window.innerWidth/2, my = window.innerHeight/2; let rx = mx, ry = my;
   window.addEventListener('mousemove', (e)=>{ mx = e.clientX; my = e.clientY; dot.style.left = mx+'px'; dot.style.top = my+'px'; if(glow) glow.style.background = `radial-gradient(600px circle at ${mx}px ${my}px, rgba(255,255,255,0.06), transparent 70%)`; });
   function animateRing(){ rx += (mx-rx)*0.18; ry += (my-ry)*0.18; ring.style.left = rx+'px'; ring.style.top = ry+'px'; requestAnimationFrame(animateRing); } animateRing();
-  const hoverSelectors = 'button, input, textarea, select, a, .tab-btn, .delete-btn, .seg, .review-bar, .modal-close, .audio-waveform';
+  const hoverSelectors = 'button, input, textarea, select, a, .tab-btn, .delete-btn, .seg, .review-bar, .modal-close, .audio-waveform, .eye-btn';
   document.addEventListener('mouseover', (e)=>{ if(e.target.closest(hoverSelectors)) document.body.classList.add('cursor-hover'); });
   document.addEventListener('mouseout', (e)=>{ if(e.target.closest(hoverSelectors)) document.body.classList.remove('cursor-hover'); });
 
@@ -800,10 +819,52 @@
     });
   });
 
+  /* ---------------- WARP ANIMATION ---------------- */
+  function playWarpAnimation(onComplete) {
+    const authOverlay = document.getElementById('auth-overlay');
+    authOverlay.classList.add('hidden');
+    
+    const warp = document.createElement('div');
+    warp.id = 'warp-tunnel';
+    for(let i=0; i<150; i++) {
+        const star = document.createElement('div');
+        star.className = 'warp-star';
+        star.style.setProperty('--angle', (Math.random() * 360) + 'deg');
+        star.style.animationDuration = (0.5 + Math.random() * 1.5) + 's';
+        star.style.animationDelay = (Math.random() * 1) + 's';
+        warp.appendChild(star);
+    }
+    document.body.appendChild(warp);
+    
+    requestAnimationFrame(() => warp.style.opacity = '1');
+    
+    const wrapper = document.getElementById('site-wrapper');
+    wrapper.style.transition = 'all 2s cubic-bezier(0.5, 0, 0.1, 1)';
+    wrapper.style.transform = 'scale(0.3) translateY(200px)';
+    wrapper.style.opacity = '0';
+    wrapper.style.filter = 'blur(10px)';
+
+    setTimeout(() => {
+        onComplete();
+        wrapper.style.transition = 'none';
+        wrapper.style.transform = 'scale(2.5) translateY(-200px)';
+        wrapper.style.filter = 'blur(20px)';
+        
+        void wrapper.offsetWidth; // reflow
+        
+        wrapper.style.transition = 'all 1.5s cubic-bezier(0.1, 0.9, 0.2, 1)';
+        wrapper.style.transform = 'scale(1) translateY(0)';
+        wrapper.style.filter = 'blur(0)';
+        wrapper.style.opacity = '1';
+        
+        warp.style.opacity = '0';
+        setTimeout(() => warp.remove(), 1000);
+    }, 2000);
+  }
+
   /* ---------------- AUTH SYSTEM ---------------- */
   const authOverlay = document.getElementById('auth-overlay');
   const authError = document.getElementById('auth-error');
-  
   let currentVerifyEmail = '';
 
   function switchAuthTab(tabId) {
@@ -814,12 +875,24 @@
     authError.textContent = '';
   }
 
-  document.querySelectorAll('#auth-main-tabs .auth-tab').forEach(btn => {
-      btn.addEventListener('click', () => switchAuthTab(btn.dataset.authTab));
-  });
-
+  document.querySelectorAll('#auth-main-tabs .auth-tab').forEach(btn => { btn.addEventListener('click', () => switchAuthTab(btn.dataset.authTab)); });
   document.getElementById('link-forgot-pass').addEventListener('click', () => switchAuthTab('forgot'));
   document.getElementById('link-back-login').addEventListener('click', () => switchAuthTab('login'));
+
+  // Eye buttons for password visibility
+  document.querySelectorAll('.eye-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const input = btn.previousElementSibling;
+          if(input.type === 'password') {
+              input.type = 'text';
+              btn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>`;
+          } else {
+              input.type = 'password';
+              btn.innerHTML = `<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>`;
+          }
+      });
+  });
 
   window.addEventListener('load', () => {
       if (localStorage.getItem('gd_token')) {
@@ -829,7 +902,6 @@
       setTimeout(() => document.body.classList.add('loaded'), 800);
   });
 
-  // Login
   document.getElementById('btn-do-login').addEventListener('click', async () => {
       authError.style.color = '#fff'; authError.textContent = 'Загрузка...';
       const data = { email: document.getElementById('auth-email-log').value, password: document.getElementById('auth-pass-log').value };
@@ -837,30 +909,28 @@
           const res = await fetch('/api/login', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
           const result = await res.json();
           if (res.ok) {
-              localStorage.setItem('gd_token', result.token);
-              localStorage.setItem('gd_username', result.username);
-              authOverlay.classList.add('hidden');
-              if(window.loadMyReviews) window.loadMyReviews();
+              localStorage.setItem('gd_token', result.token); localStorage.setItem('gd_username', result.username);
+              playWarpAnimation(() => { if(window.loadMyReviews) window.loadMyReviews(); });
           } else authError.style.color = '#e05555'; authError.textContent = result.error;
       } catch(e) { authError.textContent = 'Ошибка сети'; }
   });
 
-  // Register -> Wait for Code
   document.getElementById('btn-do-register').addEventListener('click', async () => {
       authError.style.color = '#fff'; authError.textContent = 'Загрузка...';
+      const pass = document.getElementById('auth-pass-reg').value;
+      const passConf = document.getElementById('auth-pass-reg-confirm').value;
+      if (pass !== passConf) { authError.style.color = '#e05555'; authError.textContent = currentLang === 'en' ? 'Passwords do not match!' : 'Пароли не совпадают!'; return; }
+      
       const email = document.getElementById('auth-email-reg').value;
-      const data = { username: document.getElementById('auth-user-reg').value, email: email, password: document.getElementById('auth-pass-reg').value };
+      const data = { username: document.getElementById('auth-user-reg').value, email: email, password: pass };
       try {
           const res = await fetch('/api/register', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
           const result = await res.json();
-          if (res.ok) {
-              currentVerifyEmail = email;
-              switchAuthTab('verify');
-          } else { authError.style.color = '#e05555'; authError.textContent = result.error; }
+          if (res.ok) { currentVerifyEmail = email; switchAuthTab('verify'); } 
+          else { authError.style.color = '#e05555'; authError.textContent = result.error; }
       } catch(e) { authError.textContent = 'Ошибка сети'; }
   });
 
-  // Verify Code
   document.getElementById('btn-do-verify').addEventListener('click', async () => {
       authError.style.color = '#fff'; authError.textContent = 'Загрузка...';
       const data = { email: currentVerifyEmail, code: document.getElementById('auth-code-verify').value };
@@ -868,15 +938,12 @@
           const res = await fetch('/api/verify', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
           const result = await res.json();
           if (res.ok) {
-              localStorage.setItem('gd_token', result.token);
-              localStorage.setItem('gd_username', result.username);
-              authOverlay.classList.add('hidden');
-              if(window.loadMyReviews) window.loadMyReviews();
+              localStorage.setItem('gd_token', result.token); localStorage.setItem('gd_username', result.username);
+              playWarpAnimation(() => { if(window.loadMyReviews) window.loadMyReviews(); });
           } else { authError.style.color = '#e05555'; authError.textContent = result.error; }
       } catch(e) { authError.textContent = 'Ошибка сети'; }
   });
 
-  // Forgot Password
   document.getElementById('btn-do-forgot').addEventListener('click', async () => {
       authError.style.color = '#fff'; authError.textContent = 'Загрузка...';
       const email = document.getElementById('auth-email-forgot').value;
@@ -888,70 +955,69 @@
       } catch(e) { authError.textContent = 'Ошибка сети'; }
   });
 
-  // Reset Password
   document.getElementById('btn-do-reset').addEventListener('click', async () => {
       authError.style.color = '#fff'; authError.textContent = 'Загрузка...';
       const data = { email: currentVerifyEmail, code: document.getElementById('auth-code-reset').value, newPassword: document.getElementById('auth-pass-reset').value };
       try {
           const res = await fetch('/api/reset-password', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
           const result = await res.json();
-          if (res.ok) {
-              alert(currentLang === 'en' ? 'Password changed successfully!' : 'Пароль успешно изменен!');
-              switchAuthTab('login');
-          } else { authError.style.color = '#e05555'; authError.textContent = result.error; }
+          if (res.ok) { alert(currentLang === 'en' ? 'Password changed successfully!' : 'Пароль успешно изменен!'); switchAuthTab('login'); } 
+          else { authError.style.color = '#e05555'; authError.textContent = result.error; }
       } catch(e) { authError.textContent = 'Ошибка сети'; }
   });
 
-  // Change Password (In Profile)
   document.getElementById('btn-change-pass').addEventListener('click', async () => {
       const btn = document.getElementById('btn-change-pass'); btn.textContent = '...';
       const data = { oldPassword: document.getElementById('inp-old-pass').value, newPassword: document.getElementById('inp-new-pass').value };
       try {
           const res = await fetch('/api/change-password', { method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('gd_token')}, body: JSON.stringify(data) });
-          const result = await res.json();
-          alert(result.message || result.error);
+          const result = await res.json(); alert(result.message || result.error);
       } catch(e) { alert('Error'); }
       btn.textContent = currentLang === 'en' ? 'Update Password' : 'Обновить пароль';
   });
 
-  // Change Email (In Profile)
   document.getElementById('btn-change-email').addEventListener('click', async () => {
       const btn = document.getElementById('btn-change-email'); btn.textContent = '...';
       const data = { password: document.getElementById('inp-email-pass').value, newEmail: document.getElementById('inp-new-email').value };
       try {
           const res = await fetch('/api/change-email', { method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('gd_token')}, body: JSON.stringify(data) });
-          const result = await res.json();
-          alert(result.message || result.error);
+          const result = await res.json(); alert(result.message || result.error);
       } catch(e) { alert('Error'); }
       btn.textContent = currentLang === 'en' ? 'Update Email' : 'Обновить почту';
   });
 
+  // Логаут и Удаление Аккаунта
+  document.getElementById('btn-logout').addEventListener('click', () => {
+      if(confirm(currentLang === 'en' ? 'Log out of your account?' : 'Выйти из аккаунта?')) {
+          localStorage.removeItem('gd_token'); localStorage.removeItem('gd_username'); location.reload();
+      }
+  });
+  document.getElementById('btn-delete-account').addEventListener('click', async () => {
+      const msg1 = currentLang === 'en' ? 'Are you sure? This action is irreversible and will delete all your reviews!' : 'Вы уверены? Это действие необратимо и удалит все ваши обзоры!';
+      const msg2 = currentLang === 'en' ? 'Delete account permanently?' : 'Точно удалить аккаунт навсегда?';
+      if(confirm(msg1) && confirm(msg2)) {
+          try {
+              await fetch('/api/account', { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + localStorage.getItem('gd_token') }});
+              localStorage.removeItem('gd_token'); localStorage.removeItem('gd_username'); location.reload();
+          } catch(e) { alert('Error'); }
+      }
+  });
 
   /* ---------------- storage & profile load ---------------- */
   let reviews = [];
-  
   window.loadMyReviews = async function() {
-    const token = localStorage.getItem('gd_token');
-    if(!token) return;
+    const token = localStorage.getItem('gd_token'); if(!token) return;
     try {
         const res = await fetch('/api/reviews', { headers: { 'Authorization': 'Bearer ' + token } });
         if(res.ok) {
             const data = await res.json();
-            reviews = data.map(r => ({
-                uid: r.id.toString(), id: r.level_id, name: r.level_name, author: r.level_author,
-                difficulty: r.difficulty, difficultyFace: r.difficulty_face, stars: r.stars,
-                ratings: { gameplay: r.gameplay, flow: r.flow, decoration: r.decoration, music: r.music, originality: r.originality, optimization: r.optimization },
-                finalScore: parseFloat(r.final_score), text: r.review_text, savedAt: r.saved_at
-            }));
+            reviews = data.map(r => ({ uid: r.id.toString(), id: r.level_id, name: r.level_name, author: r.level_author, difficulty: r.difficulty, difficultyFace: r.difficulty_face, stars: r.stars, ratings: { gameplay: r.gameplay, flow: r.flow, decoration: r.decoration, music: r.music, originality: r.originality, optimization: r.optimization }, finalScore: parseFloat(r.final_score), text: r.review_text, savedAt: r.saved_at }));
         }
         const profRes = await fetch('/api/profile', { headers: { 'Authorization': 'Bearer ' + token } });
         if(profRes.ok) {
-            const pData = await profRes.json();
-            userProfile.name = pData.username || localStorage.getItem('gd_username') || 'Player';
-            if(pData.description) userProfile.desc = pData.description;
-            if(pData.avatar) userProfile.avatar = pData.avatar;
-            if(pData.banner) userProfile.banner = pData.banner;
-            if(pData.frame) userProfile.frame = pData.frame;
+            const pData = await profRes.json(); userProfile.name = pData.username || localStorage.getItem('gd_username') || 'Player';
+            if(pData.description) userProfile.desc = pData.description; if(pData.avatar) userProfile.avatar = pData.avatar;
+            if(pData.banner) userProfile.banner = pData.banner; if(pData.frame) userProfile.frame = pData.frame;
             if(pData.socials) userProfile.socials = JSON.parse(pData.socials);
         }
         renderProfileHeader(); renderArchive(); renderStats(); renderRewardsUI();
@@ -959,536 +1025,108 @@
   };
 
   /* ---------------- Rewards & progression system ---------------- */
-  const REWARD_TIERS = [
-    { threshold: 1,   rarity: 'common',    frame: null,               badge: { icon: '★', label: 'Newcomer' } },
-    { threshold: 5,   rarity: 'common',    frame: 'frame-bronze',     badge: null },
-    { threshold: 10,  rarity: 'uncommon',  frame: 'frame-silver',     badge: null },
-    { threshold: 20,  rarity: 'uncommon',  frame: null,               badge: { icon: '◆', label: 'Dedicated' } },
-    { threshold: 35,  rarity: 'rare',      frame: 'frame-gold',       badge: null },
-    { threshold: 50,  rarity: 'rare',      frame: 'frame-platinum',   badge: { icon: '✦', label: 'Trusted Critic' } },
-    { threshold: 75,  rarity: 'epic',      frame: 'frame-diamond',    badge: null },
-    { threshold: 100, rarity: 'legendary', frame: 'frame-master',     badge: null },
-    { threshold: 150, rarity: 'mythic',    frame: 'frame-legend',     badge: { icon: '♛', label: 'Legend' } }
-  ];
+  const REWARD_TIERS = [ { threshold: 1, rarity: 'common', frame: null, badge: { icon: '★', label: 'Newcomer' } }, { threshold: 5, rarity: 'common', frame: 'frame-bronze', badge: null }, { threshold: 10, rarity: 'uncommon', frame: 'frame-silver', badge: null }, { threshold: 20, rarity: 'uncommon', frame: null, badge: { icon: '◆', label: 'Dedicated' } }, { threshold: 35, rarity: 'rare', frame: 'frame-gold', badge: null }, { threshold: 50, rarity: 'rare', frame: 'frame-platinum', badge: { icon: '✦', label: 'Trusted Critic' } }, { threshold: 75, rarity: 'epic', frame: 'frame-diamond', badge: null }, { threshold: 100, rarity: 'legendary', frame: 'frame-master', badge: null }, { threshold: 150, rarity: 'mythic', frame: 'frame-legend', badge: { icon: '♛', label: 'Legend' } } ];
   const FRAME_LABEL = { 'frame-default': 'Default', 'frame-circle': 'Circle', 'frame-hex': 'Hex', 'frame-tech': 'Tech', 'frame-bronze': 'Bronze', 'frame-silver': 'Silver', 'frame-gold': 'Gold', 'frame-platinum': 'Platinum', 'frame-diamond': 'Diamond', 'frame-master': 'Master', 'frame-legend': 'Legend' };
   const BASE_FRAMES = ['frame-default', 'frame-circle', 'frame-hex', 'frame-tech'];
 
-  function reviewCount() { return reviews.length; }
-  function unlockedFrames() { return BASE_FRAMES.concat(REWARD_TIERS.filter(t => t.frame && reviewCount() >= t.threshold).map(t => t.frame)); }
-  function isFrameUnlocked(frame) { return unlockedFrames().includes(frame); }
-  function earnedBadges() { return REWARD_TIERS.filter(t => t.badge && reviewCount() >= t.threshold); }
-  function nextRewardTier() { return REWARD_TIERS.find(t => reviewCount() < t.threshold) || null; }
-
-  function renderRewardBadges() {
-    const el = document.getElementById('prof-disp-badges'); if (!el) return;
-    el.innerHTML = earnedBadges().map(t => `<span class="profile-badge-chip" style="--badge-color:${rarityColor(t.rarity)}"><span class="badge-icon">${t.badge.icon}</span>${t.badge.label}</span>`).join('');
-  }
-
+  function reviewCount() { return reviews.length; } function unlockedFrames() { return BASE_FRAMES.concat(REWARD_TIERS.filter(t => t.frame && reviewCount() >= t.threshold).map(t => t.frame)); } function isFrameUnlocked(frame) { return unlockedFrames().includes(frame); } function earnedBadges() { return REWARD_TIERS.filter(t => t.badge && reviewCount() >= t.threshold); } function nextRewardTier() { return REWARD_TIERS.find(t => reviewCount() < t.threshold) || null; }
+  function renderRewardBadges() { const el = document.getElementById('prof-disp-badges'); if (!el) return; el.innerHTML = earnedBadges().map(t => `<span class="profile-badge-chip" style="--badge-color:${rarityColor(t.rarity)}"><span class="badge-icon">${t.badge.icon}</span>${t.badge.label}</span>`).join(''); }
   function rarityColor(rarity) { return { common: '#9a9a9a', uncommon: '#3ddc84', rare: '#4ea1ff', epic: '#c061ff', legendary: '#b083ff', mythic: '#ffcf4d' }[rarity] || '#9a9a9a'; }
 
   function renderProgressionSection() {
     const el = document.getElementById('rewards-progress-content'); if (!el) return;
     const count = reviewCount(); const next = nextRewardTier(); const isRu = currentLang !== 'en';
     const titleEl = document.getElementById('rewards-progress-title'); if (titleEl) titleEl.textContent = isRu ? 'Прогресс рецензента' : 'Reviewer Progression';
-    if (!next) {
-      el.innerHTML = `<div class="rewards-progress-row"><div class="rewards-progress-label">${isRu ? 'Все награды получены!' : 'All rewards unlocked!'}</div></div><div class="rewards-progress-bar"><div class="rewards-progress-fill" style="width:100%;--fill-color:${rarityColor('mythic')}"></div></div><div class="rewards-progress-sub">${isRu ? `Отправлено рецензий: ${count}` : `Reviews submitted: ${count}`}</div>`; return;
-    }
-    const prevThreshold = [...REWARD_TIERS].reverse().find(t => t.threshold <= count)?.threshold || 0;
-    const span = next.threshold - prevThreshold; const pct = Math.min(100, Math.round(((count - prevThreshold) / span) * 100));
-    const rewardName = next.frame ? `${FRAME_LABEL[next.frame]} ${isRu ? 'рамка' : 'Frame'}` : next.badge.label;
+    if (!next) { el.innerHTML = `<div class="rewards-progress-row"><div class="rewards-progress-label">${isRu ? 'Все награды получены!' : 'All rewards unlocked!'}</div></div><div class="rewards-progress-bar"><div class="rewards-progress-fill" style="width:100%;--fill-color:${rarityColor('mythic')}"></div></div><div class="rewards-progress-sub">${isRu ? `Отправлено рецензий: ${count}` : `Reviews submitted: ${count}`}</div>`; return; }
+    const prevThreshold = [...REWARD_TIERS].reverse().find(t => t.threshold <= count)?.threshold || 0; const span = next.threshold - prevThreshold; const pct = Math.min(100, Math.round(((count - prevThreshold) / span) * 100)); const rewardName = next.frame ? `${FRAME_LABEL[next.frame]} ${isRu ? 'рамка' : 'Frame'}` : next.badge.label;
     el.innerHTML = `<div class="rewards-progress-row"><div class="rewards-progress-label">${isRu ? 'Следующая награда' : 'Next reward'}: <b>${rewardName}</b></div><div class="rewards-progress-count">${count} / ${next.threshold}</div></div><div class="rewards-progress-bar"><div class="rewards-progress-fill" style="width:${pct}%;--fill-color:${rarityColor(next.rarity)}"></div></div><div class="rewards-progress-sub">${isRu ? `Ещё рецензий: ${next.threshold - count}` : `${next.threshold - count} review${next.threshold - count === 1 ? '' : 's'} to go`}</div>`;
   }
 
-  function buildRewardFrameOptionHTML(frameClass) {
-    const unlocked = isFrameUnlocked(frameClass); const tier = REWARD_TIERS.find(t => t.frame === frameClass); const isRu = currentLang !== 'en';
-    const lockNote = unlocked ? '' : `<div class="frame-lock-overlay" title="${isRu ? `Открывается после ${tier.threshold} рецензий` : `Unlocks at ${tier.threshold} reviews`}">🔒</div>`;
-    return `<div class="frame-option${unlocked ? '' : ' locked'}" data-frame="${frameClass}" style="--rarity-color:${rarityColor(tier.rarity)}"><div class="frame-preview-box"><div class="profile-avatar-wrap ${frameClass}" style="width: 32px; height: 32px;"><div class="profile-frame-overlay"></div><div class="profile-avatar" style="background:#fff;"></div></div>${lockNote}</div><span class="frame-option-label">${FRAME_LABEL[frameClass]}</span></div>`;
-  }
-
-  function renderFrameSelectorGrid() {
-    const grid = document.getElementById('frame-selector'); if (!grid) return;
-    const rewardFrames = REWARD_TIERS.filter(t => t.frame).map(t => t.frame);
-    const extra = document.getElementById('frame-selector-rewards'); if (extra) extra.remove();
-    const wrap = document.createElement('div'); wrap.id = 'frame-selector-rewards'; wrap.style.cssText = 'display:contents;';
-    wrap.innerHTML = rewardFrames.map(buildRewardFrameOptionHTML).join('');
-    grid.appendChild(wrap);
-    grid.querySelectorAll('.frame-option').forEach(opt => {
-      opt.classList.toggle('active', opt.dataset.frame === tempSelectedFrame);
-      if (!opt.dataset.boundReward) { opt.dataset.boundReward = '1'; opt.addEventListener('click', () => { if (opt.classList.contains('locked')) return; document.querySelectorAll('.frame-option').forEach(o => o.classList.remove('active')); opt.classList.add('active'); tempSelectedFrame = opt.dataset.frame; }); }
-    });
-  }
-
+  function buildRewardFrameOptionHTML(frameClass) { const unlocked = isFrameUnlocked(frameClass); const tier = REWARD_TIERS.find(t => t.frame === frameClass); const isRu = currentLang !== 'en'; const lockNote = unlocked ? '' : `<div class="frame-lock-overlay" title="${isRu ? `Открывается после ${tier.threshold} рецензий` : `Unlocks at ${tier.threshold} reviews`}">🔒</div>`; return `<div class="frame-option${unlocked ? '' : ' locked'}" data-frame="${frameClass}" style="--rarity-color:${rarityColor(tier.rarity)}"><div class="frame-preview-box"><div class="profile-avatar-wrap ${frameClass}" style="width: 32px; height: 32px;"><div class="profile-frame-overlay"></div><div class="profile-avatar" style="background:#fff;"></div></div>${lockNote}</div><span class="frame-option-label">${FRAME_LABEL[frameClass]}</span></div>`; }
+  function renderFrameSelectorGrid() { const grid = document.getElementById('frame-selector'); if (!grid) return; const rewardFrames = REWARD_TIERS.filter(t => t.frame).map(t => t.frame); const extra = document.getElementById('frame-selector-rewards'); if (extra) extra.remove(); const wrap = document.createElement('div'); wrap.id = 'frame-selector-rewards'; wrap.style.cssText = 'display:contents;'; wrap.innerHTML = rewardFrames.map(buildRewardFrameOptionHTML).join(''); grid.appendChild(wrap); grid.querySelectorAll('.frame-option').forEach(opt => { opt.classList.toggle('active', opt.dataset.frame === tempSelectedFrame); if (!opt.dataset.boundReward) { opt.dataset.boundReward = '1'; opt.addEventListener('click', () => { if (opt.classList.contains('locked')) return; document.querySelectorAll('.frame-option').forEach(o => o.classList.remove('active')); opt.classList.add('active'); tempSelectedFrame = opt.dataset.frame; }); } }); }
   function renderRewardsUI() { renderRewardBadges(); renderProgressionSection(); if (!isFrameUnlocked(userProfile.frame)) userProfile.frame = 'frame-default'; }
 
   /* ---------------- PROFILE LOGIC & CROPPER ---------------- */
   let userProfile = { name: 'Player', desc: 'Welcome to my GD Review profile!', avatar: 'https://gdbrowser.com/assets/icon.png', banner: 'https://levelthumbs.prevter.me/thumbnail/10565740/small', frame: 'frame-default', socials: {} };
-  let tempAvatarBase64 = null; let tempBannerBase64 = null; let avatarJustUploaded = false; let bannerJustUploaded = false; let tempSelectedFrame = userProfile.frame;
-  const yearEl = document.getElementById('footer-year'); if(yearEl) yearEl.textContent = new Date().getFullYear();
+  let tempAvatarBase64 = null; let tempBannerBase64 = null; let avatarJustUploaded = false; let bannerJustUploaded = false; let tempSelectedFrame = userProfile.frame; const yearEl = document.getElementById('footer-year'); if(yearEl) yearEl.textContent = new Date().getFullYear();
 
-  const SOCIAL_PLATFORMS = [
-    { key:'youtube', label:'YouTube', abbr:'YT', domains:['youtube.com','youtu.be'], placeholder:'https://youtube.com/@handle' },
-    { key:'tiktok', label:'TikTok', abbr:'TT', domains:['tiktok.com'], placeholder:'https://tiktok.com/@handle' },
-    { key:'twitch', label:'Twitch', abbr:'TC', domains:['twitch.tv'], placeholder:'https://twitch.tv/handle' },
-    { key:'instagram', label:'Instagram', abbr:'IG', domains:['instagram.com'], placeholder:'https://instagram.com/handle' },
-    { key:'discord', label:'Discord', abbr:'DC', domains:['discord.gg','discord.com'], placeholder:'https://discord.gg/invite' },
-    { key:'twitter', label:'X / Twitter', abbr:'X', domains:['twitter.com','x.com'], placeholder:'https://x.com/handle' }
-  ];
-
-  function normalizeUrl(raw) { let v = (raw || '').trim(); if(!v) return ''; if(!/^https?:\/\//i.test(v)) v = 'https://' + v; return v; }
-  function hostnameMatches(hostname, domains) { const h = hostname.toLowerCase().replace(/^www\./, ''); return domains.some(d => h === d || h.endsWith('.' + d)); }
-  function isValidSocialUrl(platform, raw) { const v = (raw || '').trim(); if(!v) return true; const normalized = normalizeUrl(v); let url; try { url = new URL(normalized); } catch(e) { return false; } return hostnameMatches(url.hostname, platform.domains); }
-
-  function buildSocialFields() {
-    const wrap = document.getElementById('socials-fields');
-    wrap.innerHTML = SOCIAL_PLATFORMS.map(p => `<div class="social-field" id="soc-field-${p.key}"><label class="social-field-label" for="inp-soc-${p.key}"><span class="social-field-badge">${p.abbr}</span>${p.label}</label><input type="text" class="modal-input" id="inp-soc-${p.key}" data-platform="${p.key}" placeholder="${p.placeholder}"><div class="social-field-error" id="soc-error-${p.key}"></div></div>`).join('');
-    SOCIAL_PLATFORMS.forEach(p => { const input = document.getElementById(`inp-soc-${p.key}`); const clearIfValid = () => { if(isValidSocialUrl(p, input.value)) setSocialFieldError(p, false); }; input.addEventListener('input', clearIfValid); input.addEventListener('blur', () => { if(!isValidSocialUrl(p, input.value)) setSocialFieldError(p, true); }); });
-  } buildSocialFields();
-
+  const SOCIAL_PLATFORMS = [ { key:'youtube', label:'YouTube', abbr:'YT', domains:['youtube.com','youtu.be'], placeholder:'https://youtube.com/@handle' }, { key:'tiktok', label:'TikTok', abbr:'TT', domains:['tiktok.com'], placeholder:'https://tiktok.com/@handle' }, { key:'twitch', label:'Twitch', abbr:'TC', domains:['twitch.tv'], placeholder:'https://twitch.tv/handle' }, { key:'instagram', label:'Instagram', abbr:'IG', domains:['instagram.com'], placeholder:'https://instagram.com/handle' }, { key:'discord', label:'Discord', abbr:'DC', domains:['discord.gg','discord.com'], placeholder:'https://discord.gg/invite' }, { key:'twitter', label:'X / Twitter', abbr:'X', domains:['twitter.com','x.com'], placeholder:'https://x.com/handle' } ];
+  function normalizeUrl(raw) { let v = (raw || '').trim(); if(!v) return ''; if(!/^https?:\/\//i.test(v)) v = 'https://' + v; return v; } function hostnameMatches(hostname, domains) { const h = hostname.toLowerCase().replace(/^www\./, ''); return domains.some(d => h === d || h.endsWith('.' + d)); } function isValidSocialUrl(platform, raw) { const v = (raw || '').trim(); if(!v) return true; const normalized = normalizeUrl(v); let url; try { url = new URL(normalized); } catch(e) { return false; } return hostnameMatches(url.hostname, platform.domains); }
+  function buildSocialFields() { const wrap = document.getElementById('socials-fields'); wrap.innerHTML = SOCIAL_PLATFORMS.map(p => `<div class="social-field" id="soc-field-${p.key}"><label class="social-field-label" for="inp-soc-${p.key}"><span class="social-field-badge">${p.abbr}</span>${p.label}</label><input type="text" class="modal-input" id="inp-soc-${p.key}" data-platform="${p.key}" placeholder="${p.placeholder}"><div class="social-field-error" id="soc-error-${p.key}"></div></div>`).join(''); SOCIAL_PLATFORMS.forEach(p => { const input = document.getElementById(`inp-soc-${p.key}`); const clearIfValid = () => { if(isValidSocialUrl(p, input.value)) setSocialFieldError(p, false); }; input.addEventListener('input', clearIfValid); input.addEventListener('blur', () => { if(!isValidSocialUrl(p, input.value)) setSocialFieldError(p, true); }); }); } buildSocialFields();
   function setSocialFieldError(platform, hasError) { const field = document.getElementById(`soc-field-${platform.key}`); const input = document.getElementById(`inp-soc-${platform.key}`); const errorEl = document.getElementById(`soc-error-${platform.key}`); field.classList.toggle('has-error', hasError); input.classList.toggle('invalid', hasError); if(hasError) errorEl.textContent = i18n[currentLang].invalidLink.replace('{platform}', platform.label); }
 
-  const SOCIAL_ICONS = {
-    youtube: '<svg viewBox="0 0 24 24"><path fill="#FF0000" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><path fill="#fff" d="M9.6 15.6V8.4L15.8 12z"/></svg>',
-    tiktok: '<svg viewBox="0 0 24 24"><path fill="#25F4EE" d="M16.6 5.8c-.9-.9-1.4-2.2-1.4-3.5h-2.9v13.4a2.6 2.6 0 1 1-1.8-2.5V9.9a5.5 5.5 0 1 0 4.7 5.4V9.6c1.1.8 2.4 1.3 3.8 1.3V8c-.8 0-1.6-.3-2.4-.7z" transform="translate(-.6,0)"/><path fill="#FE2C55" d="M16 5.4c-.9-.9-1.4-2.2-1.4-3.5h-2.9v13.4a2.6 2.6 0 1 1-1.8-2.5v-2.5a5.5 5.5 0 1 0 4.7 5.4V9.2c1.1.8 2.4 1.3 3.8 1.3V7.6c-.8 0-1.6-.3-2.4-.7z" transform="translate(.6,.4)"/><path fill="#fff" d="M15.6 5.6c-.9-.9-1.4-2.2-1.4-3.5h-2.9v13.4a2.6 2.6 0 1 1-1.8-2.5v-2.5a5.5 5.5 0 1 0 4.7 5.4V9.4c1.1.8 2.4 1.3 3.8 1.3V7.8c-.8 0-1.6-.3-2.4-.7z"/></svg>',
-    twitch: '<svg viewBox="0 0 24 24"><path fill="#9146FF" d="M4 2 2 6.4v13.2h5V22l3.6-2.4H14L20 14V2H4zm14.4 11.2-2.8 2.8h-3.2l-2.4 2.4v-2.4H6.4V3.6h12v9.6z"/><path fill="#9146FF" d="M15.6 6.8h1.6v4.8h-1.6zM11.2 6.8h1.6v4.8h-1.6z"/></svg>',
-    instagram: '<svg viewBox="0 0 24 24"><defs><radialGradient id="igGrad" cx="30%" cy="107%" r="150%"><stop offset="0%" stop-color="#FFDD55"/><stop offset="10%" stop-color="#FFDD55"/><stop offset="50%" stop-color="#FD5"/><stop offset="50%" stop-color="#FF543E"/><stop offset="100%" stop-color="#C837AB"/></radialGradient></defs><rect width="24" height="24" rx="6" fill="url(#igGrad)"/><rect x="5" y="5" width="14" height="14" rx="4" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="12" r="3.6" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="17" cy="7" r="1" fill="#fff"/></svg>',
-    discord: '<svg viewBox="0 0 24 24"><path fill="#5865F2" d="M20.3 5.4A19 19 0 0 0 15.6 4l-.3.5c1.7.5 2.6 1.1 3.6 1.9-1.5-.7-3-1.2-4.9-1.2s-3.4.5-4.9 1.2c1-.8 2-1.5 3.6-1.9L12.4 4a19 19 0 0 0-4.7 1.4C4.6 9.3 3.9 13 4.2 16.7a19 19 0 0 0 5.7 2.9l.9-1.4a11 11 0 0 1-1.8-.9l.4-.3a13.6 13.6 0 0 0 10.9 0l.4.3a11 11 0 0 1-1.8.9l.9 1.4a19 19 0 0 0 5.7-2.9c.4-4.2-.6-7.9-3.6-11.3zM9.7 14.5c-.9 0-1.6-.8-1.6-1.8s.7-1.8 1.6-1.8 1.6.8 1.6 1.8-.7 1.8-1.6 1.8zm4.7 0c-.9 0-1.6-.8-1.6-1.8s.7-1.8 1.6-1.8 1.6.8 1.6 1.8-.7 1.8-1.6 1.8z"/></svg>',
-    twitter: '<svg viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#000"/><path fill="#fff" d="M6 6l5 6.6L6.2 18H7.7l4.2-4.8 3.4 4.8H18l-5.3-7L17.5 6H16l-3.9 4.4L9 6H6zm2.2 1.1h1.6l6.9 9.8h-1.6L8.2 7.1z"/></svg>'
-  };
+  const SOCIAL_ICONS = { youtube: '<svg viewBox="0 0 24 24"><path fill="#FF0000" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><path fill="#fff" d="M9.6 15.6V8.4L15.8 12z"/></svg>', tiktok: '<svg viewBox="0 0 24 24"><path fill="#25F4EE" d="M16.6 5.8c-.9-.9-1.4-2.2-1.4-3.5h-2.9v13.4a2.6 2.6 0 1 1-1.8-2.5V9.9a5.5 5.5 0 1 0 4.7 5.4V9.6c1.1.8 2.4 1.3 3.8 1.3V8c-.8 0-1.6-.3-2.4-.7z" transform="translate(-.6,0)"/><path fill="#FE2C55" d="M16 5.4c-.9-.9-1.4-2.2-1.4-3.5h-2.9v13.4a2.6 2.6 0 1 1-1.8-2.5v-2.5a5.5 5.5 0 1 0 4.7 5.4V9.2c1.1.8 2.4 1.3 3.8 1.3V7.6c-.8 0-1.6-.3-2.4-.7z" transform="translate(.6,.4)"/><path fill="#fff" d="M15.6 5.6c-.9-.9-1.4-2.2-1.4-3.5h-2.9v13.4a2.6 2.6 0 1 1-1.8-2.5v-2.5a5.5 5.5 0 1 0 4.7 5.4V9.4c1.1.8 2.4 1.3 3.8 1.3V7.8c-.8 0-1.6-.3-2.4-.7z"/></svg>', twitch: '<svg viewBox="0 0 24 24"><path fill="#9146FF" d="M4 2 2 6.4v13.2h5V22l3.6-2.4H14L20 14V2H4zm14.4 11.2-2.8 2.8h-3.2l-2.4 2.4v-2.4H6.4V3.6h12v9.6z"/><path fill="#9146FF" d="M15.6 6.8h1.6v4.8h-1.6zM11.2 6.8h1.6v4.8h-1.6z"/></svg>', instagram: '<svg viewBox="0 0 24 24"><defs><radialGradient id="igGrad" cx="30%" cy="107%" r="150%"><stop offset="0%" stop-color="#FFDD55"/><stop offset="10%" stop-color="#FFDD55"/><stop offset="50%" stop-color="#FD5"/><stop offset="50%" stop-color="#FF543E"/><stop offset="100%" stop-color="#C837AB"/></radialGradient></defs><rect width="24" height="24" rx="6" fill="url(#igGrad)"/><rect x="5" y="5" width="14" height="14" rx="4" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="12" r="3.6" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="17" cy="7" r="1" fill="#fff"/></svg>', discord: '<svg viewBox="0 0 24 24"><path fill="#5865F2" d="M20.3 5.4A19 19 0 0 0 15.6 4l-.3.5c1.7.5 2.6 1.1 3.6 1.9-1.5-.7-3-1.2-4.9-1.2s-3.4.5-4.9 1.2c1-.8 2-1.5 3.6-1.9L12.4 4a19 19 0 0 0-4.7 1.4C4.6 9.3 3.9 13 4.2 16.7a19 19 0 0 0 5.7 2.9l.9-1.4a11 11 0 0 1-1.8-.9l.4-.3a13.6 13.6 0 0 0 10.9 0l.4.3a11 11 0 0 1-1.8.9l.9 1.4a19 19 0 0 0 5.7-2.9c.4-4.2-.6-7.9-3.6-11.3zM9.7 14.5c-.9 0-1.6-.8-1.6-1.8s.7-1.8 1.6-1.8 1.6.8 1.6 1.8-.7 1.8-1.6 1.8zm4.7 0c-.9 0-1.6-.8-1.6-1.8s.7-1.8 1.6-1.8 1.6.8 1.6 1.8-.7 1.8-1.6 1.8z"/></svg>', twitter: '<svg viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#000"/><path fill="#fff" d="M6 6l5 6.6L6.2 18H7.7l4.2-4.8 3.4 4.8H18l-5.3-7L17.5 6H16l-3.9 4.4L9 6H6zm2.2 1.1h1.6l6.9 9.8h-1.6L8.2 7.1z"/></svg>' };
   function renderNameSocialIcons() { const wrap = document.getElementById('prof-disp-name-socials'); const active = SOCIAL_PLATFORMS.filter(p => userProfile.socials[p.key] && SOCIAL_ICONS[p.key]); wrap.innerHTML = active.map(p => `<a href="${userProfile.socials[p.key]}" target="_blank" rel="noopener noreferrer" title="${p.label}">${SOCIAL_ICONS[p.key]}</a>`).join(''); }
-
-  function renderProfileHeader() {
-    document.getElementById('prof-disp-name').textContent = userProfile.name;
-    document.getElementById('prof-disp-desc').textContent = userProfile.desc;
-    document.getElementById('prof-disp-avatar').src = userProfile.avatar;
-    document.getElementById('prof-disp-banner').style.backgroundImage = `url('${userProfile.banner}')`;
-    document.getElementById('prof-disp-frame-wrap').className = `profile-avatar-wrap ${userProfile.frame}`;
-    renderNameSocialIcons(); renderRewardsUI();
-  } renderProfileHeader();
+  function renderProfileHeader() { document.getElementById('prof-disp-name').textContent = userProfile.name; document.getElementById('prof-disp-desc').textContent = userProfile.desc; document.getElementById('prof-disp-avatar').src = userProfile.avatar; document.getElementById('prof-disp-banner').style.backgroundImage = `url('${userProfile.banner}')`; document.getElementById('prof-disp-frame-wrap').className = `profile-avatar-wrap ${userProfile.frame}`; renderNameSocialIcons(); renderRewardsUI(); } renderProfileHeader();
 
   const UPLOAD_LABEL_MAP = { avatar: { id: 'lbl-upload-avatar', btnKey: 'uploadAvatarBtn', doneKey: 'uploadAvatarDone' }, banner: { id: 'lbl-upload-banner', btnKey: 'uploadBannerBtn', doneKey: 'uploadBannerDone' } };
   function syncUploadLabel(type, isUploaded) { const cfg = UPLOAD_LABEL_MAP[type]; const el = document.getElementById(cfg.id); const key = isUploaded ? cfg.doneKey : cfg.btnKey; el.setAttribute('data-i18n', key); el.textContent = i18n[currentLang][key]; el.classList.toggle('uploaded', isUploaded); }
   function resetUploadButtons() { avatarJustUploaded = false; bannerJustUploaded = false; syncUploadLabel('avatar', false); syncUploadLabel('banner', false); }
 
-  let modalLockCount = 0;
-  function openModalOverlay(el) { el.classList.add('show'); modalLockCount++; document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden'; }
-  function closeModalOverlay(el) { el.classList.remove('show'); modalLockCount = Math.max(0, modalLockCount - 1); if(modalLockCount === 0) { document.documentElement.style.overflow = ''; document.body.style.overflow = ''; } }
-
-  function setEditModalTab(tabName) { document.querySelectorAll('#edit-modal-tabs .modal-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.editTab === tabName)); document.querySelectorAll('.edit-tab-pane').forEach(p => p.classList.toggle('active', p.id === `edit-tab-${tabName}`)); }
-  document.querySelectorAll('#edit-modal-tabs .modal-tab-btn').forEach(btn => { btn.addEventListener('click', () => setEditModalTab(btn.dataset.editTab)); });
+  let modalLockCount = 0; function openModalOverlay(el) { el.classList.add('show'); modalLockCount++; document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden'; } function closeModalOverlay(el) { el.classList.remove('show'); modalLockCount = Math.max(0, modalLockCount - 1); if(modalLockCount === 0) { document.documentElement.style.overflow = ''; document.body.style.overflow = ''; } }
+  function setEditModalTab(tabName) { document.querySelectorAll('#edit-modal-tabs .modal-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.editTab === tabName)); document.querySelectorAll('.edit-tab-pane').forEach(p => p.classList.toggle('active', p.id === `edit-tab-${tabName}`)); } document.querySelectorAll('#edit-modal-tabs .modal-tab-btn').forEach(btn => { btn.addEventListener('click', () => setEditModalTab(btn.dataset.editTab)); });
 
   const editModal = document.getElementById('edit-profile-modal');
-  document.getElementById('btn-edit-profile').addEventListener('click', () => {
-    document.getElementById('inp-prof-desc').value = userProfile.desc || '';
-    tempAvatarBase64 = userProfile.avatar; tempBannerBase64 = userProfile.banner; tempSelectedFrame = userProfile.frame;
-    resetUploadButtons();
-    SOCIAL_PLATFORMS.forEach(p => { document.getElementById(`inp-soc-${p.key}`).value = userProfile.socials[p.key] || ''; setSocialFieldError(p, false); });
-    renderFrameSelectorGrid();
-    setEditModalTab('customize'); openModalOverlay(editModal);
-  });
-
+  document.getElementById('btn-edit-profile').addEventListener('click', () => { document.getElementById('inp-prof-desc').value = userProfile.desc || ''; tempAvatarBase64 = userProfile.avatar; tempBannerBase64 = userProfile.banner; tempSelectedFrame = userProfile.frame; resetUploadButtons(); SOCIAL_PLATFORMS.forEach(p => { document.getElementById(`inp-soc-${p.key}`).value = userProfile.socials[p.key] || ''; setSocialFieldError(p, false); }); renderFrameSelectorGrid(); setEditModalTab('customize'); openModalOverlay(editModal); });
   document.getElementById('modal-close-prof-btn').addEventListener('click', () => { resetUploadButtons(); closeModalOverlay(editModal); });
   
   document.getElementById('modal-save-prof-btn').addEventListener('click', async () => {
-    let firstInvalid = null;
-    const newSocials = {};
-    SOCIAL_PLATFORMS.forEach(p => {
-      const input = document.getElementById(`inp-soc-${p.key}`);
-      const raw = input.value.trim();
-      const valid = isValidSocialUrl(p, raw);
-      setSocialFieldError(p, !valid);
-      if(!valid && !firstInvalid) firstInvalid = input;
-      if(valid && raw) newSocials[p.key] = normalizeUrl(raw);
-    });
-    if(firstInvalid) { setEditModalTab('links'); firstInvalid.focus(); return; }
-
-    const btn = document.getElementById('modal-save-prof-btn');
-    const origText = btn.textContent;
-    btn.textContent = 'Загрузка...';
-
-    userProfile.desc = document.getElementById('inp-prof-desc').value;
-    userProfile.avatar = tempAvatarBase64; userProfile.banner = tempBannerBase64;
-    userProfile.frame = tempSelectedFrame; userProfile.socials = newSocials;
-
+    let firstInvalid = null; const newSocials = {}; SOCIAL_PLATFORMS.forEach(p => { const input = document.getElementById(`inp-soc-${p.key}`); const raw = input.value.trim(); const valid = isValidSocialUrl(p, raw); setSocialFieldError(p, !valid); if(!valid && !firstInvalid) firstInvalid = input; if(valid && raw) newSocials[p.key] = normalizeUrl(raw); }); if(firstInvalid) { setEditModalTab('links'); firstInvalid.focus(); return; }
+    const btn = document.getElementById('modal-save-prof-btn'); const origText = btn.textContent; btn.textContent = 'Загрузка...';
+    userProfile.desc = document.getElementById('inp-prof-desc').value; userProfile.avatar = tempAvatarBase64; userProfile.banner = tempBannerBase64; userProfile.frame = tempSelectedFrame; userProfile.socials = newSocials;
     const token = localStorage.getItem('gd_token');
-    if(token) {
-        try {
-            await fetch('/api/profile', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-                body: JSON.stringify({ avatar: userProfile.avatar, banner: userProfile.banner, frame: userProfile.frame, description: userProfile.desc, socials: JSON.stringify(userProfile.socials) })
-            });
-            await window.loadMyReviews(); // Обновляем данные с сервера
-        } catch(e) { console.error(e); }
-    }
-
-    btn.textContent = origText;
-    resetUploadButtons(); closeModalOverlay(editModal);
+    if(token) { try { await fetch('/api/profile', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify({ avatar: userProfile.avatar, banner: userProfile.banner, frame: userProfile.frame, description: userProfile.desc, socials: JSON.stringify(userProfile.socials) }) }); await window.loadMyReviews(); } catch(e) { console.error(e); } }
+    btn.textContent = origText; resetUploadButtons(); closeModalOverlay(editModal);
   });
 
   /* ---------------- Cropper Logic ---------------- */
-  const cropModal = document.getElementById('crop-modal'); const cropArea = document.getElementById('crop-area'); const cropImg = document.getElementById('crop-image'); const cropGuide = document.getElementById('crop-guide'); const cropResizeHandle = document.getElementById('crop-resize-handle'); const MIN_GUIDE = 40;
-  let cropperState = { targetType: 'avatar', img: new Image(), x: 0, y: 0, scale: 1, minScale: 1, guideLeft: 0, guideTop: 0, guideW: 100, guideH: 100, aspectLocked: true, dragMode: null, startX: 0, startY: 0, startGuideLeft: 0, startGuideTop: 0, startGuideW: 0, startGuideH: 0 };
-  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
-
-  function openCropper(file, type) {
-    cropperState.targetType = type;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        cropperState.img = img; cropImg.src = img.src;
-        const wrapperW = cropArea.clientWidth, wrapperH = cropArea.clientHeight;
-        const coverScale = Math.max(wrapperW / img.width, wrapperH / img.height);
-        cropperState.minScale = coverScale; cropperState.scale = coverScale;
-        cropperState.x = (wrapperW - img.width * coverScale) / 2; cropperState.y = (wrapperH - img.height * coverScale) / 2;
-        cropperState.aspectLocked = (type === 'avatar');
-        if(type === 'avatar') { const size = Math.min(wrapperW, wrapperH) * 0.62; cropperState.guideW = size; cropperState.guideH = size; cropperState.guideLeft = (wrapperW - size) / 2; cropperState.guideTop = (wrapperH - size) / 2; cropGuide.className = 'crop-overlay-guide' + (tempSelectedFrame === 'frame-circle' ? ' is-circle' : ''); } 
-        else { cropperState.guideW = wrapperW * 0.9; cropperState.guideH = wrapperH * 0.5; cropperState.guideLeft = (wrapperW - cropperState.guideW) / 2; cropperState.guideTop = (wrapperH - cropperState.guideH) / 2; cropGuide.className = 'crop-overlay-guide'; }
-        updateGuideVisual(); updateCropVisual(); openModalOverlay(cropModal);
-      }; img.src = e.target.result;
-    }; reader.readAsDataURL(file);
-  }
-
-  function updateCropVisual() { cropImg.style.transform = `translate(${cropperState.x}px, ${cropperState.y}px) scale(${cropperState.scale})`; }
-  function updateGuideVisual() { cropGuide.style.left = cropperState.guideLeft + 'px'; cropGuide.style.top = cropperState.guideTop + 'px'; cropGuide.style.width = cropperState.guideW + 'px'; cropGuide.style.height = cropperState.guideH + 'px'; }
-  function clampPan() { const wrapperW = cropArea.clientWidth, wrapperH = cropArea.clientHeight; const scaledW = cropperState.img.width * cropperState.scale; const scaledH = cropperState.img.height * cropperState.scale; const minX = Math.min(0, wrapperW - scaledW), maxX = 0; const minY = Math.min(0, wrapperH - scaledH), maxY = 0; cropperState.x = clamp(cropperState.x, minX, maxX); cropperState.y = clamp(cropperState.y, minY, maxY); }
-  function clampGuidePosition() { const wrapperW = cropArea.clientWidth, wrapperH = cropArea.clientHeight; cropperState.guideLeft = clamp(cropperState.guideLeft, 0, Math.max(0, wrapperW - cropperState.guideW)); cropperState.guideTop = clamp(cropperState.guideTop, 0, Math.max(0, wrapperH - cropperState.guideH)); }
-
-  cropArea.addEventListener('wheel', (e) => { e.preventDefault(); const rect = cropArea.getBoundingClientRect(); const cx = e.clientX - rect.left, cy = e.clientY - rect.top; const zoomFactor = Math.exp(-e.deltaY * 0.0015); const newScale = clamp(cropperState.scale * zoomFactor, cropperState.minScale, cropperState.minScale * 4); const imgX = (cx - cropperState.x) / cropperState.scale; const imgY = (cy - cropperState.y) / cropperState.scale; cropperState.scale = newScale; cropperState.x = cx - imgX * newScale; cropperState.y = cy - imgY * newScale; clampPan(); updateCropVisual(); }, { passive: false });
-  cropArea.addEventListener('pointerdown', (e) => { cropperState.dragMode = 'pan'; cropperState.startX = e.clientX - cropperState.x; cropperState.startY = e.clientY - cropperState.y; });
-  cropGuide.addEventListener('pointerdown', (e) => { if(e.target === cropResizeHandle) return; e.stopPropagation(); cropperState.dragMode = 'move-guide'; cropperState.startX = e.clientX; cropperState.startY = e.clientY; cropperState.startGuideLeft = cropperState.guideLeft; cropperState.startGuideTop = cropperState.guideTop; });
-  cropResizeHandle.addEventListener('pointerdown', (e) => { e.stopPropagation(); cropperState.dragMode = 'resize-guide'; cropperState.startX = e.clientX; cropperState.startY = e.clientY; cropperState.startGuideW = cropperState.guideW; cropperState.startGuideH = cropperState.guideH; });
-
-  document.addEventListener('pointermove', (e) => {
-    if(!cropperState.dragMode) return;
-    const wrapperW = cropArea.clientWidth, wrapperH = cropArea.clientHeight;
-    if(cropperState.dragMode === 'pan') { cropperState.x = e.clientX - cropperState.startX; cropperState.y = e.clientY - cropperState.startY; clampPan(); updateCropVisual(); } 
-    else if(cropperState.dragMode === 'move-guide') { const dx = e.clientX - cropperState.startX, dy = e.clientY - cropperState.startY; cropperState.guideLeft = cropperState.startGuideLeft + dx; cropperState.guideTop = cropperState.startGuideTop + dy; clampGuidePosition(); updateGuideVisual(); } 
-    else if(cropperState.dragMode === 'resize-guide') { const dx = e.clientX - cropperState.startX, dy = e.clientY - cropperState.startY; const maxW = wrapperW - cropperState.guideLeft, maxH = wrapperH - cropperState.guideTop; if(cropperState.aspectLocked) { const d = Math.max(dx, dy); const size = clamp(cropperState.startGuideW + d, MIN_GUIDE, Math.min(maxW, maxH)); cropperState.guideW = size; cropperState.guideH = size; } else { cropperState.guideW = clamp(cropperState.startGuideW + dx, MIN_GUIDE, maxW); cropperState.guideH = clamp(cropperState.startGuideH + dy, MIN_GUIDE, maxH); } updateGuideVisual(); }
-  });
-  document.addEventListener('pointerup', () => { cropperState.dragMode = null; }); document.addEventListener('pointercancel', () => { cropperState.dragMode = null; });
-
-  document.getElementById('crop-save-btn').addEventListener('click', () => {
-    const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
-    let ratio = 2; let outW = cropperState.guideW * ratio, outH = cropperState.guideH * ratio; const MAX_DIM = 900;
-    if(Math.max(outW, outH) > MAX_DIM) { ratio *= MAX_DIM / Math.max(outW, outH); outW = cropperState.guideW * ratio; outH = cropperState.guideH * ratio; }
-    canvas.width = Math.round(outW); canvas.height = Math.round(outH);
-    const drawX = (cropperState.x - cropperState.guideLeft) * ratio; const drawY = (cropperState.y - cropperState.guideTop) * ratio; const drawW = cropperState.img.width * cropperState.scale * ratio; const drawH = cropperState.img.height * cropperState.scale * ratio;
-    ctx.drawImage(cropperState.img, drawX, drawY, drawW, drawH);
-    const finalBase64 = canvas.toDataURL('image/jpeg', 0.9);
-    if (cropperState.targetType === 'avatar') { tempAvatarBase64 = finalBase64; avatarJustUploaded = true; syncUploadLabel('avatar', true); } else { tempBannerBase64 = finalBase64; bannerJustUploaded = true; syncUploadLabel('banner', true); }
-    closeModalOverlay(cropModal);
-  });
-  document.getElementById('crop-cancel-btn').addEventListener('click', () => { closeModalOverlay(cropModal); });
-  document.getElementById('inp-file-avatar').addEventListener('change', (e) => { if(e.target.files && e.target.files[0]) openCropper(e.target.files[0], 'avatar'); e.target.value = ''; });
-  document.getElementById('inp-file-banner').addEventListener('change', (e) => { if(e.target.files && e.target.files[0]) openCropper(e.target.files[0], 'banner'); e.target.value = ''; });
+  const cropModal = document.getElementById('crop-modal'); const cropArea = document.getElementById('crop-area'); const cropImg = document.getElementById('crop-image'); const cropGuide = document.getElementById('crop-guide'); const cropResizeHandle = document.getElementById('crop-resize-handle'); const MIN_GUIDE = 40; let cropperState = { targetType: 'avatar', img: new Image(), x: 0, y: 0, scale: 1, minScale: 1, guideLeft: 0, guideTop: 0, guideW: 100, guideH: 100, aspectLocked: true, dragMode: null, startX: 0, startY: 0, startGuideLeft: 0, startGuideTop: 0, startGuideW: 0, startGuideH: 0 }; function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+  function openCropper(file, type) { cropperState.targetType = type; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.onload = () => { cropperState.img = img; cropImg.src = img.src; const wrapperW = cropArea.clientWidth, wrapperH = cropArea.clientHeight; const coverScale = Math.max(wrapperW / img.width, wrapperH / img.height); cropperState.minScale = coverScale; cropperState.scale = coverScale; cropperState.x = (wrapperW - img.width * coverScale) / 2; cropperState.y = (wrapperH - img.height * coverScale) / 2; cropperState.aspectLocked = (type === 'avatar'); if(type === 'avatar') { const size = Math.min(wrapperW, wrapperH) * 0.62; cropperState.guideW = size; cropperState.guideH = size; cropperState.guideLeft = (wrapperW - size) / 2; cropperState.guideTop = (wrapperH - size) / 2; cropGuide.className = 'crop-overlay-guide' + (tempSelectedFrame === 'frame-circle' ? ' is-circle' : ''); } else { cropperState.guideW = wrapperW * 0.9; cropperState.guideH = wrapperH * 0.5; cropperState.guideLeft = (wrapperW - cropperState.guideW) / 2; cropperState.guideTop = (wrapperH - cropperState.guideH) / 2; cropGuide.className = 'crop-overlay-guide'; } updateGuideVisual(); updateCropVisual(); openModalOverlay(cropModal); }; img.src = e.target.result; }; reader.readAsDataURL(file); }
+  function updateCropVisual() { cropImg.style.transform = `translate(${cropperState.x}px, ${cropperState.y}px) scale(${cropperState.scale})`; } function updateGuideVisual() { cropGuide.style.left = cropperState.guideLeft + 'px'; cropGuide.style.top = cropperState.guideTop + 'px'; cropGuide.style.width = cropperState.guideW + 'px'; cropGuide.style.height = cropperState.guideH + 'px'; } function clampPan() { const wrapperW = cropArea.clientWidth, wrapperH = cropArea.clientHeight; const scaledW = cropperState.img.width * cropperState.scale; const scaledH = cropperState.img.height * cropperState.scale; const minX = Math.min(0, wrapperW - scaledW), maxX = 0; const minY = Math.min(0, wrapperH - scaledH), maxY = 0; cropperState.x = clamp(cropperState.x, minX, maxX); cropperState.y = clamp(cropperState.y, minY, maxY); } function clampGuidePosition() { const wrapperW = cropArea.clientWidth, wrapperH = cropArea.clientHeight; cropperState.guideLeft = clamp(cropperState.guideLeft, 0, Math.max(0, wrapperW - cropperState.guideW)); cropperState.guideTop = clamp(cropperState.guideTop, 0, Math.max(0, wrapperH - cropperState.guideH)); }
+  cropArea.addEventListener('wheel', (e) => { e.preventDefault(); const rect = cropArea.getBoundingClientRect(); const cx = e.clientX - rect.left, cy = e.clientY - rect.top; const zoomFactor = Math.exp(-e.deltaY * 0.0015); const newScale = clamp(cropperState.scale * zoomFactor, cropperState.minScale, cropperState.minScale * 4); const imgX = (cx - cropperState.x) / cropperState.scale; const imgY = (cy - cropperState.y) / cropperState.scale; cropperState.scale = newScale; cropperState.x = cx - imgX * newScale; cropperState.y = cy - imgY * newScale; clampPan(); updateCropVisual(); }, { passive: false }); cropArea.addEventListener('pointerdown', (e) => { cropperState.dragMode = 'pan'; cropperState.startX = e.clientX - cropperState.x; cropperState.startY = e.clientY - cropperState.y; }); cropGuide.addEventListener('pointerdown', (e) => { if(e.target === cropResizeHandle) return; e.stopPropagation(); cropperState.dragMode = 'move-guide'; cropperState.startX = e.clientX; cropperState.startY = e.clientY; cropperState.startGuideLeft = cropperState.guideLeft; cropperState.startGuideTop = cropperState.guideTop; }); cropResizeHandle.addEventListener('pointerdown', (e) => { e.stopPropagation(); cropperState.dragMode = 'resize-guide'; cropperState.startX = e.clientX; cropperState.startY = e.clientY; cropperState.startGuideW = cropperState.guideW; cropperState.startGuideH = cropperState.guideH; });
+  document.addEventListener('pointermove', (e) => { if(!cropperState.dragMode) return; const wrapperW = cropArea.clientWidth, wrapperH = cropArea.clientHeight; if(cropperState.dragMode === 'pan') { cropperState.x = e.clientX - cropperState.startX; cropperState.y = e.clientY - cropperState.startY; clampPan(); updateCropVisual(); } else if(cropperState.dragMode === 'move-guide') { const dx = e.clientX - cropperState.startX, dy = e.clientY - cropperState.startY; cropperState.guideLeft = cropperState.startGuideLeft + dx; cropperState.guideTop = cropperState.startGuideTop + dy; clampGuidePosition(); updateGuideVisual(); } else if(cropperState.dragMode === 'resize-guide') { const dx = e.clientX - cropperState.startX, dy = e.clientY - cropperState.startY; const maxW = wrapperW - cropperState.guideLeft, maxH = wrapperH - cropperState.guideTop; if(cropperState.aspectLocked) { const d = Math.max(dx, dy); const size = clamp(cropperState.startGuideW + d, MIN_GUIDE, Math.min(maxW, maxH)); cropperState.guideW = size; cropperState.guideH = size; } else { cropperState.guideW = clamp(cropperState.startGuideW + dx, MIN_GUIDE, maxW); cropperState.guideH = clamp(cropperState.startGuideH + dy, MIN_GUIDE, maxH); } updateGuideVisual(); } }); document.addEventListener('pointerup', () => { cropperState.dragMode = null; }); document.addEventListener('pointercancel', () => { cropperState.dragMode = null; });
+  document.getElementById('crop-save-btn').addEventListener('click', () => { const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d'); let ratio = 2; let outW = cropperState.guideW * ratio, outH = cropperState.guideH * ratio; const MAX_DIM = 900; if(Math.max(outW, outH) > MAX_DIM) { ratio *= MAX_DIM / Math.max(outW, outH); outW = cropperState.guideW * ratio; outH = cropperState.guideH * ratio; } canvas.width = Math.round(outW); canvas.height = Math.round(outH); const drawX = (cropperState.x - cropperState.guideLeft) * ratio; const drawY = (cropperState.y - cropperState.guideTop) * ratio; const drawW = cropperState.img.width * cropperState.scale * ratio; const drawH = cropperState.img.height * cropperState.scale * ratio; ctx.drawImage(cropperState.img, drawX, drawY, drawW, drawH); const finalBase64 = canvas.toDataURL('image/jpeg', 0.9); if (cropperState.targetType === 'avatar') { tempAvatarBase64 = finalBase64; avatarJustUploaded = true; syncUploadLabel('avatar', true); } else { tempBannerBase64 = finalBase64; bannerJustUploaded = true; syncUploadLabel('banner', true); } closeModalOverlay(cropModal); }); document.getElementById('crop-cancel-btn').addEventListener('click', () => { closeModalOverlay(cropModal); }); document.getElementById('inp-file-avatar').addEventListener('change', (e) => { if(e.target.files && e.target.files[0]) openCropper(e.target.files[0], 'avatar'); e.target.value = ''; }); document.getElementById('inp-file-banner').addEventListener('change', (e) => { if(e.target.files && e.target.files[0]) openCropper(e.target.files[0], 'banner'); e.target.value = ''; });
 
   /* ---------------- rating config ---------------- */
-  const CATEGORIES = [ {key:'gameplay', i18nKey:'axisGameplay'}, {key:'flow', i18nKey:'axisFlow'}, {key:'decoration', i18nKey:'axisDeco'}, {key:'music', i18nKey:'axisMusic'}, {key:'originality', i18nKey:'axisOrig'}, {key:'optimization', i18nKey:'axisOpt'} ];
-  const ratingValues = {};
-  const gridEl = document.getElementById('grid-ratings');
-  CATEGORIES.forEach(cat=>{
-    ratingValues[cat.key] = 5;
-    const wrap = document.createElement('div'); wrap.className = 'rate-item';
-    let segsHTML = ''; for(let i=1;i<=10;i++){ segsHTML += `<div class="seg${i<=5?' filled':''}" data-v="${i}"></div>`; }
-    wrap.innerHTML = `<label><span id="label-text-${cat.key}">${i18n[currentLang][cat.i18nKey]}</span> <span class="val" id="val-${cat.key}">5</span></label><div class="segbar" id="segbar-${cat.key}" data-key="${cat.key}">${segsHTML}</div>`;
-    gridEl.appendChild(wrap);
-  });
-
-  function paintSegbar(key, value, previewValue){
-    const bar = document.getElementById(`segbar-${key}`);
-    const segs = bar.querySelectorAll('.seg');
-    segs.forEach(seg=>{
-      const v = parseInt(seg.dataset.v,10);
-      seg.classList.toggle('filled', v <= value);
-      seg.classList.toggle('preview', previewValue != null && v <= previewValue && v > value);
-    });
-  }
-
-  let isDraggingRating = false; document.addEventListener('mouseup', () => { isDraggingRating = false; });
-  CATEGORIES.forEach(cat=>{
-    const bar = document.getElementById(`segbar-${cat.key}`); const valEl = document.getElementById(`val-${cat.key}`);
-    function updateVal(seg) {
-      const v = parseInt(seg.dataset.v, 10);
-      if (ratingValues[cat.key] !== v) {
-        ratingValues[cat.key] = v; valEl.textContent = v; paintSegbar(cat.key, v); recalcFinal();
-        seg.classList.remove('pop'); void seg.offsetWidth; seg.classList.add('pop');
-        valEl.classList.remove('val-pop'); void valEl.offsetWidth; valEl.classList.add('val-pop');
-      }
-    }
-    bar.addEventListener('mousedown', (e)=>{ isDraggingRating = true; const seg = e.target.closest('.seg'); if(seg) updateVal(seg); });
-    bar.addEventListener('mousemove', (e)=>{ const seg = e.target.closest('.seg'); if(!seg) return; if(isDraggingRating) updateVal(seg); else paintSegbar(cat.key, ratingValues[cat.key], parseInt(seg.dataset.v, 10)); });
-    bar.addEventListener('mouseleave', ()=>paintSegbar(cat.key, ratingValues[cat.key]));
-  });
-
-  function recalcFinal(){
-    const sum = CATEGORIES.reduce((acc,c)=>acc+ratingValues[c.key],0); const avg = sum / CATEGORIES.length;
-    document.getElementById('final-score').innerHTML = avg.toFixed(1)+'<span>/10</span>'; applyScoreTheme(avg); return avg;
-  } recalcFinal();
+  const CATEGORIES = [ {key:'gameplay', i18nKey:'axisGameplay'}, {key:'flow', i18nKey:'axisFlow'}, {key:'decoration', i18nKey:'axisDeco'}, {key:'music', i18nKey:'axisMusic'}, {key:'originality', i18nKey:'axisOrig'}, {key:'optimization', i18nKey:'axisOpt'} ]; const ratingValues = {}; const gridEl = document.getElementById('grid-ratings'); CATEGORIES.forEach(cat=>{ ratingValues[cat.key] = 5; const wrap = document.createElement('div'); wrap.className = 'rate-item'; let segsHTML = ''; for(let i=1;i<=10;i++){ segsHTML += `<div class="seg${i<=5?' filled':''}" data-v="${i}"></div>`; } wrap.innerHTML = `<label><span id="label-text-${cat.key}">${i18n[currentLang][cat.i18nKey]}</span> <span class="val" id="val-${cat.key}">5</span></label><div class="segbar" id="segbar-${cat.key}" data-key="${cat.key}">${segsHTML}</div>`; gridEl.appendChild(wrap); }); function paintSegbar(key, value, previewValue){ const bar = document.getElementById(`segbar-${key}`); const segs = bar.querySelectorAll('.seg'); segs.forEach(seg=>{ const v = parseInt(seg.dataset.v,10); seg.classList.toggle('filled', v <= value); seg.classList.toggle('preview', previewValue != null && v <= previewValue && v > value); }); } let isDraggingRating = false; document.addEventListener('mouseup', () => { isDraggingRating = false; }); CATEGORIES.forEach(cat=>{ const bar = document.getElementById(`segbar-${cat.key}`); const valEl = document.getElementById(`val-${cat.key}`); function updateVal(seg) { const v = parseInt(seg.dataset.v, 10); if (ratingValues[cat.key] !== v) { ratingValues[cat.key] = v; valEl.textContent = v; paintSegbar(cat.key, v); recalcFinal(); seg.classList.remove('pop'); void seg.offsetWidth; seg.classList.add('pop'); valEl.classList.remove('val-pop'); void valEl.offsetWidth; valEl.classList.add('val-pop'); } } bar.addEventListener('mousedown', (e)=>{ isDraggingRating = true; const seg = e.target.closest('.seg'); if(seg) updateVal(seg); }); bar.addEventListener('mousemove', (e)=>{ const seg = e.target.closest('.seg'); if(!seg) return; if(isDraggingRating) updateVal(seg); else paintSegbar(cat.key, ratingValues[cat.key], parseInt(seg.dataset.v, 10)); }); bar.addEventListener('mouseleave', ()=>paintSegbar(cat.key, ratingValues[cat.key])); }); function recalcFinal(){ const sum = CATEGORIES.reduce((acc,c)=>acc+ratingValues[c.key],0); const avg = sum / CATEGORIES.length; document.getElementById('final-score').innerHTML = avg.toFixed(1)+'<span>/10</span>'; applyScoreTheme(avg); return avg; } recalcFinal();
 
   /* ---------------- AUDIO PLAYER LOGIC ---------------- */
-  const audioBtn = document.getElementById('audio-btn'); const audioEl = document.getElementById('level-audio-el'); const iconPlay = document.getElementById('icon-play'); const iconPause = document.getElementById('icon-pause'); const waveform = document.getElementById('audio-waveform'); const audioTime = document.getElementById('audio-time');
-  let fallbackUrls = []; let currentProxyIndex = 0;
-
-  function renderWaveform(seedStr) {
-    waveform.innerHTML = ''; const count = 75; let seed = Array.from(seedStr).reduce((acc, char) => acc + char.charCodeAt(0), 0) || 12345;
-    for(let i=0; i<count; i++) { let x = i / count; let drop = 1; if (x > 0.4 && x < 0.75) drop = 1 + Math.sin((x - 0.4) * Math.PI / 0.35) * 1.5; seed = (seed * 16807 + 28211) % 2147483647; let noise = (seed / 2147483647); let h = 15 + (noise * 30) * drop; h = Math.min(100, Math.max(10, h)); let bar = document.createElement('div'); bar.className = 'bar'; bar.style.height = h + '%'; waveform.appendChild(bar); }
-  }
-
-  audioBtn.addEventListener('click', () => { if(audioBtn.classList.contains('disabled')) return; if(audioEl.paused) { audioEl.play().catch(e => console.log(e)); iconPlay.style.display = 'none'; iconPause.style.display = 'block'; } else { audioEl.pause(); iconPlay.style.display = 'block'; iconPause.style.display = 'none'; } });
-  waveform.addEventListener('click', (e) => { if(audioBtn.classList.contains('disabled') || !audioEl.duration) return; const rect = waveform.getBoundingClientRect(); const percent = (e.clientX - rect.left) / rect.width; audioEl.currentTime = percent * audioEl.duration; });
-  function formatTime(seconds) { if(isNaN(seconds)) return '0:00'; const m = Math.floor(seconds / 60); const s = Math.floor(seconds % 60).toString().padStart(2, '0'); return `${m}:${s}`; }
-  audioEl.addEventListener('timeupdate', () => { if(!audioEl.duration) return; const percent = audioEl.currentTime / audioEl.duration; const bars = document.querySelectorAll('.audio-waveform .bar'); const activeCount = Math.floor(percent * bars.length); audioTime.textContent = `${formatTime(audioEl.currentTime)} / ${formatTime(audioEl.duration)}`; bars.forEach((bar, i) => { if(i <= activeCount) bar.classList.add('active'); else bar.classList.remove('active'); }); });
-  audioEl.addEventListener('loadedmetadata', () => { audioTime.textContent = `0:00 / ${formatTime(audioEl.duration)}`; });
-  audioEl.addEventListener('ended', () => { iconPlay.style.display = 'block'; iconPause.style.display = 'none'; });
-  audioEl.addEventListener('error', () => { if (fallbackUrls.length > 0 && currentProxyIndex < fallbackUrls.length - 1) { currentProxyIndex++; audioEl.src = fallbackUrls[currentProxyIndex]; audioEl.load(); if (iconPause.style.display === 'block') audioEl.play().catch(()=>{}); } else if(audioEl.src && audioEl.src !== window.location.href) { document.getElementById('audio-song-name').textContent = currentLang === 'en' ? "Audio unavailable" : "Трек недоступен"; audioBtn.classList.add('disabled'); iconPlay.style.display = 'block'; iconPause.style.display = 'none'; audioTime.textContent = 'Error'; } });
+  const audioBtn = document.getElementById('audio-btn'); const audioEl = document.getElementById('level-audio-el'); const iconPlay = document.getElementById('icon-play'); const iconPause = document.getElementById('icon-pause'); const waveform = document.getElementById('audio-waveform'); const audioTime = document.getElementById('audio-time'); let fallbackUrls = []; let currentProxyIndex = 0; function renderWaveform(seedStr) { waveform.innerHTML = ''; const count = 75; let seed = Array.from(seedStr).reduce((acc, char) => acc + char.charCodeAt(0), 0) || 12345; for(let i=0; i<count; i++) { let x = i / count; let drop = 1; if (x > 0.4 && x < 0.75) drop = 1 + Math.sin((x - 0.4) * Math.PI / 0.35) * 1.5; seed = (seed * 16807 + 28211) % 2147483647; let noise = (seed / 2147483647); let h = 15 + (noise * 30) * drop; h = Math.min(100, Math.max(10, h)); let bar = document.createElement('div'); bar.className = 'bar'; bar.style.height = h + '%'; waveform.appendChild(bar); } } audioBtn.addEventListener('click', () => { if(audioBtn.classList.contains('disabled')) return; if(audioEl.paused) { audioEl.play().catch(e => console.log(e)); iconPlay.style.display = 'none'; iconPause.style.display = 'block'; } else { audioEl.pause(); iconPlay.style.display = 'block'; iconPause.style.display = 'none'; } }); waveform.addEventListener('click', (e) => { if(audioBtn.classList.contains('disabled') || !audioEl.duration) return; const rect = waveform.getBoundingClientRect(); const percent = (e.clientX - rect.left) / rect.width; audioEl.currentTime = percent * audioEl.duration; }); function formatTime(seconds) { if(isNaN(seconds)) return '0:00'; const m = Math.floor(seconds / 60); const s = Math.floor(seconds % 60).toString().padStart(2, '0'); return `${m}:${s}`; } audioEl.addEventListener('timeupdate', () => { if(!audioEl.duration) return; const percent = audioEl.currentTime / audioEl.duration; const bars = document.querySelectorAll('.audio-waveform .bar'); const activeCount = Math.floor(percent * bars.length); audioTime.textContent = `${formatTime(audioEl.currentTime)} / ${formatTime(audioEl.duration)}`; bars.forEach((bar, i) => { if(i <= activeCount) bar.classList.add('active'); else bar.classList.remove('active'); }); }); audioEl.addEventListener('loadedmetadata', () => { audioTime.textContent = `0:00 / ${formatTime(audioEl.duration)}`; }); audioEl.addEventListener('ended', () => { iconPlay.style.display = 'block'; iconPause.style.display = 'none'; }); audioEl.addEventListener('error', () => { if (fallbackUrls.length > 0 && currentProxyIndex < fallbackUrls.length - 1) { currentProxyIndex++; audioEl.src = fallbackUrls[currentProxyIndex]; audioEl.load(); if (iconPause.style.display === 'block') audioEl.play().catch(()=>{}); } else if(audioEl.src && audioEl.src !== window.location.href) { document.getElementById('audio-song-name').textContent = currentLang === 'en' ? "Audio unavailable" : "Трек недоступен"; audioBtn.classList.add('disabled'); iconPlay.style.display = 'block'; iconPause.style.display = 'none'; audioTime.textContent = 'Error'; } });
 
   /* ---------------- API search ---------------- */
-  let currentLevel = null;
-  const statusEl = document.getElementById('api-status'); const levelBlock = document.getElementById('level-block'); const levelBanner = document.getElementById('level-banner'); const ratingSection = document.getElementById('rating-section'); const commentsBlock = document.getElementById('comments-block'); const commentsScroll = document.getElementById('comments-scroll');
+  let currentLevel = null; const statusEl = document.getElementById('api-status'); const levelBlock = document.getElementById('level-block'); const levelBanner = document.getElementById('level-banner'); const ratingSection = document.getElementById('rating-section'); const commentsBlock = document.getElementById('comments-block'); const commentsScroll = document.getElementById('comments-scroll');
+  async function searchLevel(){ const idInput = document.getElementById('level-id-input'); const query = idInput.value.trim(); if(!query){ statusEl.textContent = currentLang === 'en' ? 'Enter Level Name or ID' : 'Введите имя или ID'; statusEl.className = 'api-status error'; return; } audioEl.pause(); audioEl.removeAttribute('src'); fallbackUrls = []; iconPlay.style.display = 'block'; iconPause.style.display = 'none'; audioTime.textContent = '0:00 / 0:00'; document.getElementById('audio-ng-link').style.display = 'none'; statusEl.textContent = currentLang === 'en' ? 'Loading...' : 'Загрузка...'; statusEl.className = 'api-status'; try{ const searchRes = await fetch(`https://gdbrowser.com/api/search/${encodeURIComponent(query)}`); if(!searchRes.ok) throw new Error('not found'); const searchData = await searchRes.json(); if(!searchData || searchData === "-1" || searchData.length === 0) throw new Error('not found'); const targetId = searchData[0].id; const res = await fetch(`https://gdbrowser.com/api/level/${targetId}`); if(!res.ok) throw new Error('not found'); const data = await res.json(); if(!data || data.error || !data.name) throw new Error('invalid'); currentLevel = { id: data.id, name: data.name, author: data.author || 'Unknown', difficulty: data.difficulty || '', difficultyFace: data.difficultyFace || '', stars: data.stars || 0 }; document.getElementById('level-name').textContent = data.name; const starsHTML = currentLevel.stars > 0 ? `<span class="level-stars" id="level-stars">★ ${currentLevel.stars}</span>` : `<span class="level-stars" id="level-stars" style="display:none;"></span>`; document.getElementById('level-author').innerHTML = `by <b>${escapeHTML(data.author || 'Unknown')}</b>${starsHTML}`; const faceEl = document.getElementById('diff-face'); if(currentLevel.difficultyFace){ faceEl.onerror = ()=>faceEl.classList.remove('show'); faceEl.onload = ()=>faceEl.classList.add('show'); faceEl.src = `https://gdbrowser.com/assets/difficulties/${encodeURIComponent(currentLevel.difficultyFace)}.png`; } else faceEl.classList.remove('show'); const thumbUrl = `https://levelthumbs.prevter.me/thumbnail/${data.id}/small`; levelBanner.style.backgroundImage = `url('${thumbUrl}')`; const audioPlayer = document.getElementById('audio-player'); const audioTitle = document.getElementById('audio-song-name'); const audioAuthor = document.getElementById('audio-song-author'); const ngLink = document.getElementById('audio-ng-link'); audioPlayer.style.display = 'flex'; renderWaveform(String(data.songID || data.name)); audioTitle.textContent = data.songName || 'Unknown Track'; audioAuthor.textContent = data.songAuthor ? `by ${data.songAuthor}` : ''; if(data.customSong && data.songLink) { let secureLink = data.songLink.replace('http://', 'https://'); ngLink.style.display = 'inline-flex'; ngLink.href = `https://www.newgrounds.com/audio/listen/${data.songID}`; audioBtn.classList.add('disabled'); audioTitle.textContent = currentLang === 'en' ? 'Downloading audio...' : 'Скачивание трека...'; audioTime.textContent = '...'; fallbackUrls = [ `/api/audio?url=${encodeURIComponent(secureLink)}`, `https://corsproxy.io/?url=${encodeURIComponent(secureLink)}`, `https://api.allorigins.win/raw?url=${encodeURIComponent(secureLink)}` ]; currentProxyIndex = 0; audioEl.src = fallbackUrls[currentProxyIndex]; audioEl.load(); audioEl.oncanplay = () => { audioBtn.classList.remove('disabled'); audioTitle.textContent = data.songName || 'Unknown Track'; }; } else { audioBtn.classList.add('disabled'); audioTitle.textContent = data.songName || 'Official Audio'; audioTime.textContent = 'N/A'; } levelBlock.classList.add('show'); ratingSection.classList.add('show'); statusEl.textContent = `✓ Loaded level #${data.id}`; statusEl.className = 'api-status ok'; loadComments(data.id); }catch(err){ currentLevel = null; levelBlock.classList.remove('show'); ratingSection.classList.remove('show'); commentsBlock.classList.remove('show'); statusEl.textContent = currentLang === 'en' ? 'Level not found. Check the spelling or ID.' : 'Уровень не найден.'; statusEl.className = 'api-status error'; } }
+  async function loadComments(id){ commentsBlock.classList.add('show'); commentsScroll.innerHTML = `<div class="comments-loading">Loading...</div>`; try{ const res = await fetch(`https://gdbrowser.com/api/comments/${encodeURIComponent(id)}?count=10`); if(!res.ok) throw new Error('comments not available'); const data = await res.json(); const list = Array.isArray(data) ? data : (data && data.comments ? data.comments : []); if(!list || list.length === 0){ commentsScroll.innerHTML = `<div class="comments-empty">No comments for this level yet.</div>`; return; } commentsScroll.innerHTML = list.slice(0,10).map(c=>{ const author = escapeHTML(c.username || c.author || c.playerName || 'Unknown'); const text = escapeHTML(c.comment || c.text || c.content || ''); const likes = (c.likes != null) ? c.likes : (c.upvotes != null ? c.upvotes : 0); return `<div class="comment-row"><div class="comment-top"><span class="comment-author">${author}</span><span class="comment-likes">▲ ${likes}</span></div><div class="comment-text">${text}</div></div>`; }).join(''); }catch(err){ commentsScroll.innerHTML = `<div class="comments-empty">Comments could not be loaded.</div>`; } }
+  document.getElementById('search-btn').addEventListener('click', searchLevel); document.getElementById('level-id-input').addEventListener('keydown', (e)=>{ if(e.key === 'Enter') searchLevel(); }); function escapeHTML(str){ const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+  function scoreColors(score){ if(score >= 8.5) return {color:'#ffffff', glow:'rgba(255,255,255,0.5)'}; if(score >= 7) return {color:'#e4e4e4', glow:'rgba(255,255,255,0.4)'}; if(score >= 5) return {color:'#b8b8b8', glow:'rgba(255,255,255,0.25)'}; if(score >= 3) return {color:'#8a8a8a', glow:'rgba(255,255,255,0.12)'}; return {color:'#5a5a5a', glow:'rgba(255,255,255,0.05)'}; } function applyScoreTheme(score){ const {color, glow} = scoreColors(score); const finalScoreEl = document.getElementById('final-score'); finalScoreEl.style.setProperty('--score-color', color); finalScoreEl.style.setProperty('--score-glow', glow); } function showSaveMsg(){ const msg = document.getElementById('save-msg'); msg.classList.add('show'); setTimeout(()=>msg.classList.remove('show'), 2200); }
 
-  async function searchLevel(){
-    const idInput = document.getElementById('level-id-input'); const query = idInput.value.trim();
-    if(!query){ statusEl.textContent = currentLang === 'en' ? 'Enter Level Name or ID' : 'Введите имя или ID'; statusEl.className = 'api-status error'; return; }
-    audioEl.pause(); audioEl.removeAttribute('src'); fallbackUrls = []; iconPlay.style.display = 'block'; iconPause.style.display = 'none'; audioTime.textContent = '0:00 / 0:00'; document.getElementById('audio-ng-link').style.display = 'none';
-    statusEl.textContent = currentLang === 'en' ? 'Loading...' : 'Загрузка...'; statusEl.className = 'api-status';
-    try{
-      const searchRes = await fetch(`https://gdbrowser.com/api/search/${encodeURIComponent(query)}`);
-      if(!searchRes.ok) throw new Error('not found');
-      const searchData = await searchRes.json();
-      if(!searchData || searchData === "-1" || searchData.length === 0) throw new Error('not found');
-      const targetId = searchData[0].id;
-      const res = await fetch(`https://gdbrowser.com/api/level/${targetId}`);
-      if(!res.ok) throw new Error('not found');
-      const data = await res.json();
-      if(!data || data.error || !data.name) throw new Error('invalid');
+  function spawnFx(className, styles){ const el = document.createElement('div'); el.className = className; if(styles) Object.assign(el.style, styles); document.body.appendChild(el); return el; } function playTierFail(){ const shell = document.querySelector('.shell'); shell.classList.add('fx-shake'); setTimeout(()=>shell.classList.remove('fx-shake'), 520); const flash = spawnFx('fx-flash fx-flash-fail'); setTimeout(()=>flash.remove(), 680); const colors = ['#9a9a9a','#6e6e6e','#b23a3a','#7a2424']; for(let i=0;i<26;i++){ const size = 9 + Math.random()*9; const shard = spawnFx('fx-shard', { left: (Math.random()*100)+'vw', borderBottomWidth: size+'px', borderLeftWidth: (size*0.55)+'px', borderRightWidth: (size*0.55)+'px', animationDuration: (0.9+Math.random()*0.6)+'s', animationDelay: (Math.random()*0.25)+'s' }); shard.style.setProperty('--shard-color', colors[Math.floor(Math.random()*colors.length)]); shard.style.setProperty('--shard-rot', (Math.random()*720-360)+'deg'); setTimeout(()=>shard.remove(), 2100); } } function playTierLow(){ const shell = document.querySelector('.shell'); shell.classList.add('fx-thud'); setTimeout(()=>shell.classList.remove('fx-thud'), 700); const flash = spawnFx('fx-flash fx-flash-low'); setTimeout(()=>flash.remove(), 600); for(let i=0;i<14;i++){ const dust = spawnFx('fx-dust', { left: (Math.random()*100)+'vw', top: (8+Math.random()*30)+'vh', animationDuration: (1.7+Math.random()*1.1)+'s', animationDelay: (Math.random()*0.4)+'s' }); setTimeout(()=>dust.remove(), 3300); } } function playTierMeh(){ const shell = document.querySelector('.shell'); shell.classList.add('fx-wobble'); setTimeout(()=>shell.classList.remove('fx-wobble'), 600); const flash = spawnFx('fx-flash fx-flash-meh'); setTimeout(()=>flash.remove(), 500); for(let i=0; i<8; i++){ const w = 40 + Math.random()*100; const line = spawnFx('fx-line', { top: (15 + Math.random()*70) + 'vh', width: w + 'px', animationDuration: (0.3 + Math.random()*0.3) + 's', animationDelay: (Math.random()*0.2) + 's' }); setTimeout(()=>line.remove(), 1000); } } function playTierMid(){ const shell = document.querySelector('.shell'); shell.classList.add('fx-bounce'); setTimeout(()=>shell.classList.remove('fx-bounce'), 500); const flash = spawnFx('fx-flash fx-flash-mid'); setTimeout(()=>flash.remove(), 500); for(let i=0;i<18;i++){ const angle = Math.random()*Math.PI*2; const dist = 80 + Math.random()*160; const sq = spawnFx('fx-sq', { left: '50vw', top: '40vh', animationDelay: (Math.random()*0.1)+'s' }); sq.style.setProperty('--sq-x', (Math.cos(angle)*dist)+'px'); sq.style.setProperty('--sq-y', (Math.sin(angle)*dist)+'px'); setTimeout(()=>sq.remove(), 1000); } } function playTierHigh(){ const flash = spawnFx('fx-flash fx-flash-high'); setTimeout(()=>flash.remove(), 600); const rays = spawnFx('fx-rays'); setTimeout(()=>rays.remove(), 2300); for(let i=0;i<22;i++){ const isDiamond = Math.random() > 0.5; const size = 12 + Math.random()*14; const angle = Math.random()*Math.PI*2; const dist = 200 + Math.random()*260; const shape = spawnFx('fx-shape', { width: size+'px', height: size+'px', left: '50vw', top: '42vh', borderRadius: isDiamond ? '3px' : '50%', transform: isDiamond ? 'rotate(45deg)' : 'none', animationDelay: (Math.random()*0.15)+'s' }); shape.style.setProperty('--sh-x', (Math.cos(angle)*dist)+'px'); shape.style.setProperty('--sh-y', (Math.sin(angle)*dist)+'px'); shape.style.setProperty('--sh-rot', (Math.random()*360)+'deg'); setTimeout(()=>shape.remove(), 1400); } } function playTierMax(){ const flash = spawnFx('fx-flash fx-flash-max'); setTimeout(()=>flash.remove(), 1200); const ring = spawnFx('fx-ring'); setTimeout(()=>ring.remove(), 1050); const goldColors = ['#ffd76a','#ffe9a8','#ffffff','#fff4d0']; for(let i=0;i<60;i++){ const size = 3 + Math.random()*6; const angle = Math.random()*Math.PI*2; const dist = 160 + Math.random()*420; const p = spawnFx('fx-particle', { width: size+'px', height: size+'px', left: '50vw', top: '46vh', background: goldColors[Math.floor(Math.random()*goldColors.length)], boxShadow: '0 0 8px rgba(255,220,140,0.8)', animationDelay: (Math.random()*0.2)+'s', animationDuration: (0.8+Math.random()*0.6)+'s' }); p.style.setProperty('--p-x', (Math.cos(angle)*dist)+'px'); p.style.setProperty('--p-y', (Math.sin(angle)*dist)+'px'); setTimeout(()=>p.remove(), 1800); } const finalScoreEl = document.getElementById('final-score'); finalScoreEl.classList.remove('fx-score-pulse'); void finalScoreEl.offsetWidth; finalScoreEl.classList.add('fx-score-pulse'); setTimeout(()=>finalScoreEl.classList.remove('fx-score-pulse'), 1050); } function playSaveAnimation(score){ if(score < 2) playTierFail(); else if(score < 4) playTierLow(); else if(score < 6) playTierMeh(); else if(score < 8) playTierMid(); else if(score < 9.5) playTierHigh(); else playTierMax(); }
 
-      currentLevel = { id: data.id, name: data.name, author: data.author || 'Unknown', difficulty: data.difficulty || '', difficultyFace: data.difficultyFace || '', stars: data.stars || 0 };
-      document.getElementById('level-name').textContent = data.name;
-      const starsHTML = currentLevel.stars > 0 ? `<span class="level-stars" id="level-stars">★ ${currentLevel.stars}</span>` : `<span class="level-stars" id="level-stars" style="display:none;"></span>`;
-      document.getElementById('level-author').innerHTML = `by <b>${escapeHTML(data.author || 'Unknown')}</b>${starsHTML}`;
-
-      const faceEl = document.getElementById('diff-face');
-      if(currentLevel.difficultyFace){ faceEl.onerror = ()=>faceEl.classList.remove('show'); faceEl.onload = ()=>faceEl.classList.add('show'); faceEl.src = `https://gdbrowser.com/assets/difficulties/${encodeURIComponent(currentLevel.difficultyFace)}.png`; } 
-      else faceEl.classList.remove('show');
-
-      const thumbUrl = `https://levelthumbs.prevter.me/thumbnail/${data.id}/small`;
-      levelBanner.style.backgroundImage = `url('${thumbUrl}')`;
-
-      const audioPlayer = document.getElementById('audio-player'); const audioTitle = document.getElementById('audio-song-name'); const audioAuthor = document.getElementById('audio-song-author'); const ngLink = document.getElementById('audio-ng-link');
-      audioPlayer.style.display = 'flex'; renderWaveform(String(data.songID || data.name));
-      audioTitle.textContent = data.songName || 'Unknown Track'; audioAuthor.textContent = data.songAuthor ? `by ${data.songAuthor}` : '';
-
-      if(data.customSong && data.songLink) {
-          let secureLink = data.songLink.replace('http://', 'https://');
-          ngLink.style.display = 'inline-flex'; ngLink.href = `https://www.newgrounds.com/audio/listen/${data.songID}`;
-          audioBtn.classList.add('disabled'); audioTitle.textContent = currentLang === 'en' ? 'Downloading audio...' : 'Скачивание трека...'; audioTime.textContent = '...';
-          fallbackUrls = [ `/api/audio?url=${encodeURIComponent(secureLink)}`, `https://corsproxy.io/?url=${encodeURIComponent(secureLink)}`, `https://api.allorigins.win/raw?url=${encodeURIComponent(secureLink)}` ];
-          currentProxyIndex = 0; audioEl.src = fallbackUrls[currentProxyIndex]; audioEl.load();
-          audioEl.oncanplay = () => { audioBtn.classList.remove('disabled'); audioTitle.textContent = data.songName || 'Unknown Track'; };
-      } else { audioBtn.classList.add('disabled'); audioTitle.textContent = data.songName || 'Official Audio'; audioTime.textContent = 'N/A'; }
-
-      levelBlock.classList.add('show'); ratingSection.classList.add('show');
-      statusEl.textContent = `✓ Loaded level #${data.id}`; statusEl.className = 'api-status ok';
-      loadComments(data.id);
-    }catch(err){
-      currentLevel = null; levelBlock.classList.remove('show'); ratingSection.classList.remove('show'); commentsBlock.classList.remove('show');
-      statusEl.textContent = currentLang === 'en' ? 'Level not found. Check the spelling or ID.' : 'Уровень не найден.'; statusEl.className = 'api-status error';
-    }
-  }
-
-  async function loadComments(id){
-    commentsBlock.classList.add('show'); commentsScroll.innerHTML = `<div class="comments-loading">Loading...</div>`;
-    try{
-      const res = await fetch(`https://gdbrowser.com/api/comments/${encodeURIComponent(id)}?count=10`);
-      if(!res.ok) throw new Error('comments not available');
-      const data = await res.json(); const list = Array.isArray(data) ? data : (data && data.comments ? data.comments : []);
-      if(!list || list.length === 0){ commentsScroll.innerHTML = `<div class="comments-empty">No comments for this level yet.</div>`; return; }
-      commentsScroll.innerHTML = list.slice(0,10).map(c=>{
-        const author = escapeHTML(c.username || c.author || c.playerName || 'Unknown'); const text = escapeHTML(c.comment || c.text || c.content || ''); const likes = (c.likes != null) ? c.likes : (c.upvotes != null ? c.upvotes : 0);
-        return `<div class="comment-row"><div class="comment-top"><span class="comment-author">${author}</span><span class="comment-likes">▲ ${likes}</span></div><div class="comment-text">${text}</div></div>`;
-      }).join('');
-    }catch(err){ commentsScroll.innerHTML = `<div class="comments-empty">Comments could not be loaded.</div>`; }
-  }
-
-  document.getElementById('search-btn').addEventListener('click', searchLevel); document.getElementById('level-id-input').addEventListener('keydown', (e)=>{ if(e.key === 'Enter') searchLevel(); });
-  function escapeHTML(str){ const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
-
-  function scoreColors(score){
-    if(score >= 8.5) return {color:'#ffffff', glow:'rgba(255,255,255,0.5)'};
-    if(score >= 7)   return {color:'#e4e4e4', glow:'rgba(255,255,255,0.4)'};
-    if(score >= 5)   return {color:'#b8b8b8', glow:'rgba(255,255,255,0.25)'};
-    if(score >= 3)   return {color:'#8a8a8a', glow:'rgba(255,255,255,0.12)'};
-    return {color:'#5a5a5a', glow:'rgba(255,255,255,0.05)'};
-  }
-  function applyScoreTheme(score){ const {color, glow} = scoreColors(score); const finalScoreEl = document.getElementById('final-score'); finalScoreEl.style.setProperty('--score-color', color); finalScoreEl.style.setProperty('--score-glow', glow); }
-
-  function showSaveMsg(){ const msg = document.getElementById('save-msg'); msg.classList.add('show'); setTimeout(()=>msg.classList.remove('show'), 2200); }
-
-  function spawnFx(className, styles){ const el = document.createElement('div'); el.className = className; if(styles) Object.assign(el.style, styles); document.body.appendChild(el); return el; }
-  function playTierFail(){ const shell = document.querySelector('.shell'); shell.classList.add('fx-shake'); setTimeout(()=>shell.classList.remove('fx-shake'), 520); const flash = spawnFx('fx-flash fx-flash-fail'); setTimeout(()=>flash.remove(), 680); const colors = ['#9a9a9a','#6e6e6e','#b23a3a','#7a2424']; for(let i=0;i<26;i++){ const size = 9 + Math.random()*9; const shard = spawnFx('fx-shard', { left: (Math.random()*100)+'vw', borderBottomWidth: size+'px', borderLeftWidth: (size*0.55)+'px', borderRightWidth: (size*0.55)+'px', animationDuration: (0.9+Math.random()*0.6)+'s', animationDelay: (Math.random()*0.25)+'s' }); shard.style.setProperty('--shard-color', colors[Math.floor(Math.random()*colors.length)]); shard.style.setProperty('--shard-rot', (Math.random()*720-360)+'deg'); setTimeout(()=>shard.remove(), 2100); } }
-  function playTierLow(){ const shell = document.querySelector('.shell'); shell.classList.add('fx-thud'); setTimeout(()=>shell.classList.remove('fx-thud'), 700); const flash = spawnFx('fx-flash fx-flash-low'); setTimeout(()=>flash.remove(), 600); for(let i=0;i<14;i++){ const dust = spawnFx('fx-dust', { left: (Math.random()*100)+'vw', top: (8+Math.random()*30)+'vh', animationDuration: (1.7+Math.random()*1.1)+'s', animationDelay: (Math.random()*0.4)+'s' }); setTimeout(()=>dust.remove(), 3300); } }
-  function playTierMeh(){ const shell = document.querySelector('.shell'); shell.classList.add('fx-wobble'); setTimeout(()=>shell.classList.remove('fx-wobble'), 600); const flash = spawnFx('fx-flash fx-flash-meh'); setTimeout(()=>flash.remove(), 500); for(let i=0; i<8; i++){ const w = 40 + Math.random()*100; const line = spawnFx('fx-line', { top: (15 + Math.random()*70) + 'vh', width: w + 'px', animationDuration: (0.3 + Math.random()*0.3) + 's', animationDelay: (Math.random()*0.2) + 's' }); setTimeout(()=>line.remove(), 1000); } }
-  function playTierMid(){ const shell = document.querySelector('.shell'); shell.classList.add('fx-bounce'); setTimeout(()=>shell.classList.remove('fx-bounce'), 500); const flash = spawnFx('fx-flash fx-flash-mid'); setTimeout(()=>flash.remove(), 500); for(let i=0;i<18;i++){ const angle = Math.random()*Math.PI*2; const dist = 80 + Math.random()*160; const sq = spawnFx('fx-sq', { left: '50vw', top: '40vh', animationDelay: (Math.random()*0.1)+'s' }); sq.style.setProperty('--sq-x', (Math.cos(angle)*dist)+'px'); sq.style.setProperty('--sq-y', (Math.sin(angle)*dist)+'px'); setTimeout(()=>sq.remove(), 1000); } }
-  function playTierHigh(){ const flash = spawnFx('fx-flash fx-flash-high'); setTimeout(()=>flash.remove(), 600); const rays = spawnFx('fx-rays'); setTimeout(()=>rays.remove(), 2300); for(let i=0;i<22;i++){ const isDiamond = Math.random() > 0.5; const size = 12 + Math.random()*14; const angle = Math.random()*Math.PI*2; const dist = 200 + Math.random()*260; const shape = spawnFx('fx-shape', { width: size+'px', height: size+'px', left: '50vw', top: '42vh', borderRadius: isDiamond ? '3px' : '50%', transform: isDiamond ? 'rotate(45deg)' : 'none', animationDelay: (Math.random()*0.15)+'s' }); shape.style.setProperty('--sh-x', (Math.cos(angle)*dist)+'px'); shape.style.setProperty('--sh-y', (Math.sin(angle)*dist)+'px'); shape.style.setProperty('--sh-rot', (Math.random()*360)+'deg'); setTimeout(()=>shape.remove(), 1400); } }
-  function playTierMax(){ const flash = spawnFx('fx-flash fx-flash-max'); setTimeout(()=>flash.remove(), 1200); const ring = spawnFx('fx-ring'); setTimeout(()=>ring.remove(), 1050); const goldColors = ['#ffd76a','#ffe9a8','#ffffff','#fff4d0']; for(let i=0;i<60;i++){ const size = 3 + Math.random()*6; const angle = Math.random()*Math.PI*2; const dist = 160 + Math.random()*420; const p = spawnFx('fx-particle', { width: size+'px', height: size+'px', left: '50vw', top: '46vh', background: goldColors[Math.floor(Math.random()*goldColors.length)], boxShadow: '0 0 8px rgba(255,220,140,0.8)', animationDelay: (Math.random()*0.2)+'s', animationDuration: (0.8+Math.random()*0.6)+'s' }); p.style.setProperty('--p-x', (Math.cos(angle)*dist)+'px'); p.style.setProperty('--p-y', (Math.sin(angle)*dist)+'px'); setTimeout(()=>p.remove(), 1800); } const finalScoreEl = document.getElementById('final-score'); finalScoreEl.classList.remove('fx-score-pulse'); void finalScoreEl.offsetWidth; finalScoreEl.classList.add('fx-score-pulse'); setTimeout(()=>finalScoreEl.classList.remove('fx-score-pulse'), 1050); }
-  function playSaveAnimation(score){ if(score < 2) playTierFail(); else if(score < 4) playTierLow(); else if(score < 6) playTierMeh(); else if(score < 8) playTierMid(); else if(score < 9.5) playTierHigh(); else playTierMax(); }
-
-  const dupModal = document.getElementById('dup-modal'); let pendingPayload = null;
-  function openDupModal(levelName){ document.getElementById('modal-text').textContent = currentLang === 'en' ? `You have already saved a review for "${levelName}". What would you like to do?` : `Вы уже сохранили обзор на «${levelName}». Что сделать?`; openModalOverlay(dupModal); }
-  function closeDupModal(){ closeModalOverlay(dupModal); pendingPayload = null; }
-  dupModal.addEventListener('click', (e)=>{ if(e.target === dupModal) closeDupModal(); });
-  document.getElementById('modal-show-btn').addEventListener('click', ()=>{ closeDupModal(); document.querySelector('.tab-btn[data-tab="profile"]').click(); });
-  document.getElementById('modal-replace-btn').addEventListener('click', async ()=>{ if(pendingPayload) await sendReviewToServer(pendingPayload); closeDupModal(); });
-
-  async function sendReviewToServer(payload) {
-      const token = localStorage.getItem('gd_token');
-      if(!token) { alert(currentLang === 'en' ? 'Please log in to save' : 'Авторизуйтесь, чтобы сохранять!'); return; }
-      try {
-          const res = await fetch('/api/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(payload) });
-          if(res.ok) { await window.loadMyReviews(); showSaveMsg(); document.getElementById('review-text').value = ''; }
-      } catch(e) { alert('Error'); }
-  }
-
-  document.getElementById('save-btn').addEventListener('click', ()=>{
-    if(!currentLevel){ statusEl.textContent = currentLang === 'en' ? 'Search for a level first' : 'Сначала найдите уровень'; statusEl.className = 'api-status error'; return; }
-    const text = document.getElementById('review-text').value.trim();
-    const finalScore = recalcFinal();
-    const payload = { level_id: currentLevel.id.toString(), level_name: currentLevel.name, level_author: currentLevel.author, difficulty: currentLevel.difficulty, difficulty_face: currentLevel.difficultyFace, stars: currentLevel.stars, ratings: {...ratingValues}, finalScore: finalScore, text: text };
-    const existingIndex = reviews.findIndex(r=>r.id == currentLevel.id);
-    if(existingIndex !== -1){ pendingPayload = payload; openDupModal(currentLevel.name); return; }
-    playSaveAnimation(finalScore); sendReviewToServer(payload);
-  });
+  const dupModal = document.getElementById('dup-modal'); let pendingPayload = null; function openDupModal(levelName){ document.getElementById('modal-text').textContent = currentLang === 'en' ? `You have already saved a review for "${levelName}". What would you like to do?` : `Вы уже сохранили обзор на «${levelName}». Что сделать?`; openModalOverlay(dupModal); } function closeDupModal(){ closeModalOverlay(dupModal); pendingPayload = null; } dupModal.addEventListener('click', (e)=>{ if(e.target === dupModal) closeDupModal(); }); document.getElementById('modal-show-btn').addEventListener('click', ()=>{ closeDupModal(); document.querySelector('.tab-btn[data-tab="profile"]').click(); }); document.getElementById('modal-replace-btn').addEventListener('click', async ()=>{ if(pendingPayload) await sendReviewToServer(pendingPayload); closeDupModal(); });
+  async function sendReviewToServer(payload) { const token = localStorage.getItem('gd_token'); if(!token) { alert(currentLang === 'en' ? 'Please log in to save' : 'Авторизуйтесь, чтобы сохранять!'); return; } try { const res = await fetch('/api/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(payload) }); if(res.ok) { await window.loadMyReviews(); showSaveMsg(); document.getElementById('review-text').value = ''; } } catch(e) { alert('Error'); } }
+  document.getElementById('save-btn').addEventListener('click', ()=>{ if(!currentLevel){ statusEl.textContent = currentLang === 'en' ? 'Search for a level first' : 'Сначала найдите уровень'; statusEl.className = 'api-status error'; return; } const text = document.getElementById('review-text').value.trim(); const finalScore = recalcFinal(); const payload = { level_id: currentLevel.id.toString(), level_name: currentLevel.name, level_author: currentLevel.author, difficulty: currentLevel.difficulty, difficulty_face: currentLevel.difficultyFace, stars: currentLevel.stars, ratings: {...ratingValues}, finalScore: finalScore, text: text }; const existingIndex = reviews.findIndex(r=>r.id == currentLevel.id); if(existingIndex !== -1){ pendingPayload = payload; openDupModal(currentLevel.name); return; } playSaveAnimation(finalScore); sendReviewToServer(payload); });
 
   /* ---------------- archive render ---------------- */
   let archiveSearchQuery = '';
-  function getFilteredReviews(){
-    const q = archiveSearchQuery.trim().toLowerCase(); const sortVal = document.getElementById('archive-sort').value;
-    let filtered = reviews; if(q) { filtered = reviews.filter(r => (r.name || '').toLowerCase().includes(q) || String(r.id || '').toLowerCase().includes(q)); }
-    return filtered.sort((a, b) => { if (sortVal === 'newest') return new Date(b.savedAt) - new Date(a.savedAt); if (sortVal === 'oldest') return new Date(a.savedAt) - new Date(b.savedAt); if (sortVal === 'highest') return b.finalScore - a.finalScore; if (sortVal === 'lowest') return a.finalScore - b.finalScore; return 0; });
-  }
-
-  function renderArchive(){
-    const content = document.getElementById('archive-content');
-    if(reviews.length === 0){ content.innerHTML = `<div class="empty-state"><div class="em-title">${i18n[currentLang].emptyArchiveTitle}</div><div class="em-sub">${i18n[currentLang].emptyArchiveSub}</div></div>`; return; }
-    const filtered = getFilteredReviews();
-    if(filtered.length === 0){ content.innerHTML = `<div class="empty-state"><div class="em-title">${i18n[currentLang].noResultsTitle}</div><div class="em-sub">${i18n[currentLang].noResultsSub}</div></div>`; return; }
-    const list = document.createElement('div'); list.className = 'archive-list';
-    filtered.forEach((r, i)=>{
-      const bar = document.createElement('div'); bar.className = 'review-bar'; bar.style.animationDelay = `${Math.min(i,10)*0.04}s`;
-      const {color: scoreColor} = scoreColors(r.finalScore); bar.style.setProperty('--score-color', scoreColor);
-      const meta = `#${escapeHTML(r.id)} ${r.stars ? '· ★ '+r.stars : ''} ${r.difficulty ? '· '+escapeHTML(r.difficulty) : ''}`;
-      const bannerUrl = `https://levelthumbs.prevter.me/thumbnail/${r.id}/small`;
-      bar.innerHTML = `<div class="bar-banner-bg" style="background-image: url('${bannerUrl}')"></div><div class="bar-content"><div class="bar-icon">${r.difficultyFace ? `<img src="https://gdbrowser.com/assets/difficulties/${encodeURIComponent(r.difficultyFace)}.png" alt="diff">` : `<div class="diff-fallback"></div>`}</div><div class="bar-mid"><div class="bar-title-row"><div class="bar-title">${escapeHTML(r.name)}</div><div class="bar-score">${r.finalScore.toFixed(1)}</div></div><div class="bar-meta">by <b>${escapeHTML(r.author)}</b> · ${meta}</div></div><div class="bar-right"><button class="delete-btn" data-uid="${r.uid}">Delete</button></div></div>`;
-      bar.addEventListener('click', (e)=>{ if(e.target.closest('.delete-btn')) return; openDetailModal(r); });
-      list.appendChild(bar);
-    });
-    content.innerHTML = ''; content.appendChild(list);
-    
-    content.querySelectorAll('.delete-btn').forEach(btn=>{
-      btn.addEventListener('click', async ()=>{ 
-        const uid = btn.dataset.uid; const token = localStorage.getItem('gd_token');
-        if(confirm(currentLang === 'en' ? 'Delete this review?' : 'Удалить этот обзор?')) { try { await fetch(`/api/reviews/${uid}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }}); await window.loadMyReviews(); } catch(e) {} }
-      });
-    });
-  } // <-- ЗАКРЫВАЮЩАЯ СКОБКА ТЕПЕРЬ ТОЧНО ЗДЕСЬ!
-
-  const archiveSearchInput = document.getElementById('archive-search'); archiveSearchInput.addEventListener('input', ()=>{ archiveSearchQuery = archiveSearchInput.value; renderArchive(); });
-  document.getElementById('archive-sort').addEventListener('change', renderArchive);
+  function getFilteredReviews(){ const q = archiveSearchQuery.trim().toLowerCase(); const sortVal = document.getElementById('archive-sort').value; let filtered = reviews; if(q) { filtered = reviews.filter(r => (r.name || '').toLowerCase().includes(q) || String(r.id || '').toLowerCase().includes(q)); } return filtered.sort((a, b) => { if (sortVal === 'newest') return new Date(b.savedAt) - new Date(a.savedAt); if (sortVal === 'oldest') return new Date(a.savedAt) - new Date(b.savedAt); if (sortVal === 'highest') return b.finalScore - a.finalScore; if (sortVal === 'lowest') return a.finalScore - b.finalScore; return 0; }); }
+  function renderArchive(){ const content = document.getElementById('archive-content'); if(reviews.length === 0){ content.innerHTML = `<div class="empty-state"><div class="em-title">${i18n[currentLang].emptyArchiveTitle}</div><div class="em-sub">${i18n[currentLang].emptyArchiveSub}</div></div>`; return; } const filtered = getFilteredReviews(); if(filtered.length === 0){ content.innerHTML = `<div class="empty-state"><div class="em-title">${i18n[currentLang].noResultsTitle}</div><div class="em-sub">${i18n[currentLang].noResultsSub}</div></div>`; return; } const list = document.createElement('div'); list.className = 'archive-list'; filtered.forEach((r, i)=>{ const bar = document.createElement('div'); bar.className = 'review-bar'; bar.style.animationDelay = `${Math.min(i,10)*0.04}s`; const {color: scoreColor} = scoreColors(r.finalScore); bar.style.setProperty('--score-color', scoreColor); const meta = `#${escapeHTML(r.id)} ${r.stars ? '· ★ '+r.stars : ''} ${r.difficulty ? '· '+escapeHTML(r.difficulty) : ''}`; const bannerUrl = `https://levelthumbs.prevter.me/thumbnail/${r.id}/small`; bar.innerHTML = `<div class="bar-banner-bg" style="background-image: url('${bannerUrl}')"></div><div class="bar-content"><div class="bar-icon">${r.difficultyFace ? `<img src="https://gdbrowser.com/assets/difficulties/${encodeURIComponent(r.difficultyFace)}.png" alt="diff">` : `<div class="diff-fallback"></div>`}</div><div class="bar-mid"><div class="bar-title-row"><div class="bar-title">${escapeHTML(r.name)}</div><div class="bar-score">${r.finalScore.toFixed(1)}</div></div><div class="bar-meta">by <b>${escapeHTML(r.author)}</b> · ${meta}</div></div><div class="bar-right"><button class="delete-btn" data-uid="${r.uid}">Delete</button></div></div>`; bar.addEventListener('click', (e)=>{ if(e.target.closest('.delete-btn')) return; openDetailModal(r); }); list.appendChild(bar); }); content.innerHTML = ''; content.appendChild(list); content.querySelectorAll('.delete-btn').forEach(btn=>{ btn.addEventListener('click', async ()=>{ const uid = btn.dataset.uid; const token = localStorage.getItem('gd_token'); if(confirm(currentLang === 'en' ? 'Delete this review?' : 'Удалить этот обзор?')) { try { await fetch(`/api/reviews/${uid}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }}); await window.loadMyReviews(); } catch(e) {} } }); }); }
+  const archiveSearchInput = document.getElementById('archive-search'); archiveSearchInput.addEventListener('input', ()=>{ archiveSearchQuery = archiveSearchInput.value; renderArchive(); }); document.getElementById('archive-sort').addEventListener('change', renderArchive);
 
   /* ---------------- detail modal ---------------- */
   const detailModal = document.getElementById('detail-modal');
-  function openDetailModal(r){
-    document.getElementById('detail-title').textContent = r.name; document.getElementById('detail-author').textContent = `by ${r.author}${r.id ? ' · #'+r.id : ''}`;
-    const {color: scoreColor} = scoreColors(r.finalScore); const scoreEl = document.getElementById('detail-score'); scoreEl.innerHTML = `${r.finalScore.toFixed(1)}<small>/10</small>`; scoreEl.style.setProperty('--score-color', scoreColor);
-    document.getElementById('detail-cats').innerHTML = CATEGORIES.map((cat,i)=>{ const v = r.ratings ? (r.ratings[cat.key] || 0) : 0; return `<div class="detail-cat-row"><div class="detail-cat-label">${i18n[currentLang][cat.i18nKey]}</div><div class="detail-cat-bar"><div class="detail-cat-fill" style="width:${v*10}%;animation-delay:${i*0.05}s"></div></div><div class="detail-cat-val">${v}</div></div>`; }).join('');
-    document.getElementById('detail-summary').textContent = r.text ? r.text : i18n[currentLang].detailNoSummary; openModalOverlay(detailModal);
-  }
-  function closeDetailModal(){ closeModalOverlay(detailModal); }
-  detailModal.addEventListener('click', (e)=>{ if(e.target === detailModal) closeDetailModal(); }); document.getElementById('detail-close-btn').addEventListener('click', closeDetailModal); document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && detailModal.classList.contains('show')) closeDetailModal(); });
+  function openDetailModal(r){ document.getElementById('detail-title').textContent = r.name; document.getElementById('detail-author').textContent = `by ${r.author}${r.id ? ' · #'+r.id : ''}`; const {color: scoreColor} = scoreColors(r.finalScore); const scoreEl = document.getElementById('detail-score'); scoreEl.innerHTML = `${r.finalScore.toFixed(1)}<small>/10</small>`; scoreEl.style.setProperty('--score-color', scoreColor); document.getElementById('detail-cats').innerHTML = CATEGORIES.map((cat,i)=>{ const v = r.ratings ? (r.ratings[cat.key] || 0) : 0; return `<div class="detail-cat-row"><div class="detail-cat-label">${i18n[currentLang][cat.i18nKey]}</div><div class="detail-cat-bar"><div class="detail-cat-fill" style="width:${v*10}%;animation-delay:${i*0.05}s"></div></div><div class="detail-cat-val">${v}</div></div>`; }).join(''); document.getElementById('detail-summary').textContent = r.text ? r.text : i18n[currentLang].detailNoSummary; openModalOverlay(detailModal); }
+  function closeDetailModal(){ closeModalOverlay(detailModal); } detailModal.addEventListener('click', (e)=>{ if(e.target === detailModal) closeDetailModal(); }); document.getElementById('detail-close-btn').addEventListener('click', closeDetailModal); document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && detailModal.classList.contains('show')) closeDetailModal(); });
 
   /* ---------------- statistics render ---------------- */
-  function buildRadarChart(categoryAverages){
-    const size = 280, cx = size/2, cy = size/2 - 6, maxR = 92, n = categoryAverages.length; const angleFor = i => (i/n) * Math.PI*2 - Math.PI/2; const pointAt = (i, r) => [cx + r*Math.cos(angleFor(i)), cy + r*Math.sin(angleFor(i))];
-    const rings = [0.25,0.5,0.75,1].map(f=>{ return `<polygon class="radar-grid" points="${categoryAverages.map((_,i)=>pointAt(i, maxR*f).join(',')).join(' ')}"/>`; }).join('');
-    const axes = categoryAverages.map((_,i)=>{ const [x,y] = pointAt(i, maxR); return `<line class="radar-axis" x1="${cx}" y1="${cy}" x2="${x}" y2="${y}"/>`; }).join('');
-    const dataPts = categoryAverages.map((c,i)=>pointAt(i, maxR*(c.avg/10))); const dots = dataPts.map((p,i)=>`<circle class="radar-dot" cx="${p[0]}" cy="${p[1]}" r="4" style="animation-delay:${1.1+i*0.06}s"><title>${categoryAverages[i].label}: ${categoryAverages[i].avg.toFixed(1)}</title></circle>`).join('');
-    const labels = categoryAverages.map((c,i)=>{ const [lx,ly] = pointAt(i, maxR + 26); const anchor = Math.abs(lx-cx) < 4 ? 'middle' : (lx > cx ? 'start' : 'end'); return `<text class="radar-label" x="${lx}" y="${ly-4}" text-anchor="${anchor}">${c.label}</text><text class="radar-value" x="${lx}" y="${ly+9}" text-anchor="${anchor}">${c.avg.toFixed(1)}</text>`; }).join('');
-    return `<svg viewBox="0 0 ${size} ${size-24}">${rings}${axes}<polygon class="radar-fill" pathLength="1" points="${dataPts.map(p=>p.join(',')).join(' ')}"/>${dots}${labels}</svg>`;
-  }
-  function buildHistogram(reviews){
-    const buckets = [{label:'0–2', min:0, max:2}, {label:'2–4', min:2, max:4}, {label:'4–6', min:4, max:6}, {label:'6–8', min:6, max:8}, {label:'8–10', min:8, max:10.001}].map(b=>({...b, count:0}));
-    reviews.forEach(r=>{ const b = buckets.find(b=>r.finalScore >= b.min && r.finalScore < b.max); if(b) b.count++; });
-    const w = 320, h = 200, padB = 26, padT = 14, gap = 14; const barW = (w - gap*(buckets.length-1)) / buckets.length; const maxCount = Math.max(1, ...buckets.map(b=>b.count)); const usableH = h - padB - padT;
-    const bars = buckets.map((b,i)=>{ const x = i*(barW+gap); const barH = maxCount ? (b.count/maxCount)*usableH : 0; const y = h - padB - barH; return `<rect class="hist-track" x="${x}" y="${padT}" width="${barW}" height="${usableH}" rx="4"/><rect class="hist-bar" x="${x}" y="${y}" width="${barW}" height="${Math.max(barH,2)}" rx="4" style="animation-delay:${0.2+i*0.08}s"></rect><text class="hist-count" x="${x+barW/2}" y="${y-8}" text-anchor="middle" style="animation-delay:${0.5+i*0.08}s">${b.count}</text><text class="hist-label" x="${x+barW/2}" y="${h-6}" text-anchor="middle">${b.label}</text>`; }).join('');
-    return `<svg viewBox="0 0 ${w} ${h}"><line class="hist-axis" x1="0" y1="${h-padB}" x2="${w}" y2="${h-padB}"/>${bars}</svg>`;
-  }
-  function buildTrendChart(reviewsChrono){
-    const w = 640, h = 190, padX = 20, padT = 16, padB = 24, n = reviewsChrono.length; const usableW = w - padX*2; const usableH = h - padT - padB; const xAt = i => n <= 1 ? padX + usableW/2 : padX + (i/(n-1))*usableW; const yAt = score => padT + usableH - (score/10)*usableH;
-    const gridLines = [0,2.5,5,7.5,10].map(v=>{ const y = yAt(v); return `<line class="trend-grid" x1="${padX}" y1="${y}" x2="${w-padX}" y2="${y}"/>`; }).join(''); const pts = reviewsChrono.map((r,i)=>[xAt(i), yAt(r.finalScore)]); const linePath = pts.map((p,i)=>(i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '); const areaPath = `${linePath} L${pts[pts.length-1][0].toFixed(1)},${(h-padB)} L${pts[0][0].toFixed(1)},${(h-padB)} Z`; const dots = pts.map((p,i)=>`<circle class="trend-dot" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" style="animation-delay:${1.1+i*0.05}s"></circle>`).join('');
-    return `<svg viewBox="0 0 ${w} ${h}"><defs><linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.28"/><stop offset="100%" stop-color="#ffffff" stop-opacity="0"/></linearGradient></defs>${gridLines}<path class="trend-area" d="${areaPath}"/><path class="trend-line" pathLength="1" d="${linePath}"/>${dots}</svg>`;
-  }
-  function renderStats(){
-    const content = document.getElementById('stats-content');
-    if(reviews.length === 0){ content.innerHTML = `<div class="empty-state"><div class="em-title">${i18n[currentLang].emptyStatsTitle}</div><div class="em-sub">${i18n[currentLang].emptyStatsSub}</div></div>`; return; }
-    const total = reviews.length; const avgFinal = reviews.reduce((a,r)=>a+r.finalScore,0) / total; const categoryAverages = CATEGORIES.map(cat=>({ label: i18n[currentLang][cat.i18nKey], avg: reviews.reduce((a,r)=>a+(r.ratings[cat.key]||0),0) / total })); const reviewsChrono = [...reviews].reverse();
-    content.innerHTML = `<div class="stats-hero"><div class="stat-card" style="animation-delay:.02s"><div class="stat-label">${i18n[currentLang].statLevels}</div><div class="stat-number">${total}</div></div><div class="stat-card" style="animation-delay:.06s"><div class="stat-label">${i18n[currentLang].statAvg}</div><div class="stat-number">${avgFinal.toFixed(1)}<small>/10</small></div></div><div class="stat-card mystic-card white-card" id="btn-mystic-white" style="animation-delay:.10s">?</div><div class="stat-card mystic-card black-card" id="btn-mystic-black" style="animation-delay:.14s">?</div></div><div class="charts-grid"><div class="chart-card" style="animation-delay:.10s"><div class="chart-title">${i18n[currentLang].chartCat}</div><div class="chart-sub">${i18n[currentLang].chartCatSub}</div>${buildRadarChart(categoryAverages)}</div><div class="chart-card" style="animation-delay:.16s"><div class="chart-title">${i18n[currentLang].chartDist}</div><div class="chart-sub">${i18n[currentLang].chartDistSub}</div>${buildHistogram(reviews)}</div><div class="chart-card wide" style="animation-delay:.22s"><div class="chart-title">${i18n[currentLang].chartTrend}</div><div class="chart-sub">${i18n[currentLang].chartTrendSub}</div>${buildTrendChart(reviewsChrono)}</div></div>`;
-    document.getElementById('btn-mystic-white').addEventListener('click', play67Animation); document.getElementById('btn-mystic-black').addEventListener('click', playEyeAnimation);
-  }
+  function buildRadarChart(categoryAverages){ const size = 280, cx = size/2, cy = size/2 - 6, maxR = 92, n = categoryAverages.length; const angleFor = i => (i/n) * Math.PI*2 - Math.PI/2; const pointAt = (i, r) => [cx + r*Math.cos(angleFor(i)), cy + r*Math.sin(angleFor(i))]; const rings = [0.25,0.5,0.75,1].map(f=>{ return `<polygon class="radar-grid" points="${categoryAverages.map((_,i)=>pointAt(i, maxR*f).join(',')).join(' ')}"/>`; }).join(''); const axes = categoryAverages.map((_,i)=>{ const [x,y] = pointAt(i, maxR); return `<line class="radar-axis" x1="${cx}" y1="${cy}" x2="${x}" y2="${y}"/>`; }).join(''); const dataPts = categoryAverages.map((c,i)=>pointAt(i, maxR*(c.avg/10))); const dots = dataPts.map((p,i)=>`<circle class="radar-dot" cx="${p[0]}" cy="${p[1]}" r="4" style="animation-delay:${1.1+i*0.06}s"><title>${categoryAverages[i].label}: ${categoryAverages[i].avg.toFixed(1)}</title></circle>`).join(''); const labels = categoryAverages.map((c,i)=>{ const [lx,ly] = pointAt(i, maxR + 26); const anchor = Math.abs(lx-cx) < 4 ? 'middle' : (lx > cx ? 'start' : 'end'); return `<text class="radar-label" x="${lx}" y="${ly-4}" text-anchor="${anchor}">${c.label}</text><text class="radar-value" x="${lx}" y="${ly+9}" text-anchor="${anchor}">${c.avg.toFixed(1)}</text>`; }).join(''); return `<svg viewBox="0 0 ${size} ${size-24}">${rings}${axes}<polygon class="radar-fill" pathLength="1" points="${dataPts.map(p=>p.join(',')).join(' ')}"/>${dots}${labels}</svg>`; }
+  function buildHistogram(reviews){ const buckets = [{label:'0–2', min:0, max:2}, {label:'2–4', min:2, max:4}, {label:'4–6', min:4, max:6}, {label:'6–8', min:6, max:8}, {label:'8–10', min:8, max:10.001}].map(b=>({...b, count:0})); reviews.forEach(r=>{ const b = buckets.find(b=>r.finalScore >= b.min && r.finalScore < b.max); if(b) b.count++; }); const w = 320, h = 200, padB = 26, padT = 14, gap = 14; const barW = (w - gap*(buckets.length-1)) / buckets.length; const maxCount = Math.max(1, ...buckets.map(b=>b.count)); const usableH = h - padB - padT; const bars = buckets.map((b,i)=>{ const x = i*(barW+gap); const barH = maxCount ? (b.count/maxCount)*usableH : 0; const y = h - padB - barH; return `<rect class="hist-track" x="${x}" y="${padT}" width="${barW}" height="${usableH}" rx="4"/><rect class="hist-bar" x="${x}" y="${y}" width="${barW}" height="${Math.max(barH,2)}" rx="4" style="animation-delay:${0.2+i*0.08}s"></rect><text class="hist-count" x="${x+barW/2}" y="${y-8}" text-anchor="middle" style="animation-delay:${0.5+i*0.08}s">${b.count}</text><text class="hist-label" x="${x+barW/2}" y="${h-6}" text-anchor="middle">${b.label}</text>`; }).join(''); return `<svg viewBox="0 0 ${w} ${h}"><line class="hist-axis" x1="0" y1="${h-padB}" x2="${w}" y2="${h-padB}"/>${bars}</svg>`; }
+  function buildTrendChart(reviewsChrono){ const w = 640, h = 190, padX = 20, padT = 16, padB = 24, n = reviewsChrono.length; const usableW = w - padX*2; const usableH = h - padT - padB; const xAt = i => n <= 1 ? padX + usableW/2 : padX + (i/(n-1))*usableW; const yAt = score => padT + usableH - (score/10)*usableH; const gridLines = [0,2.5,5,7.5,10].map(v=>{ const y = yAt(v); return `<line class="trend-grid" x1="${padX}" y1="${y}" x2="${w-padX}" y2="${y}"/>`; }).join(''); const pts = reviewsChrono.map((r,i)=>[xAt(i), yAt(r.finalScore)]); const linePath = pts.map((p,i)=>(i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '); const areaPath = `${linePath} L${pts[pts.length-1][0].toFixed(1)},${(h-padB)} L${pts[0][0].toFixed(1)},${(h-padB)} Z`; const dots = pts.map((p,i)=>`<circle class="trend-dot" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" style="animation-delay:${1.1+i*0.05}s"></circle>`).join(''); return `<svg viewBox="0 0 ${w} ${h}"><defs><linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.28"/><stop offset="100%" stop-color="#ffffff" stop-opacity="0"/></linearGradient></defs>${gridLines}<path class="trend-area" d="${areaPath}"/><path class="trend-line" pathLength="1" d="${linePath}"/>${dots}</svg>`; }
+  function renderStats(){ const content = document.getElementById('stats-content'); if(reviews.length === 0){ content.innerHTML = `<div class="empty-state"><div class="em-title">${i18n[currentLang].emptyStatsTitle}</div><div class="em-sub">${i18n[currentLang].emptyStatsSub}</div></div>`; return; } const total = reviews.length; const avgFinal = reviews.reduce((a,r)=>a+r.finalScore,0) / total; const categoryAverages = CATEGORIES.map(cat=>({ label: i18n[currentLang][cat.i18nKey], avg: reviews.reduce((a,r)=>a+(r.ratings[cat.key]||0),0) / total })); const reviewsChrono = [...reviews].reverse(); content.innerHTML = `<div class="stats-hero"><div class="stat-card" style="animation-delay:.02s"><div class="stat-label">${i18n[currentLang].statLevels}</div><div class="stat-number">${total}</div></div><div class="stat-card" style="animation-delay:.06s"><div class="stat-label">${i18n[currentLang].statAvg}</div><div class="stat-number">${avgFinal.toFixed(1)}<small>/10</small></div></div><div class="stat-card mystic-card white-card" id="btn-mystic-white" style="animation-delay:.10s">?</div><div class="stat-card mystic-card black-card" id="btn-mystic-black" style="animation-delay:.14s">?</div></div><div class="charts-grid"><div class="chart-card" style="animation-delay:.10s"><div class="chart-title">${i18n[currentLang].chartCat}</div><div class="chart-sub">${i18n[currentLang].chartCatSub}</div>${buildRadarChart(categoryAverages)}</div><div class="chart-card" style="animation-delay:.16s"><div class="chart-title">${i18n[currentLang].chartDist}</div><div class="chart-sub">${i18n[currentLang].chartDistSub}</div>${buildHistogram(reviews)}</div><div class="chart-card wide" style="animation-delay:.22s"><div class="chart-title">${i18n[currentLang].chartTrend}</div><div class="chart-sub">${i18n[currentLang].chartTrendSub}</div>${buildTrendChart(reviewsChrono)}</div></div>`; document.getElementById('btn-mystic-white').addEventListener('click', play67Animation); document.getElementById('btn-mystic-black').addEventListener('click', playEyeAnimation); }
 
   /* ---------------- EASTER EGG ANIMATIONS ---------------- */
-  function play67Animation() {
-    if(document.querySelector('.epic-67-overlay')) return;
-    const overlay = document.createElement('div'); overlay.className = 'epic-67-overlay'; overlay.innerHTML = `<div class="epic-67-text">67</div>`; document.body.appendChild(overlay);
-    requestAnimationFrame(() => overlay.style.opacity = '1');
-    setTimeout(() => { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 600); }, 3000);
-  }
-  function buildJaggedRipPolygons(ripY) {
-    const segCount = 9 + Math.floor(Math.random() * 5); const xs = [0];
-    for (let i = 1; i < segCount; i++) { xs.push(Math.min(99, Math.max(1, (i / segCount) * 100 + (Math.random() * 10 - 5)))); }
-    xs.push(100); xs.sort((a, b) => a - b);
-    const jag = () => { const amp = 30 + Math.random() * 95; const sign = Math.random() < 0.5 ? -1 : 1; return (sign * amp + (Math.random() * 20 - 10)).toFixed(1); };
-    const edgeStart = jag(), edgeEnd = jag();
-    const topPts = xs.map((x, i) => { const off = i === 0 ? edgeStart : i === xs.length - 1 ? edgeEnd : jag(); return `${x.toFixed(1)}% calc(var(--rip-y) + ${off}px)`; });
-    const bottomPts = xs.slice().reverse().map((x, i) => { const idx = xs.length - 1 - i; const off = idx === 0 ? edgeStart : idx === xs.length - 1 ? edgeEnd : jag(); return `${x.toFixed(1)}% calc(var(--rip-y) + ${off}px)`; });
-    return { topPoly: `polygon(0 0, 100% 0, ${topPts.slice().reverse().join(', ')})`, bottomPoly: `polygon(${bottomPts.slice().reverse().join(', ')}, 100% 100%, 0 100%)` };
-  }
-  function playEyeAnimation() {
-    if(document.getElementById('eye-void')) return;
-    modalLockCount++; document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden';
-    const siteWrapper = document.getElementById('site-wrapper'); siteWrapper.classList.add('pre-rip-shake');
-    const scanLayer = document.createElement('div'); scanLayer.className = 'glitch-scan-layer active'; document.body.appendChild(scanLayer);
-    
-    setTimeout(() => {
-      siteWrapper.classList.remove('pre-rip-shake'); scanLayer.remove();
-      const ripY = window.scrollY + (window.innerHeight / 2); const { topPoly, bottomPoly } = buildJaggedRipPolygons(ripY);
-      const topHalf = siteWrapper.cloneNode(true); const bottomHalf = siteWrapper.cloneNode(true);
-      siteWrapper.style.opacity = '0'; 
-      [topHalf, bottomHalf].forEach(el => { el.id = ''; el.style.position = 'absolute'; el.style.top = '0'; el.style.left = '0'; el.style.width = '100%'; el.style.height = siteWrapper.scrollHeight + 'px'; el.style.zIndex = '99999'; el.style.pointerEvents = 'none'; el.style.background = '#0a0a0a'; el.style.setProperty('--rip-y', ripY + 'px'); });
-      topHalf.classList.add('rip-top-half'); bottomHalf.classList.add('rip-bottom-half'); topHalf.style.clipPath = topPoly; bottomHalf.style.clipPath = bottomPoly;
-      document.body.appendChild(topHalf); document.body.appendChild(bottomHalf);
-      const flash = document.createElement('div'); flash.className = 'flash-strike'; document.body.appendChild(flash); setTimeout(() => flash.remove(), 400);
-
-      const voidBg = document.createElement('div'); voidBg.id = 'eye-void'; voidBg.classList.add('void-flicker');
-      voidBg.innerHTML = `<div class="creepy-eye-container"><svg viewBox="0 0 200 100" width="340" height="170"><defs><clipPath id="eyeClip"><path id="eye-lid-clip" d="M10,50 Q100,50 190,50 Q100,50 10,50 Z" /></clipPath><radialGradient id="irisGrad" cx="50%" cy="50%" r="55%"><stop offset="0%" stop-color="#4a0d0d"/><stop offset="45%" stop-color="#7c1414"/><stop offset="78%" stop-color="#2a0808"/><stop offset="100%" stop-color="#050000"/></radialGradient></defs><g clip-path="url(#eyeClip)"><rect class="eye-sclera" x="0" y="0" width="200" height="100"/><path class="eye-vein v1" d="M18,50 Q35,43 58,49 Q70,52 84,47"/><path class="eye-vein v2" d="M182,50 Q165,58 142,51 Q128,47 116,53"/><path class="eye-vein v3" d="M25,36 Q50,29 76,39"/><path class="eye-vein v4" d="M176,64 Q150,72 124,61"/><g class="eye-iris-group"><circle class="eye-iris" cx="100" cy="50" r="0"/><circle class="eye-pupil" cx="100" cy="50" r="0"/></g></g><path class="eye-lid" id="eye-lid" d="M10,50 Q100,50 190,50 Q100,50 10,50 Z" /></svg></div>`;
-      document.body.appendChild(voidBg); voidBg.offsetHeight;
-      requestAnimationFrame(() => { topHalf.classList.add('is-ripping-top'); bottomHalf.classList.add('is-ripping-bottom'); });
-
-      setTimeout(() => {
-        const container = voidBg.querySelector('.creepy-eye-container'); const lid = voidBg.querySelector('#eye-lid'); const lidClip = voidBg.querySelector('#eye-lid-clip'); const iris = voidBg.querySelector('.eye-iris'); const pupil = voidBg.querySelector('.eye-pupil');
-        container.classList.add('show', 'jitter'); const openD = 'M10,50 Q100,-28 190,50 Q100,128 10,50 Z'; lid.setAttribute('d', openD); lidClip.setAttribute('d', openD); iris.setAttribute('r', '24'); pupil.setAttribute('r', '9');
-        setTimeout(() => container.classList.remove('jitter'), 220);
-        setTimeout(() => {
-          const closedD = 'M10,50 Q100,50 190,50 Q100,50 10,50 Z'; lid.setAttribute('d', closedD); lidClip.setAttribute('d', closedD); iris.setAttribute('r', '0'); pupil.setAttribute('r', '0'); container.classList.add('jitter');
-          setTimeout(() => {
-            voidBg.remove(); topHalf.remove(); bottomHalf.remove(); siteWrapper.classList.add('restore-fade-in'); siteWrapper.style.opacity = '1';
-            modalLockCount = Math.max(0, modalLockCount - 1); if(modalLockCount === 0) { document.documentElement.style.overflow = ''; document.body.style.overflow = ''; }
-            setTimeout(() => { siteWrapper.classList.remove('restore-fade-in'); }, 1200);
-          }, 350);
-        }, 2200); 
-      }, 750); 
-    }, 350); 
-  }
+  function play67Animation() { if(document.querySelector('.epic-67-overlay')) return; const overlay = document.createElement('div'); overlay.className = 'epic-67-overlay'; overlay.innerHTML = `<div class="epic-67-text">67</div>`; document.body.appendChild(overlay); requestAnimationFrame(() => overlay.style.opacity = '1'); setTimeout(() => { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 600); }, 3000); }
+  function buildJaggedRipPolygons(ripY) { const segCount = 9 + Math.floor(Math.random() * 5); const xs = [0]; for (let i = 1; i < segCount; i++) { xs.push(Math.min(99, Math.max(1, (i / segCount) * 100 + (Math.random() * 10 - 5)))); } xs.push(100); xs.sort((a, b) => a - b); const jag = () => { const amp = 30 + Math.random() * 95; const sign = Math.random() < 0.5 ? -1 : 1; return (sign * amp + (Math.random() * 20 - 10)).toFixed(1); }; const edgeStart = jag(), edgeEnd = jag(); const topPts = xs.map((x, i) => { const off = i === 0 ? edgeStart : i === xs.length - 1 ? edgeEnd : jag(); return `${x.toFixed(1)}% calc(var(--rip-y) + ${off}px)`; }); const bottomPts = xs.slice().reverse().map((x, i) => { const idx = xs.length - 1 - i; const off = idx === 0 ? edgeStart : idx === xs.length - 1 ? edgeEnd : jag(); return `${x.toFixed(1)}% calc(var(--rip-y) + ${off}px)`; }); return { topPoly: `polygon(0 0, 100% 0, ${topPts.slice().reverse().join(', ')})`, bottomPoly: `polygon(${bottomPts.slice().reverse().join(', ')}, 100% 100%, 0 100%)` }; }
+  function playEyeAnimation() { if(document.getElementById('eye-void')) return; modalLockCount++; document.documentElement.style.overflow = 'hidden'; document.body.style.overflow = 'hidden'; const siteWrapper = document.getElementById('site-wrapper'); siteWrapper.classList.add('pre-rip-shake'); const scanLayer = document.createElement('div'); scanLayer.className = 'glitch-scan-layer active'; document.body.appendChild(scanLayer); setTimeout(() => { siteWrapper.classList.remove('pre-rip-shake'); scanLayer.remove(); const ripY = window.scrollY + (window.innerHeight / 2); const { topPoly, bottomPoly } = buildJaggedRipPolygons(ripY); const topHalf = siteWrapper.cloneNode(true); const bottomHalf = siteWrapper.cloneNode(true); siteWrapper.style.opacity = '0'; [topHalf, bottomHalf].forEach(el => { el.id = ''; el.style.position = 'absolute'; el.style.top = '0'; el.style.left = '0'; el.style.width = '100%'; el.style.height = siteWrapper.scrollHeight + 'px'; el.style.zIndex = '99999'; el.style.pointerEvents = 'none'; el.style.background = '#0a0a0a'; el.style.setProperty('--rip-y', ripY + 'px'); }); topHalf.classList.add('rip-top-half'); bottomHalf.classList.add('rip-bottom-half'); topHalf.style.clipPath = topPoly; bottomHalf.style.clipPath = bottomPoly; document.body.appendChild(topHalf); document.body.appendChild(bottomHalf); const flash = document.createElement('div'); flash.className = 'flash-strike'; document.body.appendChild(flash); setTimeout(() => flash.remove(), 400); const voidBg = document.createElement('div'); voidBg.id = 'eye-void'; voidBg.classList.add('void-flicker'); voidBg.innerHTML = `<div class="creepy-eye-container"><svg viewBox="0 0 200 100" width="340" height="170"><defs><clipPath id="eyeClip"><path id="eye-lid-clip" d="M10,50 Q100,50 190,50 Q100,50 10,50 Z" /></clipPath><radialGradient id="irisGrad" cx="50%" cy="50%" r="55%"><stop offset="0%" stop-color="#4a0d0d"/><stop offset="45%" stop-color="#7c1414"/><stop offset="78%" stop-color="#2a0808"/><stop offset="100%" stop-color="#050000"/></radialGradient></defs><g clip-path="url(#eyeClip)"><rect class="eye-sclera" x="0" y="0" width="200" height="100"/><path class="eye-vein v1" d="M18,50 Q35,43 58,49 Q70,52 84,47"/><path class="eye-vein v2" d="M182,50 Q165,58 142,51 Q128,47 116,53"/><path class="eye-vein v3" d="M25,36 Q50,29 76,39"/><path class="eye-vein v4" d="M176,64 Q150,72 124,61"/><g class="eye-iris-group"><circle class="eye-iris" cx="100" cy="50" r="0"/><circle class="eye-pupil" cx="100" cy="50" r="0"/></g></g><path class="eye-lid" id="eye-lid" d="M10,50 Q100,50 190,50 Q100,50 10,50 Z" /></svg></div>`; document.body.appendChild(voidBg); voidBg.offsetHeight; requestAnimationFrame(() => { topHalf.classList.add('is-ripping-top'); bottomHalf.classList.add('is-ripping-bottom'); }); setTimeout(() => { const container = voidBg.querySelector('.creepy-eye-container'); const lid = voidBg.querySelector('#eye-lid'); const lidClip = voidBg.querySelector('#eye-lid-clip'); const iris = voidBg.querySelector('.eye-iris'); const pupil = voidBg.querySelector('.eye-pupil'); container.classList.add('show', 'jitter'); const openD = 'M10,50 Q100,-28 190,50 Q100,128 10,50 Z'; lid.setAttribute('d', openD); lidClip.setAttribute('d', openD); iris.setAttribute('r', '24'); pupil.setAttribute('r', '9'); setTimeout(() => container.classList.remove('jitter'), 220); setTimeout(() => { const closedD = 'M10,50 Q100,50 190,50 Q100,50 10,50 Z'; lid.setAttribute('d', closedD); lidClip.setAttribute('d', closedD); iris.setAttribute('r', '0'); pupil.setAttribute('r', '0'); container.classList.add('jitter'); setTimeout(() => { voidBg.remove(); topHalf.remove(); bottomHalf.remove(); siteWrapper.classList.add('restore-fade-in'); siteWrapper.style.opacity = '1'; modalLockCount = Math.max(0, modalLockCount - 1); if(modalLockCount === 0) { document.documentElement.style.overflow = ''; document.body.style.overflow = ''; } setTimeout(() => { siteWrapper.classList.remove('restore-fade-in'); }, 1200); }, 350); }, 2200); }, 750); }, 350); }
 
   updateLanguage();
 })();
