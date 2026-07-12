@@ -276,4 +276,30 @@ app.post('/api/reviews', authenticateToken, async (req, res) => {
                 [ratings.gameplay, ratings.flow, ratings.decoration, ratings.music, ratings.originality, ratings.optimization, finalScore, text, existing.rows[0].id]);
             return res.json({ message: 'Обзор обновлен' });
         } else {
-            await pool.
+            await pool.query(`INSERT INTO reviews (user_id, level_id, level_name, level_author, difficulty, difficulty_face, stars, gameplay, flow, decoration, music, originality, optimization, final_score, review_text) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`, 
+                [req.user.userId, level_id, level_name, level_author, difficulty, difficulty_face, stars, ratings.gameplay, ratings.flow, ratings.decoration, ratings.music, ratings.originality, ratings.optimization, finalScore, text]);
+            return res.json({ message: 'Обзор сохранен' });
+        }
+    } catch(err) { res.status(500).json({ error: 'Ошибка сервера' }); }
+});
+
+app.delete('/api/reviews/:id', authenticateToken, async (req, res) => {
+    try { await pool.query('DELETE FROM reviews WHERE id = $1 AND user_id = $2', [req.params.id, req.user.userId]); res.json({ message: 'Удалено' }); } 
+    catch(err) { res.status(500).json({ error: 'Ошибка сервера' }); }
+});
+
+app.get('/api/audio', (req, res) => {
+    const audioUrl = req.query.url;
+    if (!audioUrl) return res.status(400).send('URL не указан');
+    const options = { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36', 'Referer': 'https://www.newgrounds.com/', 'Accept': '*/*' } };
+    const fetchAudio = (urlToFetch) => {
+        https.get(urlToFetch, options, (proxyRes) => {
+            if (proxyRes.statusCode >= 300 && proxyRes.statusCode < 400 && proxyRes.headers.location) return fetchAudio(proxyRes.headers.location);
+            res.writeHead(proxyRes.statusCode, proxyRes.headers); proxyRes.pipe(res);
+        }).on('error', (err) => { if (!res.headersSent) res.status(500).send('Ошибка'); });
+    };
+    fetchAudio(audioUrl);
+});
+
+app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
+app.listen(PORT, () => { console.log(`🚀 Сервер запущен на порту ${PORT}`); });
