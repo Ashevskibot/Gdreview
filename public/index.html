@@ -1994,6 +1994,7 @@ body.loaded #global-loader { opacity: 0; pointer-events: none; transform: transl
               localStorage.setItem('gd_token', result.token);
               localStorage.setItem('gd_username', result.username);
               authOverlay.classList.add('hidden');
+            if(window.loadMyReviews) window.loadMyReviews();
           } else {
               authError.style.color = '#e05555'; authError.textContent = result.error;
           }
@@ -3574,6 +3575,7 @@ body.loaded #global-loader { opacity: 0; pointer-events: none; transform: transl
         }
       });
     });
+  }
 
   const archiveSearchInput = document.getElementById('archive-search');
   archiveSearchInput.addEventListener('input', ()=>{ archiveSearchQuery = archiveSearchInput.value; renderArchive(); });
