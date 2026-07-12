@@ -17,7 +17,6 @@ const transporter = nodemailer.createTransport({
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
-// Исправлено: теперь сервер насильно добавит нужные колонки, если таблица была создана до обновления
 pool.connect().then(async (client) => {
     console.log('✅ Подключились к базе данных!');
     await client.query(`
@@ -42,7 +41,7 @@ pool.connect().then(async (client) => {
         );
     `);
     
-    // Принудительно добавляем все новые колонки для профиля и верификации
+    // Принудительно добавляем все новые колонки
     await client.query(`
         ALTER TABLE users 
         ADD COLUMN IF NOT EXISTS avatar TEXT,
@@ -92,6 +91,9 @@ async function uploadToCloud(base64Image) {
     return base64Image;
 }
 
+// ==========================================
+// 1. СИСТЕМА РЕГИСТРАЦИИ И ВХОДА С ПОЧТОЙ
+// ==========================================
 app.post('/api/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -99,6 +101,8 @@ app.post('/api/register', async (req, res) => {
         
         if (userExists.rows.length > 0) {
             if (userExists.rows[0].is_verified) return res.status(400).json({ error: 'Пользователь уже существует' });
+            // Удаляем старые обзоры неактивированного аккаунта (защита от ошибок)
+            await pool.query('DELETE FROM reviews WHERE user_id = $1', [userExists.rows[0].id]).catch(()=>{});
             await pool.query('DELETE FROM users WHERE id = $1', [userExists.rows[0].id]);
         }
 
@@ -110,9 +114,20 @@ app.post('/api/register', async (req, res) => {
             'INSERT INTO users (username, email, password_hash, verify_code) VALUES ($1, $2, $3, $4)',
             [username, email, passwordHash, code]
         );
-        await sendEmail(email, 'Код подтверждения GD Review', `Ваш код для регистрации: ${code}`);
+
+        // Печатаем код в логи Railway для удобства тестирования
+        console.log(`\n=========================================`);
+        console.log(`🔑 КОД РЕГИСТРАЦИИ ДЛЯ ${email}: [ ${code} ]`);
+        console.log(`=========================================\n`);
+
+        // ОТПРАВЛЯЕМ ПИСЬМО В ФОНЕ (без await), чтобы не блокировать загрузку!
+        sendEmail(email, 'Код подтверждения GD Review', `Ваш код для регистрации: ${code}`);
+
         res.json({ message: 'Код отправлен на почту!' });
-    } catch (err) { res.status(500).json({ error: 'Ошибка сервера: ' + err.message }); }
+    } catch (err) {
+        console.error('Ошибка регистрации:', err);
+        res.status(500).json({ error: 'Ошибка сервера: ' + err.message });
+    }
 });
 
 app.post('/api/verify', async (req, res) => {
@@ -151,9 +166,16 @@ app.post('/api/forgot-password', async (req, res) => {
         if (result.rows.length === 0) return res.status(400).json({ error: 'Аккаунт не найден' });
         
         const code = generateCode();
-        const expires = Date.now() + 15 * 60 * 1000; // 15 минут
+        const expires = Date.now() + 15 * 60 * 1000;
         await pool.query('UPDATE users SET reset_code = $1, reset_expires = $2 WHERE id = $3', [code, expires, result.rows[0].id]);
-        await sendEmail(email, 'Сброс пароля GD Review', `Ваш код для сброса пароля: ${code}`);
+        
+        console.log(`\n=========================================`);
+        console.log(`🔑 КОД СБРОСА ПАРОЛЯ ДЛЯ ${email}: [ ${code} ]`);
+        console.log(`=========================================\n`);
+
+        // ОТПРАВЛЯЕМ ПИСЬМО В ФОНЕ (без await)
+        sendEmail(email, 'Сброс пароля GD Review', `Ваш код для сброса пароля: ${code}`);
+
         res.json({ message: 'Код отправлен!' });
     } catch (err) { res.status(500).json({ error: 'Ошибка сервера' }); }
 });
@@ -201,17 +223,17 @@ app.post('/api/change-email', authenticateToken, async (req, res) => {
     } catch (err) { res.status(500).json({ error: 'Ошибка сервера' }); }
 });
 
-// НОВЫЙ БЛОК: Удаление аккаунта
 app.delete('/api/account', authenticateToken, async (req, res) => {
     try {
-        // Сначала удаляем все обзоры пользователя, чтобы не было конфликтов в базе
         await pool.query('DELETE FROM reviews WHERE user_id = $1', [req.user.userId]);
-        // Затем удаляем самого пользователя
         await pool.query('DELETE FROM users WHERE id = $1', [req.user.userId]);
         res.json({ message: 'Аккаунт удален' });
     } catch (err) { res.status(500).json({ error: 'Ошибка сервера' }); }
 });
 
+// ==========================================
+// 2. ПРОФИЛЬ (С ImgBB) И ОБЗОРЫ
+// ==========================================
 app.get('/api/profile', authenticateToken, async (req, res) => {
     try {
         const result = await pool.query('SELECT username, avatar, banner, frame, description, socials FROM users WHERE id = $1', [req.user.userId]);
@@ -259,6 +281,7 @@ app.delete('/api/reviews/:id', authenticateToken, async (req, res) => {
     catch(err) { res.status(500).json({ error: 'Ошибка сервера' }); }
 });
 
+// Прокси для музыки
 app.get('/api/audio', (req, res) => {
     const audioUrl = req.query.url;
     if (!audioUrl) return res.status(400).send('URL не указан');
