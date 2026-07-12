@@ -5,16 +5,23 @@ const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const dns = require('dns');
+
+// 🚀 КРИТИЧЕСКИ ВАЖНЫЙ ФИКС ДЛЯ RAILWAY: 
+// Заставляем сервер общаться с Google только по IPv4. 
+// Это обходит блокировку и решает проблему "Connection timeout"
+dns.setDefaultResultOrder('ipv4first');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key'; 
 
-// Более надежная настройка почты с явным указанием хоста и порта
+// Используем альтернативный порт 587 (STARTTLS), который открыт на всех хостингах
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
+    port: 587,
+    secure: false, // Для порта 587 должно быть false
+    requireTLS: true,
     auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
 });
 
@@ -76,7 +83,7 @@ const authenticateToken = (req, res, next) => {
 
 const generateCode = () => Math.floor(100000 + Math.random() * 900000).toString();
 
-// Функция отправки письма В ФОНОВОМ РЕЖИМЕ (без await)
+// Функция отправки письма (работает в фоне)
 function sendEmail(to, subject, text) {
     transporter.sendMail({ 
         from: `"GD Review" <${process.env.EMAIL_USER}>`, 
@@ -122,15 +129,12 @@ app.post('/api/register', async (req, res) => {
             [username, email, passwordHash, code]
         );
 
-        // ВЫВОДИМ КОД В ЛОГИ, ЧТОБЫ ТЫ МОГ ПРОДОЛЖИТЬ РАБОТУ
         console.log(`\n=========================================`);
         console.log(`🔑 КОД РЕГИСТРАЦИИ ДЛЯ ${email}: [ ${code} ]`);
         console.log(`=========================================\n`);
 
-        // Запускаем отправку письма, но НЕ ЖДЕМ её
         sendEmail(email, 'Код подтверждения GD Review', `Ваш код для регистрации: ${code}`);
 
-        // МГНОВЕННО отвечаем сайту, чтобы убрать бесконечную загрузку
         res.json({ message: 'Код отправлен на почту!' });
     } catch (err) { res.status(500).json({ error: 'Ошибка сервера: ' + err.message }); }
 });
@@ -272,30 +276,4 @@ app.post('/api/reviews', authenticateToken, async (req, res) => {
                 [ratings.gameplay, ratings.flow, ratings.decoration, ratings.music, ratings.originality, ratings.optimization, finalScore, text, existing.rows[0].id]);
             return res.json({ message: 'Обзор обновлен' });
         } else {
-            await pool.query(`INSERT INTO reviews (user_id, level_id, level_name, level_author, difficulty, difficulty_face, stars, gameplay, flow, decoration, music, originality, optimization, final_score, review_text) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`, 
-                [req.user.userId, level_id, level_name, level_author, difficulty, difficulty_face, stars, ratings.gameplay, ratings.flow, ratings.decoration, ratings.music, ratings.originality, ratings.optimization, finalScore, text]);
-            return res.json({ message: 'Обзор сохранен' });
-        }
-    } catch(err) { res.status(500).json({ error: 'Ошибка сервера' }); }
-});
-
-app.delete('/api/reviews/:id', authenticateToken, async (req, res) => {
-    try { await pool.query('DELETE FROM reviews WHERE id = $1 AND user_id = $2', [req.params.id, req.user.userId]); res.json({ message: 'Удалено' }); } 
-    catch(err) { res.status(500).json({ error: 'Ошибка сервера' }); }
-});
-
-app.get('/api/audio', (req, res) => {
-    const audioUrl = req.query.url;
-    if (!audioUrl) return res.status(400).send('URL не указан');
-    const options = { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36', 'Referer': 'https://www.newgrounds.com/', 'Accept': '*/*' } };
-    const fetchAudio = (urlToFetch) => {
-        https.get(urlToFetch, options, (proxyRes) => {
-            if (proxyRes.statusCode >= 300 && proxyRes.statusCode < 400 && proxyRes.headers.location) return fetchAudio(proxyRes.headers.location);
-            res.writeHead(proxyRes.statusCode, proxyRes.headers); proxyRes.pipe(res);
-        }).on('error', (err) => { if (!res.headersSent) res.status(500).send('Ошибка'); });
-    };
-    fetchAudio(audioUrl);
-});
-
-app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
-app.listen(PORT, () => { console.log(`🚀 Сервер запущен на порту ${PORT}`); });
+            await pool.
