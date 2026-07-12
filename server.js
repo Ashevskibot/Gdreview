@@ -4,27 +4,21 @@ const https = require('https');
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
-const dns = require('dns');
-
-// 🚀 ХАК ДЛЯ RAILWAY: Принудительно используем IPv4
-dns.setDefaultResultOrder('ipv4first');
+const { Resend } = require('resend');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key'; 
 
-// 🚀 БРОНЕБОЙНАЯ НАСТРОЙКА GMAIL
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // Используем SSL
-    auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
-    tls: { 
-        // Отключаем строгую проверку сертификатов (помогает обойти фильтры)
-        rejectUnauthorized: false 
-    }
-});
+// 🚀 ОТПРАВКА ПИСЕМ ЧЕРЕЗ RESEND (HTTP API, порт 443 — Railway его не блокирует)
+// Ключ берётся на https://resend.com/api-keys, кладём в переменную окружения RESEND_API_KEY
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Пока домен не подтверждён в Resend, используйте 'onboarding@resend.dev' —
+// письма с этого адреса будут приходить только на почту, привязанную к вашему аккаунту Resend.
+// После верификации своего домена (Resend -> Domains -> Add Domain, добавить DNS-записи)
+// замените на свой адрес, например 'GD Review <noreply@your-domain.com>'
+const EMAIL_FROM = process.env.EMAIL_FROM || 'GD Review <onboarding@resend.dev>';
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
@@ -86,13 +80,18 @@ const generateCode = () => Math.floor(100000 + Math.random() * 900000).toString(
 
 // Фоновая функция отправки письма (не тормозит сайт)
 function sendEmail(to, subject, text) {
-    transporter.sendMail({ 
-        from: `"GD Review" <${process.env.EMAIL_USER}>`, 
-        to, 
-        subject, 
-        text 
-    }).then(() => console.log(`📧 Письмо успешно отправлено на ${to}`))
-      .catch(err => console.error(`❌ Ошибка отправки письма на ${to}:`, err.message));
+    resend.emails.send({
+        from: EMAIL_FROM,
+        to,
+        subject,
+        text
+    }).then(({ data, error }) => {
+        if (error) {
+            console.error(`❌ Ошибка отправки письма на ${to}:`, error.message || error);
+            return;
+        }
+        console.log(`📧 Письмо успешно отправлено на ${to} (id: ${data?.id})`);
+    }).catch(err => console.error(`❌ Ошибка отправки письма на ${to}:`, err.message));
 }
 
 async function uploadToCloud(base64Image) {
