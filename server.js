@@ -10,6 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key'; 
 
+// Настройка почтальона
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
@@ -41,7 +42,6 @@ pool.connect().then(async (client) => {
         );
     `);
     
-    // Принудительно добавляем все новые колонки
     await client.query(`
         ALTER TABLE users 
         ADD COLUMN IF NOT EXISTS avatar TEXT,
@@ -74,9 +74,14 @@ const authenticateToken = (req, res, next) => {
 
 const generateCode = () => Math.floor(100000 + Math.random() * 900000).toString();
 
+// Жесткая функция отправки: если почта не работает, она "выбросит" ошибку
 async function sendEmail(to, subject, text) {
-    try { await transporter.sendMail({ from: `"GD Review" <${process.env.EMAIL_USER}>`, to, subject, text }); } 
-    catch (e) { console.error('Ошибка отправки письма:', e); }
+    await transporter.sendMail({ 
+        from: `"GD Review" <${process.env.EMAIL_USER}>`, 
+        to, 
+        subject, 
+        text 
+    });
 }
 
 async function uploadToCloud(base64Image) {
@@ -92,7 +97,7 @@ async function uploadToCloud(base64Image) {
 }
 
 // ==========================================
-// 1. СИСТЕМА РЕГИСТРАЦИИ И ВХОДА С ПОЧТОЙ
+// 1. СИСТЕМА РЕГИСТРАЦИИ И ВХОДА (СТРОГО ЧЕРЕЗ EMAIL)
 // ==========================================
 app.post('/api/register', async (req, res) => {
     try {
@@ -101,7 +106,6 @@ app.post('/api/register', async (req, res) => {
         
         if (userExists.rows.length > 0) {
             if (userExists.rows[0].is_verified) return res.status(400).json({ error: 'Пользователь уже существует' });
-            // Удаляем старые обзоры неактивированного аккаунта (защита от ошибок)
             await pool.query('DELETE FROM reviews WHERE user_id = $1', [userExists.rows[0].id]).catch(()=>{});
             await pool.query('DELETE FROM users WHERE id = $1', [userExists.rows[0].id]);
         }
@@ -110,24 +114,23 @@ app.post('/api/register', async (req, res) => {
         const passwordHash = await bcrypt.hash(password, salt);
         const code = generateCode();
 
-        await pool.query(
-            'INSERT INTO users (username, email, password_hash, verify_code) VALUES ($1, $2, $3, $4)',
+        const newUser = await pool.query(
+            'INSERT INTO users (username, email, password_hash, verify_code) VALUES ($1, $2, $3, $4) RETURNING id',
             [username, email, passwordHash, code]
         );
 
-        // Печатаем код в логи Railway для удобства тестирования
-        console.log(`\n=========================================`);
-        console.log(`🔑 КОД РЕГИСТРАЦИИ ДЛЯ ${email}: [ ${code} ]`);
-        console.log(`=========================================\n`);
+        // Пытаемся отправить письмо. Если ошибка — переходим в блок catch
+        try {
+            await sendEmail(email, 'Код подтверждения GD Review', `Ваш код для регистрации: ${code}`);
+            res.json({ message: 'Код отправлен на почту!' });
+        } catch (emailErr) {
+            console.error('Ошибка SMTP (Письмо не ушло):', emailErr);
+            // Если письмо не дошло, удаляем аккаунт из базы, чтобы не "завис"
+            await pool.query('DELETE FROM users WHERE id = $1', [newUser.rows[0].id]);
+            res.status(500).json({ error: 'Ошибка отправки почты. Проверьте пароль приложения Gmail в Railway!' });
+        }
 
-        // ОТПРАВЛЯЕМ ПИСЬМО В ФОНЕ (без await), чтобы не блокировать загрузку!
-        sendEmail(email, 'Код подтверждения GD Review', `Ваш код для регистрации: ${code}`);
-
-        res.json({ message: 'Код отправлен на почту!' });
-    } catch (err) {
-        console.error('Ошибка регистрации:', err);
-        res.status(500).json({ error: 'Ошибка сервера: ' + err.message });
-    }
+    } catch (err) { res.status(500).json({ error: 'Ошибка сервера: ' + err.message }); }
 });
 
 app.post('/api/verify', async (req, res) => {
@@ -169,14 +172,13 @@ app.post('/api/forgot-password', async (req, res) => {
         const expires = Date.now() + 15 * 60 * 1000;
         await pool.query('UPDATE users SET reset_code = $1, reset_expires = $2 WHERE id = $3', [code, expires, result.rows[0].id]);
         
-        console.log(`\n=========================================`);
-        console.log(`🔑 КОД СБРОСА ПАРОЛЯ ДЛЯ ${email}: [ ${code} ]`);
-        console.log(`=========================================\n`);
-
-        // ОТПРАВЛЯЕМ ПИСЬМО В ФОНЕ (без await)
-        sendEmail(email, 'Сброс пароля GD Review', `Ваш код для сброса пароля: ${code}`);
-
-        res.json({ message: 'Код отправлен!' });
+        try {
+            await sendEmail(email, 'Сброс пароля GD Review', `Ваш код для сброса пароля: ${code}`);
+            res.json({ message: 'Код отправлен!' });
+        } catch (emailErr) {
+            console.error('Ошибка SMTP:', emailErr);
+            res.status(500).json({ error: 'Ошибка отправки почты. Проверьте настройки!' });
+        }
     } catch (err) { res.status(500).json({ error: 'Ошибка сервера' }); }
 });
 
@@ -232,7 +234,7 @@ app.delete('/api/account', authenticateToken, async (req, res) => {
 });
 
 // ==========================================
-// 2. ПРОФИЛЬ (С ImgBB) И ОБЗОРЫ
+// 2. ПРОФИЛЬ И ОБЗОРЫ
 // ==========================================
 app.get('/api/profile', authenticateToken, async (req, res) => {
     try {
@@ -281,7 +283,6 @@ app.delete('/api/reviews/:id', authenticateToken, async (req, res) => {
     catch(err) { res.status(500).json({ error: 'Ошибка сервера' }); }
 });
 
-// Прокси для музыки
 app.get('/api/audio', (req, res) => {
     const audioUrl = req.query.url;
     if (!audioUrl) return res.status(400).send('URL не указан');
