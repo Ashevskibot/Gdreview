@@ -1959,6 +1959,7 @@ body.loaded #global-loader { opacity: 0; pointer-events: none; transform: transl
   window.addEventListener('load', () => {
       if (localStorage.getItem('gd_token')) {
           authOverlay.classList.add('hidden'); 
+        if(window.loadMyReviews) window.loadMyReviews();
       }
   });
 
@@ -1972,6 +1973,7 @@ body.loaded #global-loader { opacity: 0; pointer-events: none; transform: transl
               localStorage.setItem('gd_token', result.token);
               localStorage.setItem('gd_username', result.username);
               authOverlay.classList.add('hidden');
+            if(window.loadMyReviews) window.loadMyReviews();
           } else {
               authError.style.color = '#e05555'; authError.textContent = result.error;
           }
@@ -2397,6 +2399,28 @@ body.loaded #global-loader { opacity: 0; pointer-events: none; transform: transl
 
   /* ---------------- storage ---------------- */
   let reviews = [];
+  
+  window.loadMyReviews = async function() {
+    const token = localStorage.getItem('gd_token');
+    if(!token) return;
+    try {
+        const res = await fetch('/api/reviews', { headers: { 'Authorization': 'Bearer ' + token } });
+        if(res.ok) {
+            const data = await res.json();
+            // Превращаем данные из базы в понятный для сайта формат
+            reviews = data.map(r => ({
+                uid: r.id.toString(), id: r.level_id, name: r.level_name, author: r.level_author,
+                difficulty: r.difficulty, difficultyFace: r.difficulty_face, stars: r.stars,
+                ratings: { gameplay: r.gameplay, flow: r.flow, decoration: r.decoration, music: r.music, originality: r.originality, optimization: r.optimization },
+                finalScore: parseFloat(r.final_score), text: r.review_text, savedAt: r.saved_at
+            }));
+            renderArchive(); renderStats(); renderRewardsUI();
+        }
+    } catch(e) { console.error('Ошибка загрузки обзоров:', e); }
+  };
+  
+  // При открытии страницы сразу качаем обзоры
+  window.loadMyReviews();
 
   /* ---------------- Rewards & progression system ---------------- */
   const REWARD_TIERS = [
@@ -3399,7 +3423,7 @@ body.loaded #global-loader { opacity: 0; pointer-events: none; transform: transl
 
   /* ---------------- duplicate-review modal ---------------- */
   const dupModal = document.getElementById('dup-modal');
-  let pendingSave = null;
+  let pendingPayload = null;
 
   function openDupModal(levelName){
     document.getElementById('modal-text').textContent = currentLang === 'en' 
@@ -3407,16 +3431,33 @@ body.loaded #global-loader { opacity: 0; pointer-events: none; transform: transl
       : `Вы уже сохранили обзор на «${levelName}». Что сделать?`;
     openModalOverlay(dupModal);
   }
-  function closeDupModal(){ closeModalOverlay(dupModal); pendingSave = null; }
+  function closeDupModal(){ closeModalOverlay(dupModal); pendingPayload = null; }
   dupModal.addEventListener('click', (e)=>{ if(e.target === dupModal) closeDupModal(); });
-  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && dupModal.classList.contains('show')) closeDupModal(); });
   document.getElementById('modal-show-btn').addEventListener('click', ()=>{
     closeDupModal(); document.querySelector('.tab-btn[data-tab="profile"]').click();
   });
-  document.getElementById('modal-replace-btn').addEventListener('click', ()=>{
-    if(pendingSave){ reviews[pendingSave.existingIndex] = pendingSave.review; document.getElementById('review-text').value = ''; }
-    closeDupModal(); showSaveMsg();
+  
+  document.getElementById('modal-replace-btn').addEventListener('click', async ()=>{
+    if(pendingPayload) await sendReviewToServer(pendingPayload);
+    closeDupModal(); 
   });
+
+  async function sendReviewToServer(payload) {
+      const token = localStorage.getItem('gd_token');
+      if(!token) { alert(currentLang === 'en' ? 'Please log in to save' : 'Авторизуйтесь, чтобы сохранять!'); return; }
+      try {
+          const res = await fetch('/api/reviews', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+              body: JSON.stringify(payload)
+          });
+          if(res.ok) {
+              await window.loadMyReviews(); // Качаем свежие данные из базы!
+              showSaveMsg();
+              document.getElementById('review-text').value = '';
+          }
+      } catch(e) { alert('Error'); }
+  }
 
   document.getElementById('save-btn').addEventListener('click', ()=>{
     if(!currentLevel){
@@ -3426,25 +3467,22 @@ body.loaded #global-loader { opacity: 0; pointer-events: none; transform: transl
     }
     const text = document.getElementById('review-text').value.trim();
     const finalScore = recalcFinal();
-    playSaveAnimation(finalScore);
-    const review = {
-      uid: Date.now().toString(36)+Math.random().toString(36).slice(2,7),
-      id: currentLevel.id, name: currentLevel.name, author: currentLevel.author,
-      difficulty: currentLevel.difficulty, difficultyFace: currentLevel.difficultyFace, stars: currentLevel.stars,
-      ratings: {...ratingValues}, finalScore: finalScore, text: text, savedAt: new Date().toISOString()
+    
+    const payload = {
+      level_id: currentLevel.id.toString(), level_name: currentLevel.name, level_author: currentLevel.author,
+      difficulty: currentLevel.difficulty, difficulty_face: currentLevel.difficultyFace, stars: currentLevel.stars,
+      ratings: {...ratingValues}, finalScore: finalScore, text: text
     };
 
-    const existingIndex = reviews.findIndex(r=>r.id === currentLevel.id);
+    const existingIndex = reviews.findIndex(r=>r.id == currentLevel.id);
     if(existingIndex !== -1){
-      review.uid = reviews[existingIndex].uid; pendingSave = {review, existingIndex};
+      pendingPayload = payload;
       openDupModal(currentLevel.name);
       return;
     }
 
-    reviews.unshift(review);
-    renderRewardsUI();
-    showSaveMsg();
-    document.getElementById('review-text').value = '';
+    playSaveAnimation(finalScore);
+    sendReviewToServer(payload);
   });
 
   /* ---------------- archive render ---------------- */
@@ -3524,14 +3562,18 @@ body.loaded #global-loader { opacity: 0; pointer-events: none; transform: transl
     });
 
     content.innerHTML = ''; content.appendChild(list);
-    content.querySelectorAll('.delete-btn').forEach(btn=>{
-      btn.addEventListener('click', ()=>{ 
-        reviews = reviews.filter(r=>r.uid !== btn.dataset.uid); 
-        renderArchive(); 
-        renderStats();
+   content.querySelectorAll('.delete-btn').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{ 
+        const uid = btn.dataset.uid;
+        const token = localStorage.getItem('gd_token');
+        if(confirm(currentLang === 'en' ? 'Delete this review?' : 'Удалить этот обзор?')) {
+            try {
+                await fetch(`/api/reviews/${uid}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }});
+                await window.loadMyReviews(); // Обновляем список
+            } catch(e) {}
+        }
       });
     });
-  }
 
   const archiveSearchInput = document.getElementById('archive-search');
   archiveSearchInput.addEventListener('input', ()=>{ archiveSearchQuery = archiveSearchInput.value; renderArchive(); });
