@@ -7,22 +7,23 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const dns = require('dns');
 
-// 🚀 КРИТИЧЕСКИ ВАЖНЫЙ ФИКС ДЛЯ RAILWAY: 
-// Заставляем сервер общаться с Google только по IPv4. 
-// Это обходит блокировку и решает проблему "Connection timeout"
+// 🚀 ХАК ДЛЯ RAILWAY: Принудительно используем IPv4
 dns.setDefaultResultOrder('ipv4first');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key'; 
 
-// Используем альтернативный порт 587 (STARTTLS), который открыт на всех хостингах
+// 🚀 БРОНЕБОЙНАЯ НАСТРОЙКА GMAIL
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // Для порта 587 должно быть false
-    requireTLS: true,
-    auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
+    port: 465,
+    secure: true, // Используем SSL
+    auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+    tls: { 
+        // Отключаем строгую проверку сертификатов (помогает обойти фильтры)
+        rejectUnauthorized: false 
+    }
 });
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
@@ -83,7 +84,7 @@ const authenticateToken = (req, res, next) => {
 
 const generateCode = () => Math.floor(100000 + Math.random() * 900000).toString();
 
-// Функция отправки письма (работает в фоне)
+// Фоновая функция отправки письма (не тормозит сайт)
 function sendEmail(to, subject, text) {
     transporter.sendMail({ 
         from: `"GD Review" <${process.env.EMAIL_USER}>`, 
@@ -129,6 +130,7 @@ app.post('/api/register', async (req, res) => {
             [username, email, passwordHash, code]
         );
 
+        // ВЫВОДИМ КОД КАК СТРАХОВКУ
         console.log(`\n=========================================`);
         console.log(`🔑 КОД РЕГИСТРАЦИИ ДЛЯ ${email}: [ ${code} ]`);
         console.log(`=========================================\n`);
