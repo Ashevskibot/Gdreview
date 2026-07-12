@@ -2,14 +2,65 @@
 const express = require('express');
 const path = require('path');
 const https = require('https');
+const cors = require('cors');
+const helmet = require('helmet');
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Resend } = require('resend');
+const { buildCodeEmail, buildCodeEmailText } = require('./email-templates');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key';
+
+// Railway (and most PaaS providers) terminate TLS at a reverse proxy and
+// forward the real client IP via X-Forwarded-For. Trusting the proxy makes
+// req.ip / req.secure resolve correctly instead of always returning the
+// proxy's own address.
+app.set('trust proxy', 1);
+
+/* ============ SECURITY: HELMET + CORS ============ */
+// Helmet sets a sane set of security headers (HSTS, X-Content-Type-Options,
+// no-sniff, etc). CSP is left in "report only"-free default mode disabled
+// here because the app is a classic server-rendered/static bundle with
+// inline scripts (see index.html) — enabling the default CSP would break it.
+// If/when inline scripts are moved to external files, re-enable it.
+app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+}));
+
+// Only the production domain (and local dev) may call the API with
+// credentials/cookies or custom headers. Requests with no Origin header
+// (curl, server-to-server, mobile apps, Postman) are allowed through since
+// they can't be spoofed by a browser the way cross-site requests can.
+const ALLOWED_ORIGINS = (process.env.CORS_ORIGINS || 'https://gdreview.com,https://www.gdreview.com,http://localhost:3000,http://localhost:5173')
+    .split(',')
+    .map(o => o.trim())
+    .filter(Boolean);
+
+const corsOptions = {
+    origin(origin, callback) {
+        if (!origin) return callback(null, true); // non-browser clients
+        if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+        callback(new Error('not_allowed_by_cors'));
+    },
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    maxAge: 86400,
+};
+app.use(cors(corsOptions));
+// Express 5 / recent path-to-regexp reject bare '*' — match all paths via regex instead.
+app.options(/.*/, cors(corsOptions));
+
+// Surface CORS rejections as clean 403s instead of a raw Express error page.
+app.use((err, req, res, next) => {
+    if (err && err.message === 'not_allowed_by_cors') return res.status(403).json({ error: 'origin_not_allowed' });
+    next(err);
+});
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const EMAIL_FROM = process.env.EMAIL_FROM || 'GD Review <onboarding@resend.dev>';
@@ -30,7 +81,7 @@ async function initDb() {
             );
             CREATE TABLE IF NOT EXISTS reviews (
                 id SERIAL PRIMARY KEY,
-                user_id INTEGER REFERENCES users(id),
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
                 level_id VARCHAR(50) NOT NULL,
                 level_name VARCHAR(255),
                 level_author VARCHAR(255),
@@ -41,6 +92,24 @@ async function initDb() {
                 final_score NUMERIC(4,2), review_text TEXT, saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
+        // Existing databases created before this change still have the old
+        // FK without ON DELETE CASCADE. Drop and recreate it so deleting a
+        // user (e.g. cleaning up unverified/test accounts) no longer fails
+        // with a foreign key constraint violation on their reviews.
+        await client.query(`
+            DO $$
+            BEGIN
+                IF EXISTS (
+                    SELECT 1 FROM information_schema.table_constraints
+                    WHERE table_name = 'reviews' AND constraint_name = 'reviews_user_id_fkey'
+                ) THEN
+                    ALTER TABLE reviews DROP CONSTRAINT reviews_user_id_fkey;
+                END IF;
+                ALTER TABLE reviews
+                    ADD CONSTRAINT reviews_user_id_fkey
+                    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+            END $$;
+        `).catch(err => console.error('⚠️  Could not migrate reviews FK to ON DELETE CASCADE:', err.message));
         await client.query(`
             ALTER TABLE users
             ADD COLUMN IF NOT EXISTS avatar TEXT,
@@ -51,7 +120,8 @@ async function initDb() {
             ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE,
             ADD COLUMN IF NOT EXISTS verify_code VARCHAR(10),
             ADD COLUMN IF NOT EXISTS reset_code VARCHAR(10),
-            ADD COLUMN IF NOT EXISTS reset_expires BIGINT;
+            ADD COLUMN IF NOT EXISTS reset_expires BIGINT,
+            ADD COLUMN IF NOT EXISTS register_ip VARCHAR(45);
         `).catch(() => {});
         await client.query(`ALTER TABLE reviews ADD COLUMN IF NOT EXISTS title VARCHAR(120);`).catch(() => {});
         await client.query(`
@@ -76,11 +146,41 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 /* ============ HELPERS ============ */
 const fail = (res, status, code) => res.status(status).json({ error: code });
-const isEmail = v => typeof v === 'string' && v.length <= 255 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+
+// Stricter RFC-5322-ish email check: bounds local/domain part lengths,
+// rejects consecutive dots and leading/trailing dots, and requires a
+// plausible TLD. This runs before we ever hand the address to Resend, so
+// malformed input fails fast with a clean 400 instead of an API error.
+const EMAIL_RE = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+const isEmail = v => {
+    if (typeof v !== 'string') return false;
+    const email = v.trim();
+    if (email.length === 0 || email.length > 254) return false;
+    if (email.includes('..')) return false;
+    if (!EMAIL_RE.test(email)) return false;
+    const atIndex = email.lastIndexOf('@');
+    const local = email.slice(0, atIndex);
+    const domain = email.slice(atIndex + 1);
+    if (local.length === 0 || local.length > 64) return false;
+    if (domain.length === 0 || domain.length > 253) return false;
+    const tld = domain.split('.').pop();
+    if (!tld || tld.length < 2) return false;
+    return true;
+};
+
 const isUsername = v => typeof v === 'string' && /^[a-zA-Z0-9а-яА-ЯёЁ_\-. ]{3,20}$/.test(v.trim());
 const isPassword = v => typeof v === 'string' && v.length >= 8 && v.length <= 100;
 const generateCode = () => Math.floor(100000 + Math.random() * 900000).toString();
 const normEmail = v => String(v || '').trim().toLowerCase();
+
+// Railway's edge proxy sets X-Forwarded-For to "client, proxy1, proxy2...".
+// With `trust proxy` enabled above, req.ip already resolves this correctly,
+// but we read the header directly as a fallback/for explicit logging.
+const getClientIp = req => {
+    const xff = req.headers['x-forwarded-for'];
+    if (xff) return String(xff).split(',')[0].trim();
+    return req.ip || req.socket?.remoteAddress || 'unknown';
+};
 
 const authenticateToken = (req, res, next) => {
     const h = req.headers['authorization'];
@@ -112,11 +212,21 @@ function rateLimit(max, windowMs) {
 }
 setInterval(() => { const now = Date.now(); for (const [k, v] of rlStore) { const f = v.filter(t => now - t < 900000); if (f.length) rlStore.set(k, f); else rlStore.delete(k); } }, 300000).unref();
 
-function sendEmail(to, subject, text) {
-    resend.emails.send({ from: EMAIL_FROM, to, subject, text }).then(({ data, error }) => {
+function sendEmail(to, subject, text, html) {
+    const payload = html ? { from: EMAIL_FROM, to, subject, text, html } : { from: EMAIL_FROM, to, subject, text };
+    resend.emails.send(payload).then(({ data, error }) => {
         if (error) { console.error(`❌ Email error (${to}):`, error.message || error); return; }
         console.log(`📧 Email sent to ${to} (id: ${data && data.id})`);
     }).catch(err => console.error(`❌ Email error (${to}):`, err.message));
+}
+
+/**
+ * Sends the GDREVIEW dark-themed code email (verification or password reset).
+ */
+function sendCodeEmail(to, { subject, code, headline, intro, expiresMinutes, preheader, ip }) {
+    const html = buildCodeEmail({ code, headline, intro, expiresMinutes, preheader, ip });
+    const text = buildCodeEmailText({ code, headline, intro, expiresMinutes, ip });
+    sendEmail(to, subject, text, html);
 }
 
 async function uploadToCloud(base64Image) {
@@ -152,19 +262,33 @@ app.post('/api/register', rateLimit(10, 600000), async (req, res) => {
         if (!isEmail(email)) return fail(res, 400, 'invalid_email');
         if (!isPassword(password)) return fail(res, 400, 'weak_password');
 
+        const clientIp = getClientIp(req);
+
         const existing = await pool.query('SELECT id, is_verified FROM users WHERE email = $1 OR username = $2', [email, username.trim()]);
         if (existing.rows.length > 0) {
             if (existing.rows[0].is_verified) return fail(res, 400, 'user_exists');
-            await pool.query('DELETE FROM reviews WHERE user_id = $1', [existing.rows[0].id]).catch(() => {});
+            // Reviews cascade-delete automatically now (ON DELETE CASCADE on
+            // reviews.user_id), so we no longer need to delete them manually.
             await pool.query('DELETE FROM users WHERE id = $1', [existing.rows[0].id]);
         }
 
         const passwordHash = await bcrypt.hash(password, 10);
         const code = generateCode();
-        await pool.query('INSERT INTO users (username, email, password_hash, verify_code) VALUES ($1, $2, $3, $4)', [username.trim(), email, passwordHash, code]);
+        await pool.query(
+            'INSERT INTO users (username, email, password_hash, verify_code, register_ip) VALUES ($1, $2, $3, $4, $5)',
+            [username.trim(), email, passwordHash, code, clientIp]
+        );
 
-        console.log(`\n🔑 REGISTRATION CODE for ${email}: [ ${code} ]\n`);
-        sendEmail(email, 'GD Review — verification code', `Your registration code: ${code}`);
+        console.log(`\n🔑 REGISTRATION CODE for ${email}: [ ${code} ] — IP: ${clientIp}\n`);
+        sendCodeEmail(email, {
+            subject: 'GDREVIEW — Confirm your email',
+            code,
+            headline: 'Confirm Your Email',
+            intro: "We received a request to verify your email address and complete your GDREVIEW registration. Enter the code below to continue.",
+            expiresMinutes: 10,
+            preheader: 'Your GDREVIEW verification code is ready — enter it to complete your registration.',
+            ip: clientIp,
+        });
         res.json({ message: 'code_sent' });
     } catch (err) { console.error(err); fail(res, 500, 'server_error'); }
 });
@@ -172,12 +296,21 @@ app.post('/api/register', rateLimit(10, 600000), async (req, res) => {
 app.post('/api/resend-code', rateLimit(5, 600000), async (req, res) => {
     try {
         const email = normEmail(req.body.email);
+        if (!isEmail(email)) return fail(res, 400, 'invalid_email');
         const result = await pool.query('SELECT id FROM users WHERE email = $1 AND is_verified = FALSE', [email]);
         if (result.rows.length === 0) return fail(res, 400, 'account_not_found');
         const code = generateCode();
         await pool.query('UPDATE users SET verify_code = $1 WHERE id = $2', [code, result.rows[0].id]);
         console.log(`\n🔑 RESENT CODE for ${email}: [ ${code} ]\n`);
-        sendEmail(email, 'GD Review — verification code', `Your registration code: ${code}`);
+        sendCodeEmail(email, {
+            subject: 'GDREVIEW — Confirm your email',
+            code,
+            headline: 'Confirm Your Email',
+            intro: "We received a request to verify your email address and complete your GDREVIEW registration. Enter the code below to continue.",
+            expiresMinutes: 10,
+            preheader: 'Your GDREVIEW verification code is ready — enter it to complete your registration.',
+            ip: getClientIp(req),
+        });
         res.json({ message: 'code_sent' });
     } catch (err) { fail(res, 500, 'server_error'); }
 });
@@ -212,13 +345,22 @@ app.post('/api/login', rateLimit(15, 600000), async (req, res) => {
 app.post('/api/forgot-password', rateLimit(5, 600000), async (req, res) => {
     try {
         const email = normEmail(req.body.email);
+        if (!isEmail(email)) return fail(res, 400, 'invalid_email');
         const result = await pool.query('SELECT id FROM users WHERE email = $1 AND is_verified = TRUE', [email]);
         if (result.rows.length === 0) return fail(res, 400, 'account_not_found');
         const code = generateCode();
         const expires = Date.now() + 15 * 60 * 1000;
         await pool.query('UPDATE users SET reset_code = $1, reset_expires = $2 WHERE id = $3', [code, expires, result.rows[0].id]);
         console.log(`\n🔑 RESET CODE for ${email}: [ ${code} ]\n`);
-        sendEmail(email, 'GD Review — password reset', `Your password reset code: ${code}`);
+        sendCodeEmail(email, {
+            subject: 'GDREVIEW — Password reset code',
+            code,
+            headline: 'Reset Your Password',
+            intro: "We received a request to reset your GDREVIEW account password. Enter the code below to continue.",
+            expiresMinutes: 15,
+            preheader: 'Your GDREVIEW password reset code is ready — enter it to continue.',
+            ip: getClientIp(req),
+        });
         res.json({ message: 'code_sent' });
     } catch (err) { fail(res, 500, 'server_error'); }
 });
