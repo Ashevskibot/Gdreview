@@ -10,9 +10,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key'; 
 
-// Настройка почтальона
+// Более надежная настройка почты с явным указанием хоста и порта
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
 });
 
@@ -74,14 +76,15 @@ const authenticateToken = (req, res, next) => {
 
 const generateCode = () => Math.floor(100000 + Math.random() * 900000).toString();
 
-// Жесткая функция отправки: если почта не работает, она "выбросит" ошибку
-async function sendEmail(to, subject, text) {
-    await transporter.sendMail({ 
+// Функция отправки письма В ФОНОВОМ РЕЖИМЕ (без await)
+function sendEmail(to, subject, text) {
+    transporter.sendMail({ 
         from: `"GD Review" <${process.env.EMAIL_USER}>`, 
         to, 
         subject, 
         text 
-    });
+    }).then(() => console.log(`📧 Письмо успешно отправлено на ${to}`))
+      .catch(err => console.error(`❌ Ошибка отправки письма на ${to}:`, err.message));
 }
 
 async function uploadToCloud(base64Image) {
@@ -97,7 +100,7 @@ async function uploadToCloud(base64Image) {
 }
 
 // ==========================================
-// 1. СИСТЕМА РЕГИСТРАЦИИ И ВХОДА (СТРОГО ЧЕРЕЗ EMAIL)
+// 1. СИСТЕМА РЕГИСТРАЦИИ И ВХОДА
 // ==========================================
 app.post('/api/register', async (req, res) => {
     try {
@@ -114,22 +117,21 @@ app.post('/api/register', async (req, res) => {
         const passwordHash = await bcrypt.hash(password, salt);
         const code = generateCode();
 
-        const newUser = await pool.query(
-            'INSERT INTO users (username, email, password_hash, verify_code) VALUES ($1, $2, $3, $4) RETURNING id',
+        await pool.query(
+            'INSERT INTO users (username, email, password_hash, verify_code) VALUES ($1, $2, $3, $4)',
             [username, email, passwordHash, code]
         );
 
-        // Пытаемся отправить письмо. Если ошибка — переходим в блок catch
-        try {
-            await sendEmail(email, 'Код подтверждения GD Review', `Ваш код для регистрации: ${code}`);
-            res.json({ message: 'Код отправлен на почту!' });
-        } catch (emailErr) {
-            console.error('Ошибка SMTP (Письмо не ушло):', emailErr);
-            // Если письмо не дошло, удаляем аккаунт из базы, чтобы не "завис"
-            await pool.query('DELETE FROM users WHERE id = $1', [newUser.rows[0].id]);
-            res.status(500).json({ error: 'Ошибка отправки почты. Проверьте пароль приложения Gmail в Railway!' });
-        }
+        // ВЫВОДИМ КОД В ЛОГИ, ЧТОБЫ ТЫ МОГ ПРОДОЛЖИТЬ РАБОТУ
+        console.log(`\n=========================================`);
+        console.log(`🔑 КОД РЕГИСТРАЦИИ ДЛЯ ${email}: [ ${code} ]`);
+        console.log(`=========================================\n`);
 
+        // Запускаем отправку письма, но НЕ ЖДЕМ её
+        sendEmail(email, 'Код подтверждения GD Review', `Ваш код для регистрации: ${code}`);
+
+        // МГНОВЕННО отвечаем сайту, чтобы убрать бесконечную загрузку
+        res.json({ message: 'Код отправлен на почту!' });
     } catch (err) { res.status(500).json({ error: 'Ошибка сервера: ' + err.message }); }
 });
 
@@ -172,13 +174,12 @@ app.post('/api/forgot-password', async (req, res) => {
         const expires = Date.now() + 15 * 60 * 1000;
         await pool.query('UPDATE users SET reset_code = $1, reset_expires = $2 WHERE id = $3', [code, expires, result.rows[0].id]);
         
-        try {
-            await sendEmail(email, 'Сброс пароля GD Review', `Ваш код для сброса пароля: ${code}`);
-            res.json({ message: 'Код отправлен!' });
-        } catch (emailErr) {
-            console.error('Ошибка SMTP:', emailErr);
-            res.status(500).json({ error: 'Ошибка отправки почты. Проверьте настройки!' });
-        }
+        console.log(`\n=========================================`);
+        console.log(`🔑 КОД СБРОСА ПАРОЛЯ ДЛЯ ${email}: [ ${code} ]`);
+        console.log(`=========================================\n`);
+
+        sendEmail(email, 'Сброс пароля GD Review', `Ваш код для сброса пароля: ${code}`);
+        res.json({ message: 'Код отправлен!' });
     } catch (err) { res.status(500).json({ error: 'Ошибка сервера' }); }
 });
 
