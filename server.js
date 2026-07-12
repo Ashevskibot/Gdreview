@@ -10,7 +10,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key'; 
 
-// Настройка почты для отправки кодов
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }
@@ -18,7 +17,7 @@ const transporter = nodemailer.createTransport({
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
-// Создаем таблицы и обновляем их под новую систему
+// Исправлено: теперь сервер насильно добавит нужные колонки, если таблица была создана до обновления
 pool.connect().then(async (client) => {
     console.log('✅ Подключились к базе данных!');
     await client.query(`
@@ -27,15 +26,6 @@ pool.connect().then(async (client) => {
             username VARCHAR(100) UNIQUE NOT NULL,
             email VARCHAR(255) UNIQUE NOT NULL,
             password_hash VARCHAR(255) NOT NULL,
-            avatar TEXT,
-            banner TEXT,
-            frame VARCHAR(50) DEFAULT 'frame-default',
-            description TEXT,
-            socials TEXT,
-            is_verified BOOLEAN DEFAULT FALSE,
-            verify_code VARCHAR(10),
-            reset_code VARCHAR(10),
-            reset_expires BIGINT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
         CREATE TABLE IF NOT EXISTS reviews (
@@ -51,6 +41,21 @@ pool.connect().then(async (client) => {
             final_score NUMERIC(4,2), review_text TEXT, saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     `);
+    
+    // Принудительно добавляем все новые колонки для профиля и верификации
+    await client.query(`
+        ALTER TABLE users 
+        ADD COLUMN IF NOT EXISTS avatar TEXT,
+        ADD COLUMN IF NOT EXISTS banner TEXT,
+        ADD COLUMN IF NOT EXISTS frame VARCHAR(50) DEFAULT 'frame-default',
+        ADD COLUMN IF NOT EXISTS description TEXT,
+        ADD COLUMN IF NOT EXISTS socials TEXT,
+        ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE,
+        ADD COLUMN IF NOT EXISTS verify_code VARCHAR(10),
+        ADD COLUMN IF NOT EXISTS reset_code VARCHAR(10),
+        ADD COLUMN IF NOT EXISTS reset_expires BIGINT;
+    `).catch(() => {});
+
     client.release();
     console.log('✅ Таблицы готовы к работе!');
 }).catch(err => console.error('❌ Ошибка базы данных:', err.stack));
@@ -87,9 +92,6 @@ async function uploadToCloud(base64Image) {
     return base64Image;
 }
 
-// ==========================================
-// 1. СИСТЕМА РЕГИСТРАЦИИ И ВХОДА С ПОЧТОЙ
-// ==========================================
 app.post('/api/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -97,7 +99,6 @@ app.post('/api/register', async (req, res) => {
         
         if (userExists.rows.length > 0) {
             if (userExists.rows[0].is_verified) return res.status(400).json({ error: 'Пользователь уже существует' });
-            // Если аккаунт есть, но почта не подтверждена — удаляем старый черновик
             await pool.query('DELETE FROM users WHERE id = $1', [userExists.rows[0].id]);
         }
 
@@ -111,7 +112,7 @@ app.post('/api/register', async (req, res) => {
         );
         await sendEmail(email, 'Код подтверждения GD Review', `Ваш код для регистрации: ${code}`);
         res.json({ message: 'Код отправлен на почту!' });
-    } catch (err) { res.status(500).json({ error: 'Ошибка сервера' }); }
+    } catch (err) { res.status(500).json({ error: 'Ошибка сервера: ' + err.message }); }
 });
 
 app.post('/api/verify', async (req, res) => {
@@ -143,7 +144,6 @@ app.post('/api/login', async (req, res) => {
     } catch (err) { res.status(500).json({ error: 'Ошибка сервера' }); }
 });
 
-// Восстановление пароля
 app.post('/api/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
@@ -172,7 +172,6 @@ app.post('/api/reset-password', async (req, res) => {
     } catch (err) { res.status(500).json({ error: 'Ошибка сервера' }); }
 });
 
-// Смена почты и пароля внутри аккаунта
 app.post('/api/change-password', authenticateToken, async (req, res) => {
     try {
         const { oldPassword, newPassword } = req.body;
@@ -202,9 +201,17 @@ app.post('/api/change-email', authenticateToken, async (req, res) => {
     } catch (err) { res.status(500).json({ error: 'Ошибка сервера' }); }
 });
 
-// ==========================================
-// 2. ПРОФИЛЬ (С ImgBB) И ОБЗОРЫ
-// ==========================================
+// НОВЫЙ БЛОК: Удаление аккаунта
+app.delete('/api/account', authenticateToken, async (req, res) => {
+    try {
+        // Сначала удаляем все обзоры пользователя, чтобы не было конфликтов в базе
+        await pool.query('DELETE FROM reviews WHERE user_id = $1', [req.user.userId]);
+        // Затем удаляем самого пользователя
+        await pool.query('DELETE FROM users WHERE id = $1', [req.user.userId]);
+        res.json({ message: 'Аккаунт удален' });
+    } catch (err) { res.status(500).json({ error: 'Ошибка сервера' }); }
+});
+
 app.get('/api/profile', authenticateToken, async (req, res) => {
     try {
         const result = await pool.query('SELECT username, avatar, banner, frame, description, socials FROM users WHERE id = $1', [req.user.userId]);
@@ -252,7 +259,6 @@ app.delete('/api/reviews/:id', authenticateToken, async (req, res) => {
     catch(err) { res.status(500).json({ error: 'Ошибка сервера' }); }
 });
 
-// Прокси для музыки
 app.get('/api/audio', (req, res) => {
     const audioUrl = req.query.url;
     if (!audioUrl) return res.status(400).send('URL не указан');
