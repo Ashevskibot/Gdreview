@@ -1403,8 +1403,8 @@ async function openLevelPage(id){
   const face = info ? info.difficultyFace : first.difficultyFace;
   const diff = info ? info.difficulty : first.difficulty;
   const thumb = 'https://levelthumbs.prevter.me/thumbnail/'+encodeURIComponent(id)+'/small';
- $('lvl-hero').innerHTML = '<div class="level-banner" style="background-image:url(\\''+thumb+'\\')"></div>'
-    + (levelPage.walkthrough ? '<button class="yt-btn" onclick="openVideo(\\''+escapeHTML(levelPage.walkthrough.video_id)+'\\')">'+YT_ICON+'</button>' : '')
+$('lvl-hero').innerHTML = '<div class="level-banner" style="background-image:url(\''+thumb+'\')"></div>'
+    + (levelPage.walkthrough ? '<button class="yt-btn" onclick="openVideo(\''+escapeHTML(levelPage.walkthrough.video_id)+'\')">'+YT_ICON+'</button>' : '')
     + '<div class="level-content"><div class="eyebrow">'+t('lvlEyebrow')+' #'+escapeHTML(String(id))+'</div>'
     + '<div class="level-header-row"><div class="level-name">'+escapeHTML(name)+'</div>'+(face ? '<img class="diff-face show" src="https://gdbrowser.com/assets/difficulties/'+encodeURIComponent(face)+'.png" alt="">' : '')+'</div>'
     + '<div class="level-author">by <b>'+escapeHTML(author)+'</b>'+(stars ? '<span class="level-stars">★ '+stars+'</span>' : '')+(diff ? '<span class="level-stars">· '+escapeHTML(diff)+'</span>' : '')+'</div>'
