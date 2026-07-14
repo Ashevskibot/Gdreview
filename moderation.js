@@ -1,24 +1,24 @@
 'use strict';
 /**
- * Automatic pre-publication content moderation.
+ * Automatic pre-publication content moderation, powered by Sightengine.
  *
- * - Text (reviews, bios, walkthrough descriptions):
+ * - Text (reviews, bios):
  *     1. Local rule check: external links / advertising are rejected outright.
- *     2. OpenAI Moderation API (omni-moderation-latest) for toxicity/insults.
- * - Images (avatars, banners): Sightengine (nudity, gore, weapons, drugs,
- *   offensive symbols), checked BEFORE the image is uploaded anywhere.
+ *     2. Sightengine Text Moderation API (standard mode, en + ru) for
+ *        insults, profanity, toxicity, extremism, violence and drug refs.
+ * - Images (avatars, banners): Sightengine image checks (nudity, gore,
+ *   weapons, drugs, offensive symbols), run BEFORE the image is uploaded.
  *
  * Env vars (already configured on Railway):
- *   OPENAI_API_KEY, SIGHTENGINE_API_USER, SIGHTENGINE_API_SECRET
+ *   SIGHTENGINE_API_USER, SIGHTENGINE_API_SECRET
  *
  * Every check resolves to { ok: true } or { ok: false, reason: '<code>' }
  * where reason ∈ links | advertising | toxicity | image | unavailable.
- * 'unavailable' means the moderation provider could not be reached — the
- * platform is strict-by-default, so content is NOT published in that case
- * and the client offers a retry.
+ * 'unavailable' means Sightengine could not be reached — the platform is
+ * strict-by-default, so content is NOT published in that case and the
+ * client offers a retry.
  */
 
-const OPENAI_KEY = () => process.env.OPENAI_API_KEY;
 const SE_USER = () => process.env.SIGHTENGINE_API_USER;
 const SE_SECRET = () => process.env.SIGHTENGINE_API_SECRET;
 
@@ -33,32 +33,41 @@ function localTextCheck(text) {
     return { ok: true };
 }
 
-async function openAiTextCheck(text) {
-    if (!OPENAI_KEY()) {
-        console.warn('⚠️  OPENAI_API_KEY not set — skipping AI text moderation');
+async function sightengineTextCheck(text) {
+    if (!SE_USER() || !SE_SECRET()) {
+        console.warn('⚠️  Sightengine keys not set — skipping text moderation');
         return { ok: true };
     }
     try {
-        const res = await fetch('https://api.openai.com/v1/moderations', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${OPENAI_KEY()}` },
-            body: JSON.stringify({ model: 'omni-moderation-latest', input: text.slice(0, 8000) }),
+        const params = new URLSearchParams({
+            text: text.slice(0, 6000),
+            mode: 'standard',
+            lang: 'en,ru',
+            categories: 'profanity,personal,link,drug,extremism,violence',
+            api_user: SE_USER(),
+            api_secret: SE_SECRET(),
         });
-        if (!res.ok) { console.error('❌ OpenAI moderation HTTP', res.status); return { ok: false, reason: 'unavailable' }; }
-        const data = await res.json();
-        const result = data && data.results && data.results[0];
-        if (!result) return { ok: false, reason: 'unavailable' };
-        if (result.flagged) return { ok: false, reason: 'toxicity' };
-        // Extra guard for clearly abusive content just under the API threshold.
-        const s = result.category_scores || {};
-        const worst = Math.max(
-            s.harassment || 0, s['harassment/threatening'] || 0,
-            s.hate || 0, s['hate/threatening'] || 0, s.sexual || 0
-        );
-        if (worst > 0.5) return { ok: false, reason: 'toxicity' };
+        const res = await fetch('https://api.sightengine.com/1.0/text/check.json', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString(),
+        });
+        if (!res.ok) { console.error('❌ Sightengine text HTTP', res.status); return { ok: false, reason: 'unavailable' }; }
+        const d = await res.json();
+        if (d.status !== 'success') {
+            console.error('❌ Sightengine text error:', d.error && d.error.message);
+            return { ok: false, reason: 'unavailable' };
+        }
+        const matches = c => ((d[c] && d[c].matches) || []);
+        if (matches('link').length) return { ok: false, reason: 'links' };
+        // Any profanity/insult match, or extremism/violence/drug references,
+        // blocks publication outright.
+        if (matches('profanity').length || matches('extremism').length || matches('violence').length || matches('drug').length) {
+            return { ok: false, reason: 'toxicity' };
+        }
         return { ok: true };
     } catch (err) {
-        console.error('❌ OpenAI moderation error:', err.message);
+        console.error('❌ Sightengine text error:', err.message);
         return { ok: false, reason: 'unavailable' };
     }
 }
@@ -69,7 +78,7 @@ async function moderateText(text) {
     if (!clean) return { ok: true };
     const local = localTextCheck(clean);
     if (!local.ok) return local;
-    return openAiTextCheck(clean);
+    return sightengineTextCheck(clean);
 }
 
 /** Moderates an image (data URL or https URL) via Sightengine. */
