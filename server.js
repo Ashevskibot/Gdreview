@@ -163,7 +163,6 @@ async function initDb() {
                 user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
                 youtube_url TEXT NOT NULL,
                 video_id VARCHAR(20) NOT NULL,
-                description TEXT,
                 status VARCHAR(20) DEFAULT 'pending',
                 submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 reviewed_at TIMESTAMP,
@@ -684,18 +683,16 @@ app.get('/api/levels/:levelId', optionalAuth, async (req, res) => {
 app.post('/api/levels/:levelId/walkthroughs', authenticateToken, rateLimit(5, 600000), async (req, res) => {
     try {
         const levelId = String(req.params.levelId);
+        // Walkthroughs carry no user text — the only server-side check is
+        // that the submitted string is a valid YouTube URL.
         const videoId = parseYouTubeId(req.body.youtube_url);
         if (!videoId) return fail(res, 400, 'invalid_youtube_url');
-        const description = String(req.body.description || '').slice(0, 500);
-        // Automatic moderation BEFORE the submission enters the admin queue.
-        const verdict = await moderateText(description);
-        if (!verdict.ok) return rejectContent(res, verdict, 'walkthrough_description');
         const levelName = String(req.body.level_name || '').slice(0, 255);
         const dup = await pool.query(`SELECT id FROM walkthroughs WHERE level_id = $1 AND video_id = $2 AND status IN ('pending','approved')`, [levelId, videoId]);
         if (dup.rows.length) return fail(res, 400, 'walkthrough_exists');
         await pool.query(
-            'INSERT INTO walkthroughs (level_id, level_name, user_id, youtube_url, video_id, description) VALUES ($1,$2,$3,$4,$5,$6)',
-            [levelId, levelName || null, req.user.userId, `https://www.youtube.com/watch?v=${videoId}`, videoId, description || null]
+            'INSERT INTO walkthroughs (level_id, level_name, user_id, youtube_url, video_id) VALUES ($1,$2,$3,$4,$5)',
+            [levelId, levelName || null, req.user.userId, `https://www.youtube.com/watch?v=${videoId}`, videoId]
         );
         res.json({ message: 'walkthrough_submitted' });
     } catch (err) { console.error(err); fail(res, 500, 'server_error'); }
@@ -705,7 +702,7 @@ app.get('/api/admin/walkthroughs', authenticateToken, requireAdmin, async (req, 
     try {
         const status = ['pending', 'approved', 'rejected'].includes(String(req.query.status)) ? String(req.query.status) : 'pending';
         const r = await pool.query(`
-            SELECT w.id, w.level_id, w.level_name, w.youtube_url, w.video_id, w.description, w.status, w.submitted_at, u.username
+            SELECT w.id, w.level_id, w.level_name, w.youtube_url, w.video_id, w.status, w.submitted_at, u.username
             FROM walkthroughs w LEFT JOIN users u ON u.id = w.user_id
             WHERE w.status = $1 ORDER BY w.submitted_at ASC LIMIT 100`, [status]);
         res.json(r.rows);
