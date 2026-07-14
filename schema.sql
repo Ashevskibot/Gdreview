@@ -99,7 +99,6 @@ CREATE TABLE IF NOT EXISTS walkthroughs (
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     youtube_url TEXT NOT NULL,
     video_id VARCHAR(20) NOT NULL,
-    description TEXT,
     status VARCHAR(20) DEFAULT 'pending',   -- pending | approved | rejected
     submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     reviewed_at TIMESTAMP,
