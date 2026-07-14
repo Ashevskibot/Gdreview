@@ -123,6 +123,13 @@ async function initDb() {
             ADD COLUMN IF NOT EXISTS reset_expires BIGINT,
             ADD COLUMN IF NOT EXISTS register_ip VARCHAR(45);
         `).catch(() => {});
+        // Google Sign-In support: google_id stores the Google OAuth subject
+        // (sub) for linked accounts. password_hash becomes nullable because
+        // Google-only accounts have no local password — they can create one
+        // later through the password-reset flow.
+        await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255);`).catch(() => {});
+        await client.query(`ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;`).catch(err => console.error('⚠️  Could not make password_hash nullable:', err.message));
+        await client.query(`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);`).catch(() => {});
         await client.query(`ALTER TABLE reviews ADD COLUMN IF NOT EXISTS title VARCHAR(120);`).catch(() => {});
         // New 5-axis scoring system (Gameplay / Sync / Design / Creativity /
         // Optimization). Legacy 6-axis data is backfilled so old reviews keep
@@ -414,11 +421,125 @@ app.post('/api/login', rateLimit(15, 600000), async (req, res) => {
         const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
         if (result.rows.length === 0 || !result.rows[0].is_verified) return fail(res, 400, 'wrong_credentials');
         const user = result.rows[0];
+        // Google-only accounts have no local password. Point the user at the
+        // Google button (or the reset flow, which lets them set a password).
+        if (!user.password_hash) return fail(res, 400, 'use_google_signin');
         const isMatch = await bcrypt.compare(String(password || ''), user.password_hash);
         if (!isMatch) return fail(res, 400, 'wrong_credentials');
         const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '30d' });
         res.json({ message: 'ok', token, username: user.username });
     } catch (err) { fail(res, 500, 'server_error'); }
+});
+
+/* ============ GOOGLE SIGN-IN (OAuth 2.0 authorization-code flow) ============ */
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+
+// The redirect URI must exactly match one registered in the Google Cloud
+// console. It can be pinned via GOOGLE_REDIRECT_URI; otherwise it is derived
+// from the request host (correct behind the PaaS proxy thanks to trust proxy).
+function googleRedirectUri(req) {
+    if (process.env.GOOGLE_REDIRECT_URI) return process.env.GOOGLE_REDIRECT_URI;
+    return `${req.protocol}://${req.get('host')}/api/auth/google/callback`;
+}
+
+// OAuth results are delivered to the SPA through the URL fragment: fragments
+// are never sent to the server and never end up in access logs. The client
+// reads the value once and strips it from the address bar immediately.
+const googleFail = (res, code) => res.redirect('/#gerr=' + encodeURIComponent(code));
+
+app.get('/api/auth/google', rateLimit(20, 600000), (req, res) => {
+    if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) return googleFail(res, 'google_not_configured');
+    // Signed short-lived state token = stateless CSRF protection on callback.
+    const state = jwt.sign({ p: 'google_oauth' }, JWT_SECRET, { expiresIn: '10m' });
+    const params = new URLSearchParams({
+        client_id: GOOGLE_CLIENT_ID,
+        redirect_uri: googleRedirectUri(req),
+        response_type: 'code',
+        scope: 'openid email profile',
+        state,
+        prompt: 'select_account',
+    });
+    res.redirect('https://accounts.google.com/o/oauth2/v2/auth?' + params.toString());
+});
+
+// Google display names may collide or contain characters we do not allow —
+// build a valid, unique username from the name / email local part.
+async function generateUniqueUsername(base) {
+    let name = String(base || '').replace(/[^a-zA-Z0-9а-яА-ЯёЁ_\-. ]/g, '').trim().slice(0, 20).trim();
+    if (name.length < 3) name = 'player';
+    let candidate = name;
+    for (let i = 0; i < 30; i++) {
+        const r = await pool.query('SELECT 1 FROM users WHERE LOWER(username) = LOWER($1)', [candidate]);
+        if (!r.rows.length) return candidate;
+        const suffix = String(Math.floor(100 + Math.random() * 9900));
+        candidate = name.slice(0, 20 - suffix.length) + suffix;
+    }
+    return 'player' + Date.now().toString().slice(-9);
+}
+
+app.get('/api/auth/google/callback', rateLimit(30, 600000), async (req, res) => {
+    try {
+        if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) return googleFail(res, 'google_not_configured');
+        if (req.query.error) return googleFail(res, 'google_auth_failed');
+        try {
+            const st = jwt.verify(String(req.query.state || ''), JWT_SECRET);
+            if (st.p !== 'google_oauth') throw new Error('bad_state');
+        } catch (e) { return googleFail(res, 'google_auth_failed'); }
+        const code = String(req.query.code || '');
+        if (!code) return googleFail(res, 'google_auth_failed');
+
+        const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                code,
+                client_id: GOOGLE_CLIENT_ID,
+                client_secret: GOOGLE_CLIENT_SECRET,
+                redirect_uri: googleRedirectUri(req),
+                grant_type: 'authorization_code',
+            }),
+        });
+        const tokenData = await tokenRes.json().catch(() => ({}));
+        if (!tokenRes.ok || !tokenData.access_token) {
+            console.error('❌ Google token exchange failed:', tokenData.error || tokenRes.status);
+            return googleFail(res, 'google_auth_failed');
+        }
+
+        const profRes = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
+            headers: { Authorization: `Bearer ${tokenData.access_token}` },
+        });
+        const prof = await profRes.json().catch(() => ({}));
+        if (!profRes.ok || !prof.sub) return googleFail(res, 'google_auth_failed');
+        const email = normEmail(prof.email);
+        // Never link accounts on an email Google itself has not verified.
+        if (!email || prof.email_verified !== true) return googleFail(res, 'google_email_unverified');
+
+        let user = (await pool.query('SELECT * FROM users WHERE google_id = $1', [prof.sub])).rows[0] || null;
+        if (!user) {
+            const byEmail = (await pool.query('SELECT * FROM users WHERE email = $1', [email])).rows[0] || null;
+            if (byEmail) {
+                // Existing email/password account with the same Google-verified
+                // address → link it. Google proved mailbox ownership, so any
+                // pending email verification is completed as part of linking.
+                await pool.query('UPDATE users SET google_id = $1, is_verified = TRUE, verify_code = NULL WHERE id = $2', [prof.sub, byEmail.id]);
+                user = byEmail;
+            } else {
+                const username = await generateUniqueUsername(prof.name || email.split('@')[0]);
+                const ins = await pool.query(
+                    `INSERT INTO users (username, email, password_hash, google_id, is_verified, register_ip, avatar)
+                     VALUES ($1, $2, NULL, $3, TRUE, $4, $5) RETURNING *`,
+                    [username, email, prof.sub, getClientIp(req), prof.picture || null]
+                );
+                user = ins.rows[0];
+            }
+        }
+        const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '30d' });
+        res.redirect('/#gtoken=' + encodeURIComponent(token));
+    } catch (err) {
+        console.error('❌ Google OAuth error:', err);
+        googleFail(res, 'google_auth_failed');
+    }
 });
 
 app.post('/api/forgot-password', rateLimit(5, 600000), async (req, res) => {
@@ -465,6 +586,8 @@ app.post('/api/change-password', authenticateToken, async (req, res) => {
         if (!isPassword(newPassword)) return fail(res, 400, 'weak_password');
         const result = await pool.query('SELECT password_hash FROM users WHERE id = $1', [req.user.userId]);
         if (result.rows.length === 0) return fail(res, 404, 'not_found');
+        // Google-only accounts must create a password via the reset flow first.
+        if (!result.rows[0].password_hash) return fail(res, 400, 'password_not_set');
         const isMatch = await bcrypt.compare(String(oldPassword || ''), result.rows[0].password_hash);
         if (!isMatch) return fail(res, 400, 'wrong_password');
         const hash = await bcrypt.hash(newPassword, 10);
@@ -480,6 +603,8 @@ app.post('/api/change-email', authenticateToken, async (req, res) => {
         if (!isEmail(newEmail)) return fail(res, 400, 'invalid_email');
         const result = await pool.query('SELECT password_hash FROM users WHERE id = $1', [req.user.userId]);
         if (result.rows.length === 0) return fail(res, 404, 'not_found');
+        // Google-only accounts must create a password via the reset flow first.
+        if (!result.rows[0].password_hash) return fail(res, 400, 'password_not_set');
         const isMatch = await bcrypt.compare(String(password || ''), result.rows[0].password_hash);
         if (!isMatch) return fail(res, 400, 'wrong_password');
         const emailCheck = await pool.query('SELECT id FROM users WHERE email = $1 AND id <> $2', [newEmail, req.user.userId]);
@@ -494,6 +619,8 @@ app.delete('/api/account', authenticateToken, async (req, res) => {
         const { password } = req.body || {};
         const result = await pool.query('SELECT password_hash FROM users WHERE id = $1', [req.user.userId]);
         if (result.rows.length === 0) return fail(res, 404, 'not_found');
+        // Google-only accounts must create a password via the reset flow first.
+        if (!result.rows[0].password_hash) return fail(res, 400, 'password_not_set');
         const isMatch = await bcrypt.compare(String(password || ''), result.rows[0].password_hash);
         if (!isMatch) return fail(res, 400, 'wrong_password');
         await pool.query('DELETE FROM reviews WHERE user_id = $1', [req.user.userId]);
