@@ -34,12 +34,17 @@ CREATE TABLE IF NOT EXISTS reviews (
     difficulty VARCHAR(50),
     difficulty_face VARCHAR(100),
     stars INTEGER,
-    gameplay INTEGER,
+    -- Актуальная 5-осевая система оценок:
+    gameplay INTEGER,          -- Gameplay (обычные уровни) / Direction & Camera (Auto)
+    sync_rhythm INTEGER,       -- Synchronization / Rhythm
+    design_deco INTEGER,       -- Design / Decoration
+    creativity INTEGER,        -- Idea / Creativity
+    optimization INTEGER,      -- Optimization (LDM, performance)
+    -- Устаревшие колонки старой 6-осевой системы (сохранены для истории):
     flow INTEGER,
     decoration INTEGER,
     music INTEGER,
     originality INTEGER,
-    optimization INTEGER,
     final_score NUMERIC(4,2),
     title VARCHAR(120),
     review_text TEXT,
@@ -70,3 +75,36 @@ ALTER TABLE reviews
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS register_ip VARCHAR(45);
+
+-- Миграция на 5-осевую систему оценок (server.js применяет автоматически):
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS sync_rhythm INTEGER;
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS design_deco INTEGER;
+ALTER TABLE reviews ADD COLUMN IF NOT EXISTS creativity INTEGER;
+UPDATE reviews SET
+    sync_rhythm = COALESCE(sync_rhythm, music),
+    design_deco = COALESCE(design_deco, decoration),
+    creativity  = COALESCE(creativity, originality)
+WHERE sync_rhythm IS NULL OR design_deco IS NULL OR creativity IS NULL;
+
+-- ============================================================
+-- Прохождения (walkthroughs) и права администратора
+-- ============================================================
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;
+
+CREATE TABLE IF NOT EXISTS walkthroughs (
+    id SERIAL PRIMARY KEY,
+    level_id VARCHAR(50) NOT NULL,
+    level_name VARCHAR(255),
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    youtube_url TEXT NOT NULL,
+    video_id VARCHAR(20) NOT NULL,
+    description TEXT,
+    status VARCHAR(20) DEFAULT 'pending',   -- pending | approved | rejected
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    reviewed_at TIMESTAMP,
+    reviewed_by INTEGER REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_walkthroughs_level ON walkthroughs(level_id, status);
+CREATE INDEX IF NOT EXISTS idx_walkthroughs_status ON walkthroughs(status, submitted_at DESC);
