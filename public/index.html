@@ -393,6 +393,18 @@
   @keyframes spin{to{transform:rotate(360deg);}}
   .code-input{ text-align:center !important; font-family:'Space Mono',monospace !important; font-size:20px !important; letter-spacing:0.5em; }
 
+  /* ---------- GOOGLE SIGN-IN / DISMISSIBLE AUTH ---------- */
+  #auth-overlay .modal-close{ background:rgba(10,10,10,0.6); }
+  .auth-divider{ display:flex; align-items:center; gap:12px; margin:16px 0 12px; color:var(--dim2); font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.15em; }
+  .auth-divider::before, .auth-divider::after{ content:''; flex:1; height:1px; background:var(--line); }
+  .google-btn{ display:flex; align-items:center; justify-content:center; gap:10px; width:100%; background:#fff; color:#1a1a1a; border:none; border-radius:8px; font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:13px 20px; cursor:pointer; transition:all .2s var(--spring); }
+  .google-btn:hover{ filter:brightness(0.93); transform:translateY(-1px); box-shadow:0 4px 18px rgba(255,255,255,0.18); }
+  .google-btn:active{ transform:scale(0.98); }
+  .google-btn svg{ width:16px; height:16px; flex-shrink:0; }
+  #google-auth-area[hidden]{ display:none; }
+  #tab-login[hidden], #tab-profile[hidden]{ display:none; }
+  .settings-card[hidden]{ display:none; }
+
   /* ---------- LIFTOFF ---------- */
   #liftoff{ position:fixed; inset:0; z-index:999992; pointer-events:none; overflow:hidden; transition:opacity .6s ease; }
   #liftoff span{ position:fixed; top:-160px; width:2px; border-radius:2px; background:linear-gradient(rgba(255,255,255,0.9), transparent); animation:streakDown linear both; }
@@ -532,9 +544,10 @@
   <div class="loader-progress"></div>
 </div>
 
-<div id="auth-overlay">
+<div id="auth-overlay" class="hidden">
   <canvas id="stars-canvas"></canvas>
   <div class="auth-box" id="auth-box">
+    <button class="modal-close" id="auth-close" aria-label="Close">&times;</button>
     <div class="brand">GD<span>/</span>REVIEW</div>
     <div class="auth-sub" id="auth-sub" data-i18n="authTagline">Rate. Review. Share.</div>
 
@@ -581,6 +594,14 @@
       <button class="auth-link" id="link-reset-back" data-i18n="backLogin">Back to login</button>
     </div>
 
+    <div id="google-auth-area">
+      <div class="auth-divider"><span data-i18n="authOr">or</span></div>
+      <button class="google-btn" id="btn-google">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M23.5 12.27c0-.85-.08-1.66-.22-2.45H12v4.64h6.45a5.52 5.52 0 0 1-2.4 3.62v3h3.88c2.27-2.09 3.57-5.17 3.57-8.81z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.94-2.91l-3.88-3c-1.08.72-2.45 1.15-4.06 1.15-3.13 0-5.78-2.11-6.72-4.95H1.27v3.1A12 12 0 0 0 12 24z"/><path fill="#FBBC05" d="M5.28 14.29A7.2 7.2 0 0 1 4.9 12c0-.8.14-1.57.38-2.29v-3.1H1.27a12 12 0 0 0 0 10.78l4.01-3.1z"/><path fill="#EA4335" d="M12 4.77c1.76 0 3.35.6 4.6 1.8l3.44-3.44A11.97 11.97 0 0 0 12 0 12 12 0 0 0 1.27 6.61l4.01 3.1C6.22 6.88 8.87 4.77 12 4.77z"/></svg>
+        <span data-i18n="authContinueGoogle">Continue with Google</span>
+      </button>
+    </div>
+
     <div id="auth-error" class="auth-error"></div>
   </div>
 </div>
@@ -605,7 +626,8 @@
       <nav class="tabs">
         <button class="tab-btn active" data-tab="home" data-i18n="navHome">Home</button>
         <button class="tab-btn" data-tab="create" data-i18n="navCreate">Create</button>
-        <button class="tab-btn" data-tab="profile"><img id="nav-avatar" class="nav-avatar" src="" alt=""><span data-i18n="navProfile">Profile</span></button>
+        <button class="tab-btn" data-tab="profile" id="tab-profile"><img id="nav-avatar" class="nav-avatar" src="" alt=""><span data-i18n="navProfile">Profile</span></button>
+        <button class="tab-btn" id="tab-login" hidden data-i18n="navLogin">Log In</button>
         <button class="tab-btn" data-tab="admin" id="tab-admin" hidden data-i18n="navAdmin">Admin</button>
         <button class="tab-btn tab-icon" data-tab="settings" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></button>
       </nav>
@@ -940,8 +962,8 @@ function scoreColors(score){ if(score >= 8.5) return {color:'#ffffff', glow:'rgb
 /* ================= I18N ================= */
 const i18n = {
   en: {
-    navHome:'Home', navCreate:'Create', navProfile:'Profile', navSettings:'Settings',
-    authTagline:'Rate. Review. Share.', authLogin:'Log In', authRegister:'Sign Up',
+    navHome:'Home', navCreate:'Create', navProfile:'Profile', navSettings:'Settings', navLogin:'Log In',
+    authTagline:'Rate. Review. Share.', authLogin:'Log In', authRegister:'Sign Up', authOr:'or', authContinueGoogle:'Continue with Google',
     phEmail:'Email', phPassword:'Password', phUsername:'Username', phPassConfirm:'Repeat password', phNewPass:'New password',
     btnLoginTxt:'Log In', btnRegisterTxt:'Create Account', authForgot:'Forgot password?',
     verifyTitle:'Confirm your email', verifySentTo:'We sent a 6-digit code to', btnVerifyTxt:'Confirm', btnResendTxt:'Resend code', resendIn:'Resend in {s}s',
@@ -993,11 +1015,12 @@ const i18n = {
     err_content_rejected:'Content rejected by automatic moderation', err_moderation_unavailable:'Moderation service unavailable — try again in a moment',
     justNow:'just now', minAgo:'m ago', hourAgo:'h ago', dayAgo:'d ago',
     cropTitle:'Adjust Image', cropHint:'Scroll to zoom · drag photo to move · drag corner to resize', cropApply:'Apply',
-    err_auth_required:'Please log in', err_session_expired:'Session expired — log in again', err_too_many_requests:'Too many attempts. Try again later.', err_user_exists:'This username or email is already taken', err_invalid_code:'Wrong code', err_code_expired:'Code expired — request a new one', err_wrong_password:'Wrong password', err_wrong_credentials:'Wrong email or password', err_account_not_found:'Account not found', err_email_taken:'This email is already in use', err_invalid_email:'Invalid email', err_invalid_username:'Invalid username', err_weak_password:'Password must be at least 8 characters', err_server_error:'Server error. Try again.', err_network:'Network error. Check your connection.', err_not_found:'Not found', err_invalid_payload:'Invalid data'
+    err_auth_required:'Please log in', err_session_expired:'Session expired — log in again', err_too_many_requests:'Too many attempts. Try again later.', err_user_exists:'This username or email is already taken', err_invalid_code:'Wrong code', err_code_expired:'Code expired — request a new one', err_wrong_password:'Wrong password', err_wrong_credentials:'Wrong email or password', err_account_not_found:'Account not found', err_email_taken:'This email is already in use', err_invalid_email:'Invalid email', err_invalid_username:'Invalid username', err_weak_password:'Password must be at least 8 characters', err_server_error:'Server error. Try again.', err_network:'Network error. Check your connection.', err_not_found:'Not found', err_invalid_payload:'Invalid data',
+    err_google_auth_failed:'Google sign-in failed. Try again.', err_google_email_unverified:'Your Google email address is not verified', err_use_google_signin:'This account uses Google Sign-In — use the Google button below', err_password_not_set:'No password set for this account — create one via “Forgot password?” first', err_google_not_configured:'Google sign-in is not available right now'
   },
   ru: {
-    navHome:'Главная', navCreate:'Создать', navProfile:'Профиль', navSettings:'Настройки',
-    authTagline:'Оценивай. Пиши. Делись.', authLogin:'Вход', authRegister:'Регистрация',
+    navHome:'Главная', navCreate:'Создать', navProfile:'Профиль', navSettings:'Настройки', navLogin:'Войти',
+    authTagline:'Оценивай. Пиши. Делись.', authLogin:'Вход', authRegister:'Регистрация', authOr:'или', authContinueGoogle:'Продолжить с Google',
     phEmail:'Email', phPassword:'Пароль', phUsername:'Никнейм', phPassConfirm:'Повторите пароль', phNewPass:'Новый пароль',
     btnLoginTxt:'Войти', btnRegisterTxt:'Создать аккаунт', authForgot:'Забыли пароль?',
     verifyTitle:'Подтвердите почту', verifySentTo:'Мы отправили 6-значный код на', btnVerifyTxt:'Подтвердить', btnResendTxt:'Отправить код ещё раз', resendIn:'Повторная отправка через {s}с',
@@ -1049,7 +1072,8 @@ const i18n = {
     err_content_rejected:'Контент отклонён автоматической модерацией', err_moderation_unavailable:'Сервис модерации недоступен — попробуйте ещё раз чуть позже',
     justNow:'только что', minAgo:' мин', hourAgo:' ч', dayAgo:' дн',
     cropTitle:'Настройка изображения', cropHint:'Колесо — зум · тяните фото · угол — размер', cropApply:'Применить',
-    err_auth_required:'Необходима авторизация', err_session_expired:'Сессия истекла — войдите снова', err_too_many_requests:'Слишком много попыток. Попробуйте позже.', err_user_exists:'Такой никнейм или email уже занят', err_invalid_code:'Неверный код', err_code_expired:'Код истёк — запросите новый', err_wrong_password:'Неверный пароль', err_wrong_credentials:'Неверный email или пароль', err_account_not_found:'Аккаунт не найден', err_email_taken:'Эта почта уже занята', err_invalid_email:'Некорректный email', err_invalid_username:'Некорректный никнейм', err_weak_password:'Пароль — минимум 8 символов', err_server_error:'Ошибка сервера. Попробуйте ещё раз.', err_network:'Ошибка сети. Проверьте соединение.', err_not_found:'Не найдено', err_invalid_payload:'Некорректные данные'
+    err_auth_required:'Необходима авторизация', err_session_expired:'Сессия истекла — войдите снова', err_too_many_requests:'Слишком много попыток. Попробуйте позже.', err_user_exists:'Такой никнейм или email уже занят', err_invalid_code:'Неверный код', err_code_expired:'Код истёк — запросите новый', err_wrong_password:'Неверный пароль', err_wrong_credentials:'Неверный email или пароль', err_account_not_found:'Аккаунт не найден', err_email_taken:'Эта почта уже занята', err_invalid_email:'Некорректный email', err_invalid_username:'Некорректный никнейм', err_weak_password:'Пароль — минимум 8 символов', err_server_error:'Ошибка сервера. Попробуйте ещё раз.', err_network:'Ошибка сети. Проверьте соединение.', err_not_found:'Не найдено', err_invalid_payload:'Некорректные данные',
+    err_google_auth_failed:'Не удалось войти через Google. Попробуйте ещё раз.', err_google_email_unverified:'Ваш email в Google не подтверждён', err_use_google_signin:'Этот аккаунт использует вход через Google — нажмите кнопку Google ниже', err_password_not_set:'У аккаунта нет пароля — сначала создайте его через «Забыли пароль?»', err_google_not_configured:'Вход через Google сейчас недоступен'
   }
 };
 let lang = localStorage.getItem('gd_lang') || 'ru';
@@ -1174,11 +1198,13 @@ function showScreen(name){
   qsa('nav.tabs .tab-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===name); });
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-function renderHeader(){ $('nav-avatar').src = (me && me.avatar) ? me.avatar : DEFAULT_AVATAR; $('tab-admin').hidden = !(me && me.is_admin); }
+function renderHeader(){ $('nav-avatar').src = (me && me.avatar) ? me.avatar : DEFAULT_AVATAR; $('tab-admin').hidden = !(me && me.is_admin); $('tab-login').hidden = !!me; $('tab-profile').hidden = !me; }
 qsa('nav.tabs .tab-btn').forEach(function(btn){
   btn.addEventListener('click', function(){
+    if(btn.id === 'tab-login'){ openAuthOverlay('login'); return; }
     const tab = btn.dataset.tab;
-    if(tab === 'profile') return openOwnProfile();
+    if(!tab) return;
+    if(tab === 'profile'){ if(!requireAuth()) return; openOwnProfile(); return; }
     showScreen(tab);
     if(tab === 'home' && !$('feed-content').innerHTML.trim()) loadFeed();
     if(tab === 'settings') fillSettings();
@@ -1193,9 +1219,18 @@ function switchAuthView(name){
   $('view-'+name).classList.add('active');
   qsa('#auth-main-tabs .auth-tab').forEach(function(b){ b.classList.toggle('active', b.dataset.authTab===name); });
   $('auth-sub').textContent = t(AUTH_SUBS[name] || 'authTagline');
+  $('google-auth-area').hidden = (name !== 'login' && name !== 'register');
   $('auth-error').textContent = '';
 }
 qsa('#auth-main-tabs .auth-tab').forEach(function(b){ b.addEventListener('click', function(){ switchAuthView(b.dataset.authTab); }); });
+/* The auth overlay is no longer a wall: it opens on demand (Log In button or
+   any action that requires an account) and can always be dismissed. */
+function openAuthOverlay(view){ switchAuthView(view || 'login'); $('auth-overlay').classList.remove('hidden'); }
+function closeAuthOverlay(){ $('auth-overlay').classList.add('hidden'); }
+function requireAuth(){ if(me) return true; openAuthOverlay('login'); return false; }
+$('auth-close').addEventListener('click', closeAuthOverlay);
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !$('auth-overlay').classList.contains('hidden')) closeAuthOverlay(); });
+$('btn-google').addEventListener('click', function(){ window.location.href = '/api/auth/google'; });
 $('link-forgot').addEventListener('click', function(){ switchAuthView('forgot'); });
 $('link-forgot-back').addEventListener('click', function(){ switchAuthView('login'); });
 $('link-verify-back').addEventListener('click', function(){ switchAuthView('login'); });
@@ -1475,7 +1510,7 @@ $('create-wt-play').addEventListener('click', function(){ if(currentLevel && cur
 const wtModal = $('walkthrough-modal');
 $('lvl-submit-wt').addEventListener('click', function(){
   if(!levelPage.id) return;
-  if(!tokenGet()){ toast(ERR('auth_required'), 'error'); return; }
+  if(!requireAuth()) return;
   $('wt-url').value = '';
   openModalOverlay(wtModal);
   setTimeout(function(){ $('wt-url').focus(); }, 100);
@@ -1533,6 +1568,7 @@ $('screen-admin').addEventListener('click', async function(e){
 /* ================= LIKES ================= */
 const likeBusy = new Set();
 async function toggleLike(uid){
+  if(!requireAuth()) return;
   if(likeBusy.has(uid)) return;
   likeBusy.add(uid);
   const r = await api('/reviews/'+uid+'/like', { method:'POST' });
@@ -1673,6 +1709,7 @@ $('level-id-input').addEventListener('keydown', function(e){ if(e.key === 'Enter
 
 $('save-btn').addEventListener('click', async function(){
   const btn = $('save-btn'); if(btn.disabled) return;
+  if(!requireAuth()) return;
   if(!currentLevel){ statusEl.textContent = t('createFindFirst'); statusEl.className = 'api-status error'; return; }
   const title = $('review-title').value.trim();
   if(!title){ toast(t('vTitleReq'), 'error'); $('review-title').focus(); return; }
@@ -1916,6 +1953,8 @@ $('banner-edit').addEventListener('click', function(){ $('inp-file-banner').clic
 
 /* ================= SETTINGS ================= */
 function fillSettings(){
+  /* Guests only see the language card — the account cards need a session. */
+  qsa('.settings-grid .settings-card').forEach(function(c, i){ c.hidden = (i > 0) && !me; });
   if(me){ $('set-cur-email').textContent = me.email || '—'; SOCIAL_PLATFORMS.forEach(function(p){ const inp = $('inp-soc-'+p.key); if(inp){ inp.value = (me.socials && me.socials[p.key]) || ''; setSocialFieldError(p, false); } }); }
   $('set-lang-en').classList.toggle('active', lang === 'en');
   $('set-lang-ru').classList.toggle('active', lang === 'ru');
@@ -1973,11 +2012,25 @@ $('btn-delete-account').addEventListener('click', async function(){
 window.addEventListener('load', async function(){
   $('footer-year').textContent = new Date().getFullYear();
   applyI18n(); injectEyes(); buildSocialFields(); renderCriteriaGuide(); initStars();
+  /* Google OAuth results come back in the URL fragment — fragments are never
+     sent to the server or written to logs, and we strip them immediately. */
+  let googleError = null;
+  if(location.hash.indexOf('#gtoken=') === 0){
+    localStorage.setItem('gd_token', decodeURIComponent(location.hash.slice(8)));
+    history.replaceState(null, '', location.pathname + location.search);
+  } else if(location.hash.indexOf('#gerr=') === 0){
+    googleError = decodeURIComponent(location.hash.slice(6));
+    history.replaceState(null, '', location.pathname + location.search);
+  }
   if(tokenGet()){
     const ok = await loadMe();
-    if(ok){ $('auth-overlay').classList.add('hidden'); enterApp(); }
-    else if(!navigator.onLine === false){ localStorage.removeItem('gd_token'); localStorage.removeItem('gd_username'); }
+    if(ok) localStorage.setItem('gd_username', me.username || '');
+    else { localStorage.removeItem('gd_token'); localStorage.removeItem('gd_username'); }
   }
+  /* The homepage is the default landing page — guests browse freely and only
+     see the auth overlay when they try an action that needs an account. */
+  enterApp();
+  if(googleError){ openAuthOverlay('login'); authFail(ERR(googleError)); }
   setTimeout(function(){ document.body.classList.add('loaded'); }, 700);
 });
 </script>
