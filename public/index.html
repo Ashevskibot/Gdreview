@@ -433,10 +433,23 @@
   #dash-rankings.dash-fade{ opacity:0.2; transform:translateY(5px); pointer-events:none; }
   .dash-sec-head{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
   .dash-sec-num{ font-family:'Space Mono',monospace; font-size:11px; color:var(--dim2); border:1px solid var(--line); border-radius:6px; padding:3px 7px; }
-  .rank-row{ display:grid; grid-auto-flow:column; grid-auto-columns:230px; gap:14px; overflow-x:auto; padding:4px 2px 10px; scroll-snap-type:x proximity; }
-  .rank-card{ scroll-snap-align:start; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; cursor:pointer; opacity:0; transform:translateY(10px); animation:barIn .45s var(--ease) forwards; transition:transform .22s var(--ease), border-color .22s var(--ease), box-shadow .22s var(--ease); }
-  .rank-card:hover{ transform:translateY(-3px); border-color:var(--line2); box-shadow:0 14px 30px -14px rgba(255,255,255,0.18); }
-  .rank-thumb{ position:relative; height:96px; background-size:cover; background-position:center; background-color:var(--black2); border-bottom:1px solid var(--line); }
+  /* ---- Horizontal level carousels: hidden scrollbar, masked edges, drag-to-scroll ---- */
+  .rank-row{ display:grid; grid-auto-flow:column; grid-auto-columns:230px; gap:14px; overflow-x:auto; overflow-y:hidden; padding:10px 20px 16px; margin:0 -20px; scroll-snap-type:x proximity; scroll-behavior:smooth; scrollbar-width:none; -ms-overflow-style:none; -webkit-mask-image:linear-gradient(to right, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%); mask-image:linear-gradient(to right, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%); user-select:none; -webkit-user-select:none; }
+  .rank-row::-webkit-scrollbar{ display:none; }
+  .rank-row.dragging{ scroll-behavior:auto; scroll-snap-type:none; }
+  .rank-row.dragging .rank-card{ pointer-events:none; }
+  .rank-card{ scroll-snap-align:start; position:relative; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; cursor:pointer; opacity:0; transform:translateY(10px); animation:barIn .45s var(--ease) forwards; transition:transform .28s var(--spring), border-color .22s var(--ease), box-shadow .28s var(--ease); }
+  .rank-card::after{ content:''; position:absolute; inset:0; border-radius:inherit; box-shadow:inset 0 0 0 1px rgba(255,255,255,0); pointer-events:none; transition:box-shadow .25s var(--ease); }
+  .rank-card:hover{ transform:translateY(-6px); border-color:var(--line2); box-shadow:0 18px 38px -14px rgba(255,255,255,0.22), 0 4px 14px rgba(0,0,0,0.45); }
+  .rank-card:hover::after{ box-shadow:inset 0 0 0 1px rgba(255,255,255,0.22); }
+  .rank-card:hover .rank-name{ color:#fff; text-shadow:0 0 14px rgba(255,255,255,0.35); }
+  .rank-card:active{ transform:translateY(-2px) scale(0.965); transition-duration:.09s; }
+  .rank-thumb{ position:relative; height:96px; background-size:cover; background-position:center; background-color:var(--black2); border-bottom:1px solid var(--line); overflow:hidden; }
+  .rank-thumb::after{ content:''; position:absolute; inset:0; background:linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.14) 50%, transparent 70%); transform:translateX(-120%); transition:transform .6s var(--ease); pointer-events:none; }
+  .rank-card:hover .rank-thumb::after{ transform:translateX(120%); }
+  .rank-card .rank-thumb-img{ transition:transform .55s var(--ease), filter .35s var(--ease); }
+  .rank-card:hover .rank-thumb-img{ transform:scale(1.09); filter:brightness(1.12); }
+  .rank-name{ transition:color .2s var(--ease), text-shadow .2s var(--ease); }
   .rank-num{ position:absolute; top:8px; left:8px; font-family:'Space Mono',monospace; font-weight:700; font-size:11px; background:rgba(6,6,6,0.75); border:1px solid var(--line2); border-radius:6px; padding:2px 7px; }
   .rank-face{ position:absolute; bottom:8px; right:8px; width:26px; height:26px; object-fit:contain; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.7)); }
   .rank-info{ padding:12px 14px 14px; }
@@ -475,39 +488,77 @@
   .sk-stat-label{ height:10px; width:80%; }
   .sk-feed-card{ border:1px solid var(--line); border-radius:14px; background:var(--panel); padding:20px 22px; display:flex; flex-direction:column; gap:12px; }
 
-  /* ---------- LEVEL DISCOVERY (Signal Search) ---------- */
-  .discover-box{ max-width:560px; text-align:left; padding:34px 32px 26px; max-height:88vh; overflow-y:auto; }
+  /* ---------- LEVEL DISCOVERY (full-size studio) ---------- */
+  .discover-box{ max-width:960px; width:100%; text-align:left; padding:34px 34px 28px; max-height:90vh; overflow-y:auto; }
   .disc-eyebrow{ font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.24em; text-transform:uppercase; color:var(--dim); margin-bottom:8px; }
-  .disc-title{ font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:26px; margin-bottom:20px; }
-  .disc-filters{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
-  @media(max-width:520px){ .disc-filters{ grid-template-columns:1fr; } }
-  .disc-filter label{ display:block; font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.14em; color:var(--dim); margin-bottom:6px; }
+  .disc-title{ font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:clamp(22px,4vw,30px); margin-bottom:22px; }
+  .disc-layout{ display:grid; grid-template-columns:264px 1fr; gap:22px; align-items:stretch; }
+  @media(max-width:820px){ .disc-layout{ grid-template-columns:1fr; } }
+  .disc-panel{ display:flex; flex-direction:column; gap:18px; background:var(--black2); border:1px solid var(--line); border-radius:14px; padding:18px; }
+  .disc-filter label{ display:block; font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.14em; color:var(--dim); margin-bottom:8px; }
   .disc-filter select{ width:100%; }
-  .disc-stage{ position:relative; border:1px solid var(--line); border-radius:12px; background:var(--black2); padding:28px 22px 22px; overflow:hidden; }
-  .disc-stage[hidden]{ display:none; }
-  .disc-scanline{ position:absolute; top:0; bottom:0; width:1px; left:-10%; opacity:0; background:linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0.55), rgba(255,255,255,0)); }
-  .disc-stage.scanning .disc-scanline{ opacity:1; animation:discScanX 1.15s linear infinite; }
-  @keyframes discScanX{ from{left:-4%;} to{left:104%;} }
-  .disc-freq{ position:relative; height:34px; border-radius:8px; border:1px solid var(--line); background:repeating-linear-gradient(90deg, rgba(255,255,255,0.13) 0 1px, transparent 1px 9%); margin-bottom:18px; }
-  .disc-needle{ position:absolute; top:-4px; bottom:-4px; left:6%; width:2px; background:var(--white); box-shadow:0 0 12px rgba(255,255,255,0.9); transition:left .4s cubic-bezier(.3,.9,.4,1); }
-  .disc-readout{ font-family:'Space Mono',monospace; font-size:clamp(16px,3.6vw,22px); font-weight:700; letter-spacing:0.06em; color:var(--white); min-height:30px; white-space:nowrap; overflow:hidden; margin-bottom:10px; }
-  .disc-readout .dr-dim{ color:var(--dim2); }
-  .disc-status{ font-family:'Space Mono',monospace; font-size:10.5px; letter-spacing:0.18em; text-transform:uppercase; color:var(--dim); }
-  .disc-stage.locked{ border-color:var(--white); box-shadow:0 0 0 3px rgba(255,255,255,0.08), 0 0 40px rgba(255,255,255,0.08); animation:discLock .5s var(--ease); }
-  @keyframes discLock{ 0%{transform:scale(1);} 30%{transform:scale(1.015);} 100%{transform:scale(1);} }
-  .disc-glitch{ animation:discGlitch .3s steps(2,end) 2; }
-  @keyframes discGlitch{ 0%{transform:translate(0);} 25%{transform:translate(-3px,1px);} 50%{transform:translate(3px,-1px);} 75%{transform:translate(-2px,-1px);} 100%{transform:translate(0);} }
-  .disc-result{ animation:fadeIn .5s var(--ease); }
-  .disc-result[hidden]{ display:none; }
-  .disc-card{ position:relative; border:1px solid var(--line2); border-radius:14px; overflow:hidden; background:var(--panel); }
-  .disc-card-bg{ position:absolute; inset:0; background-size:cover; background-position:center; opacity:0.3; -webkit-mask-image:linear-gradient(to left, rgba(0,0,0,0.95), transparent 90%); mask-image:linear-gradient(to left, rgba(0,0,0,0.95), transparent 90%); }
-  .disc-card-body{ position:relative; padding:20px 22px; }
-  .disc-card-name{ font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:22px; display:flex; align-items:center; gap:10px; word-break:break-word; }
-  .disc-card-name img{ width:30px; height:30px; object-fit:contain; flex-shrink:0; }
-  .disc-card-meta{ font-size:12px; color:var(--dim); text-transform:uppercase; letter-spacing:0.06em; margin:6px 0 12px; }
-  .disc-card-stats{ margin-bottom:16px; }
-  .disc-card-actions{ display:flex; gap:10px; flex-wrap:wrap; }
-  .disc-card-actions .modal-btn{ width:auto; flex:1; padding:12px 14px; font-size:11px; }
+  .disc-diff-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+  .disc-diff-opt{ position:relative; display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 2px 6px; background:rgba(255,255,255,0.02); border:1px solid var(--line); border-radius:9px; cursor:pointer; transition:all .2s var(--spring); }
+  .disc-diff-opt img{ width:24px; height:24px; object-fit:contain; filter:grayscale(1); opacity:0.75; transition:all .2s var(--ease); }
+  .disc-diff-opt .ddo-any{ width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:16px; color:var(--dim); transition:color .2s; }
+  .disc-diff-opt span.ddo-label{ font-family:'Space Mono',monospace; font-size:8px; letter-spacing:0.02em; text-transform:uppercase; color:var(--dim2); text-align:center; line-height:1.15; transition:color .2s; }
+  .disc-diff-opt:hover{ border-color:var(--line2); transform:translateY(-1px); }
+  .disc-diff-opt:hover img{ opacity:1; transform:scale(1.1); }
+  .disc-diff-opt:hover span.ddo-label{ color:var(--dim); }
+  .disc-diff-opt.active{ background:var(--white); border-color:var(--white); box-shadow:0 0 16px rgba(255,255,255,0.22); animation:diffPop .32s var(--spring); }
+  .disc-diff-opt.active img{ opacity:1; filter:grayscale(1) brightness(0.25); }
+  .disc-diff-opt.active .ddo-any{ color:#0a0a0a; }
+  .disc-diff-opt.active span.ddo-label{ color:#0a0a0a; font-weight:700; }
+  .disc-cat-chips{ display:flex; flex-wrap:wrap; gap:6px; }
+  .disc-cat-chips .chip{ padding:8px 12px; font-size:10px; }
+  .disc-go{ width:100%; background:var(--white); color:#0a0a0a; border:none; border-radius:10px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; padding:16px; cursor:pointer; transition:all .22s var(--spring); margin-top:auto; }
+  .disc-go:hover{ filter:brightness(0.92); box-shadow:0 6px 26px rgba(255,255,255,0.25); transform:translateY(-2px); }
+  .disc-go:active{ transform:scale(0.96); }
+  .disc-go:disabled{ opacity:0.4; pointer-events:none; }
+  .disc-stage{ position:relative; min-height:430px; border:1px solid var(--line); border-radius:14px; background:var(--black2); overflow:hidden; display:flex; flex-direction:column; }
+  .disc-idle, .disc-searching{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; text-align:center; padding:30px; }
+  .disc-idle[hidden], .disc-searching[hidden], .disc-found[hidden]{ display:none; }
+  .disc-idle-mark{ width:74px; height:74px; border:1px solid var(--line2); border-radius:50%; display:flex; align-items:center; justify-content:center; position:relative; animation:discIdlePulse 3s ease-in-out infinite; }
+  .disc-idle-mark::before{ content:''; position:absolute; inset:-12px; border:1px dashed var(--line); border-radius:50%; animation:discOrbit 14s linear infinite; }
+  .disc-idle-mark svg{ width:32px; height:32px; fill:var(--dim); }
+  @keyframes discIdlePulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,255,255,0.1);} 50%{ box-shadow:0 0 0 14px rgba(255,255,255,0);} }
+  @keyframes discOrbit{ to{ transform:rotate(360deg); } }
+  .disc-idle-text{ font-size:13px; color:var(--dim); max-width:300px; line-height:1.6; }
+  .disc-search-viz{ position:relative; width:150px; height:150px; }
+  .disc-search-viz span{ position:absolute; inset:0; border:1px solid rgba(255,255,255,0.25); border-radius:50%; opacity:0; animation:discRipple 1.6s var(--ease) infinite; }
+  .disc-search-viz span:nth-child(2){ animation-delay:.4s; } .disc-search-viz span:nth-child(3){ animation-delay:.8s; }
+  @keyframes discRipple{ 0%{ transform:scale(0.25); opacity:0.9; } 100%{ transform:scale(1); opacity:0; } }
+  .disc-search-core{ position:absolute; top:50%; left:50%; width:14px; height:14px; margin:-7px 0 0 -7px; background:var(--white); border-radius:50%; box-shadow:0 0 24px rgba(255,255,255,0.8); animation:pulse 1.2s infinite; }
+  .disc-search-status{ font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--dim); min-height:16px; animation:pulse 1.4s infinite; }
+  .disc-search-status.disc-noresult{ color:#e8a1a1; animation:none; }
+  .disc-found{ flex:1; display:flex; flex-direction:column; }
+  .disc-hero{ position:relative; height:220px; background:var(--black); border-bottom:1px solid var(--line); overflow:hidden; flex-shrink:0; }
+  .disc-hero img{ width:100%; height:100%; object-fit:cover; animation:discHeroIn .9s var(--ease) both; }
+  @keyframes discHeroIn{ from{ opacity:0; transform:scale(1.12); filter:blur(10px) brightness(1.6);} to{ opacity:1; transform:scale(1); filter:blur(0) brightness(1);} }
+  .disc-hero::after{ content:''; position:absolute; inset:0; background:linear-gradient(to top, rgba(10,10,10,0.85), transparent 55%); pointer-events:none; }
+  .disc-hero-flash{ position:absolute; inset:0; background:#fff; opacity:0; animation:discFlash .7s ease-out both; pointer-events:none; }
+  @keyframes discFlash{ 0%{opacity:0.7;} 100%{opacity:0;} }
+  .disc-hero-name{ position:absolute; left:20px; right:20px; bottom:14px; font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:clamp(20px,3.4vw,30px); line-height:1; word-break:break-word; text-shadow:0 4px 18px rgba(0,0,0,0.8); animation:riseIn .55s var(--ease) .15s both; }
+  .disc-found-body{ padding:18px 20px 20px; display:flex; flex-direction:column; gap:14px; flex:1; }
+  .disc-meta-row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; animation:riseIn .5s var(--ease) .28s both; }
+  .disc-diff-badge{ display:inline-flex; align-items:center; gap:8px; background:var(--panel); border:1px solid var(--line2); border-radius:999px; padding:6px 14px 6px 8px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; }
+  .disc-diff-badge img{ width:22px; height:22px; object-fit:contain; }
+  .disc-creator{ font-size:13px; color:var(--dim); } .disc-creator b{ color:var(--white); }
+  .disc-stat-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(105px,1fr)); gap:8px; animation:riseIn .5s var(--ease) .38s both; }
+  .disc-stat{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:10px 12px; }
+  .disc-stat-k{ font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:var(--dim2); margin-bottom:4px; }
+  .disc-stat-v{ font-family:'Space Mono',monospace; font-size:13px; font-weight:700; color:var(--white); }
+  .disc-actions{ display:flex; gap:10px; margin-top:auto; flex-wrap:wrap; animation:riseIn .5s var(--ease) .48s both; }
+  .disc-actions .modal-btn{ width:auto; flex:1; min-width:130px; padding:14px 16px; font-size:11px; }
+
+  /* ---------- DIFFICULTY NAVIGATOR (home ranking chips) ---------- */
+  #diff-chips{ gap:8px; }
+  #diff-chips .chip{ display:inline-flex; align-items:center; gap:8px; padding:9px 15px 9px 11px; background:linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.008)), var(--panel); }
+  #diff-chips .chip img{ width:20px; height:20px; object-fit:contain; filter:grayscale(1); opacity:0.72; transition:all .22s var(--ease); }
+  #diff-chips .chip:hover img{ opacity:1; transform:scale(1.12) rotate(-4deg); }
+  #diff-chips .chip.active{ box-shadow:0 0 18px rgba(255,255,255,0.25), 0 4px 14px rgba(0,0,0,0.4); animation:diffPop .32s var(--spring); }
+  #diff-chips .chip.active img{ opacity:1; filter:grayscale(1) brightness(0.25); }
+  @keyframes diffPop{ 0%{ transform:scale(0.92);} 60%{ transform:scale(1.05);} 100%{ transform:scale(1);} }
 
   /* ---------- LIFTOFF ---------- */
   #liftoff{ position:fixed; inset:0; z-index:999992; pointer-events:none; overflow:hidden; transition:opacity .6s ease; }
@@ -749,22 +800,10 @@
 
         <div class="discover-banner" id="discover-open" role="button" tabindex="0">
           <div class="disc-banner-text">
-            <div class="disc-banner-title" data-i18n="discBannerTitle">Signal Search</div>
-            <div class="disc-banner-sub" data-i18n="discBannerSub">Tune into the archive and uncover a random level to play &amp; review</div>
+            <div class="disc-banner-title" data-i18n="discBannerTitle">Level Discovery</div>
+            <div class="disc-banner-sub" data-i18n="discBannerSub">Open the discovery studio — filter the archive and find your next level to play &amp; review</div>
           </div>
-          <div class="disc-banner-cta" data-i18n="discBannerCta">Start Scan →</div>
-        </div>
-
-        <div class="dash-community">
-          <div class="chart-card">
-            <div class="chart-title" data-i18n="dashStatsTitle">Global Statistics</div>
-            <div class="dash-stats-grid" id="dash-stats"></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title" data-i18n="dashLbTitle">Top Reviewers</div>
-            <div class="chart-sub" data-i18n="dashLbSub">Top 10 by total likes received</div>
-            <div id="dash-leaderboard"></div>
-          </div>
+          <div class="disc-banner-cta" data-i18n="discBannerCta">Open Discovery →</div>
         </div>
 
         <div class="dash-diff-bar">
@@ -779,7 +818,22 @@
           <div class="dash-section"><div class="dash-sec-head"><span class="dash-sec-num">04</span><span class="section-label" style="margin:0;" data-i18n="secDiscussed">Most Discussed Levels</span></div><div class="rank-row" id="row-discussed"></div></div>
         </div>
 
-        <div class="dash-section"><div class="dash-sec-head"><span class="dash-sec-num">05</span><span class="section-label" style="margin:0;" data-i18n="secLatest">Latest Reviews</span></div><div id="dash-latest"></div></div>
+        <div class="dash-section">
+          <div class="dash-sec-head"><span class="dash-sec-num">05</span><span class="section-label" style="margin:0;" data-i18n="secCommunity">Global Statistics &amp; Top Reviewers</span></div>
+          <div class="dash-community">
+            <div class="chart-card">
+              <div class="chart-title" data-i18n="dashStatsTitle">Global Statistics</div>
+              <div class="dash-stats-grid" id="dash-stats"></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title" data-i18n="dashLbTitle">Top Reviewers</div>
+              <div class="chart-sub" data-i18n="dashLbSub">Top 10 by total likes received</div>
+              <div id="dash-leaderboard"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dash-section"><div class="dash-sec-head"><span class="dash-sec-num">06</span><span class="section-label" style="margin:0;" data-i18n="secLatest">Latest Reviews</span></div><div id="dash-latest"></div></div>
       </div>
     </section>
 
@@ -1072,26 +1126,30 @@
 <div class="modal-overlay" id="discover-modal">
   <div class="modal-box discover-box">
     <button class="modal-close" id="disc-close" aria-label="Close">&times;</button>
-    <div class="disc-eyebrow" data-i18n="discEyebrow">Level Discovery</div>
-    <div class="disc-title" data-i18n="discTitle">Signal Search</div>
+    <div class="disc-eyebrow" data-i18n="discEyebrow">Discovery</div>
+    <div class="disc-title" data-i18n="discTitle">Find Your Next Level</div>
 
-    <div class="disc-filters">
-      <div class="disc-filter"><label for="disc-diff" data-i18n="discFDiff">Difficulty</label><select id="disc-diff" class="archive-sort"></select></div>
-      <div class="disc-filter"><label for="disc-pop" data-i18n="discFPop">Popularity</label><select id="disc-pop" class="archive-sort"></select></div>
-      <div class="disc-filter"><label for="disc-len" data-i18n="discFLen">Length</label><select id="disc-len" class="archive-sort"></select></div>
-    </div>
+    <div class="disc-layout">
+      <aside class="disc-panel">
+        <div class="disc-filter"><label data-i18n="discFDiff">Difficulty</label><div class="disc-diff-grid" id="disc-diff-grid"></div></div>
+        <div class="disc-filter"><label data-i18n="discFCat">Category</label><div class="disc-cat-chips" id="disc-cat"></div></div>
+        <div class="disc-filter"><label for="disc-pop" data-i18n="discFPop">Popularity</label><select id="disc-pop" class="archive-sort"></select></div>
+        <div class="disc-filter"><label for="disc-len" data-i18n="discFLen">Length</label><select id="disc-len" class="archive-sort"></select></div>
+        <div class="disc-filter"><label for="disc-rate" data-i18n="discFRate">Rating</label><select id="disc-rate" class="archive-sort"></select></div>
+        <button class="disc-go" id="disc-scan-btn" data-i18n="discScan">Discover</button>
+      </aside>
 
-    <div class="disc-stage" id="disc-stage">
-      <div class="disc-scanline"></div>
-      <div class="disc-freq"><span class="disc-needle" id="disc-needle"></span></div>
-      <div class="disc-readout" id="disc-readout"><span class="dr-dim">— — —</span></div>
-      <div class="disc-status" id="disc-status" data-i18n="discIdle">Awaiting scan</div>
-    </div>
-
-    <div class="disc-result" id="disc-result" hidden></div>
-
-    <div class="modal-actions">
-      <button class="modal-btn solid" id="disc-scan-btn" data-i18n="discScan">Initiate Scan</button>
+      <div class="disc-stage" id="disc-stage">
+        <div class="disc-idle" id="disc-idle">
+          <div class="disc-idle-mark"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm4.9-12.9-2.6 6.2-6.2 2.6 2.6-6.2 6.2-2.6zM12 13a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg></div>
+          <div class="disc-idle-text" data-i18n="discIdle">Dial in your filters and discover a level picked just for you.</div>
+        </div>
+        <div class="disc-searching" id="disc-searching" hidden>
+          <div class="disc-search-viz"><span></span><span></span><span></span><div class="disc-search-core"></div></div>
+          <div class="disc-search-status" id="disc-search-status"></div>
+        </div>
+        <div class="disc-found" id="disc-found" hidden></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1123,11 +1181,13 @@ const i18n = {
     dashStatsTitle:'Global Statistics', statTotalReviews:'Total reviews & ratings', statTotalUsers:'Registered users',
     dashLbTitle:'Top Reviewers', dashLbSub:'Top 10 by total likes received', lbEmpty:'No reviewers yet',
     dashRankTitle:'Level Rankings', diffAll:'All Difficulties', diffNA:'NA', rankEmpty:'No levels here yet', rankReviews:'reviews',
-    secPopularAll:'Most Popular Levels — All Time', secTopToday:'Top Rated Popular Levels — Today', secPopularWeek:'Popular Levels — This Week', secDiscussed:'Most Discussed Levels', secLatest:'Latest Reviews',
-    discBannerTitle:'Signal Search', discBannerSub:'Tune into the archive and uncover a random level to play & review', discBannerCta:'Start Scan →',
-    discEyebrow:'Level Discovery', discTitle:'Signal Search', discFDiff:'Difficulty', discFPop:'Popularity', discFLen:'Length',
-    discIdle:'Awaiting scan', discCalibrating:'Calibrating filters…', discSweeping:'Sweeping the archive…', discTuning:'Isolating signal…', discLocked:'Signal locked', discNoSignal:'No signal found — try loosening the filters', discScan:'Initiate Scan', discAgain:'Scan Again', discOpen:'Open Level', discReview:'Review It',
-    popAny:'Any rated', popFeatured:'Featured', popMagic:'Magic', popTrending:'Trending', popDownloads:'Most Downloaded', popLiked:'Most Liked', popRecent:'Recent', lenAny:'Any length',
+    secPopularAll:'Most Popular Levels — All Time', secTopToday:'Top Rated Popular Levels — Today', secPopularWeek:'Popular Levels — This Week', secDiscussed:'Most Discussed Levels', secCommunity:'Global Statistics & Top Reviewers', secLatest:'Latest Reviews',
+    discBannerTitle:'Level Discovery', discBannerSub:'Open the discovery studio — filter the archive and find your next level to play & review', discBannerCta:'Open Discovery →',
+    discEyebrow:'Discovery', discTitle:'Find Your Next Level', discFDiff:'Difficulty', discFPop:'Popularity', discFLen:'Length', discFCat:'Category', discFRate:'Rating',
+    discIdle:'Dial in your filters and discover a level picked just for you.', discSearch1:'Reading your filters…', discSearch2:'Searching the archive…', discSearch3:'Curating your match…', discNoSignal:'No level matched — try loosening the filters', discScan:'Discover', discAgain:'Discover Again', discOpen:'Open Level', discReview:'Review It',
+    discStatLen:'Length', discStatDownloads:'Downloads', discStatLikes:'Likes', discStatStars:'Stars', discStatScore:'Community Score', discNoReviews:'No reviews yet', discReviewsCount:'{n} reviews',
+    popRated:'Rated', popFeatured:'Featured', popMagic:'Magic', popTrending:'Trending', popDefault:'By category', popDownloads:'Most Downloaded', popLiked:'Most Liked', popRecent:'Recent', lenAny:'Any length',
+    rateAny:'Any rating', rateLow:'★ 1–3', rateMid:'★ 4–6', rateHigh:'★ 7–9', rateDemon:'★ 10 (Demon)',
     chipRecent:'Recent', chipPopular:'Popular', chipToday:'Top Today', chipWeek:'Top Week', chipAllTime:'All Time', chipDiscussed:'Most Discussed', chipBeautiful:'Most Beautiful', chipEasiest:'Easiest', chipHardest:'Hardest', diffAny:'Any difficulty',
     feedEmptyTitle:'Nothing here yet', feedEmptySub:'Be the first — write a review in the Create tab.',
     searchResults:'Search results', clearSearch:'Clear', noResultsTitle:'No results found', noResultsSub:'Try a different query — by level name or ID.', loading:'Loading…', readMore:'Read →',
@@ -1188,11 +1248,13 @@ const i18n = {
     dashStatsTitle:'Глобальная статистика', statTotalReviews:'Всего рецензий и оценок', statTotalUsers:'Зарегистрировано пользователей',
     dashLbTitle:'Топ рецензентов', dashLbSub:'Топ-10 по полученным лайкам', lbEmpty:'Пока нет рецензентов',
     dashRankTitle:'Рейтинги уровней', diffAll:'Все сложности', diffNA:'NA', rankEmpty:'Здесь пока пусто', rankReviews:'рец.',
-    secPopularAll:'Самые популярные уровни — за всё время', secTopToday:'Лучшие среди популярных — сегодня', secPopularWeek:'Популярные уровни — за неделю', secDiscussed:'Самые обсуждаемые уровни', secLatest:'Последние рецензии',
-    discBannerTitle:'Поиск сигнала', discBannerSub:'Настройтесь на архив и найдите случайный уровень для игры и рецензии', discBannerCta:'Начать сканирование →',
-    discEyebrow:'Поиск уровня', discTitle:'Поиск сигнала', discFDiff:'Сложность', discFPop:'Популярность', discFLen:'Длина',
-    discIdle:'Ожидание сканирования', discCalibrating:'Калибровка фильтров…', discSweeping:'Сканируем архив…', discTuning:'Изолируем сигнал…', discLocked:'Сигнал пойман', discNoSignal:'Сигнал не найден — ослабьте фильтры', discScan:'Запустить сканирование', discAgain:'Сканировать ещё', discOpen:'Открыть уровень', discReview:'Написать рецензию',
-    popAny:'Любые оценённые', popFeatured:'Featured', popMagic:'Magic', popTrending:'В тренде', popDownloads:'Самые скачиваемые', popLiked:'Самые залайканные', popRecent:'Новые', lenAny:'Любая длина',
+    secPopularAll:'Самые популярные уровни — за всё время', secTopToday:'Лучшие среди популярных — сегодня', secPopularWeek:'Популярные уровни — за неделю', secDiscussed:'Самые обсуждаемые уровни', secCommunity:'Статистика и топ рецензентов', secLatest:'Последние рецензии',
+    discBannerTitle:'Подбор уровня', discBannerSub:'Откройте студию подбора — настройте фильтры и найдите следующий уровень для игры и рецензии', discBannerCta:'Открыть подбор →',
+    discEyebrow:'Подбор', discTitle:'Найдите свой уровень', discFDiff:'Сложность', discFPop:'Популярность', discFLen:'Длина', discFCat:'Категория', discFRate:'Рейтинг',
+    discIdle:'Настройте фильтры и найдите уровень, подобранный специально для вас.', discSearch1:'Читаем фильтры…', discSearch2:'Ищем в архиве…', discSearch3:'Подбираем совпадение…', discNoSignal:'Ничего не найдено — ослабьте фильтры', discScan:'Найти уровень', discAgain:'Найти ещё', discOpen:'Открыть уровень', discReview:'Написать рецензию',
+    discStatLen:'Длина', discStatDownloads:'Скачивания', discStatLikes:'Лайки', discStatStars:'Звёзды', discStatScore:'Оценка сообщества', discNoReviews:'Пока нет рецензий', discReviewsCount:'{n} рец.',
+    popRated:'Оценённые', popFeatured:'Featured', popMagic:'Magic', popTrending:'В тренде', popDefault:'По категории', popDownloads:'Самые скачиваемые', popLiked:'Самые залайканные', popRecent:'Новые', lenAny:'Любая длина',
+    rateAny:'Любой рейтинг', rateLow:'★ 1–3', rateMid:'★ 4–6', rateHigh:'★ 7–9', rateDemon:'★ 10 (демон)',
     chipRecent:'Недавние', chipPopular:'Популярные', chipToday:'Лучшие за день', chipWeek:'Лучшие за неделю', chipAllTime:'За всё время', chipDiscussed:'Обсуждаемые', chipBeautiful:'Самые красивые', chipEasiest:'Лёгкие', chipHardest:'Сложные', diffAny:'Любая сложность',
     feedEmptyTitle:'Пока пусто', feedEmptySub:'Станьте первым — напишите рецензию во вкладке «Создать».',
     searchResults:'Результаты поиска', clearSearch:'Сбросить', noResultsTitle:'Ничего не найдено', noResultsSub:'Попробуйте другой запрос — по названию или ID.', loading:'Загрузка…', readMore:'Читать →',
@@ -1535,17 +1597,18 @@ function renderLevelCard(l, i){
 }
 /* ---- Difficulty selector for the ranking sections ---- */
 const DIFF_OPTIONS = [
-  { v:'', i18n:'diffAll' },
-  { v:'auto', label:'Auto' }, { v:'easy', label:'Easy' }, { v:'normal', label:'Normal' },
-  { v:'hard', label:'Hard' }, { v:'harder', label:'Harder' }, { v:'insane', label:'Insane' },
-  { v:'easy demon', label:'Easy Demon' }, { v:'medium demon', label:'Medium Demon' }, { v:'hard demon', label:'Hard Demon' },
-  { v:'insane demon', label:'Insane Demon' }, { v:'extreme demon', label:'Extreme Demon' },
-  { v:'na', i18n:'diffNA' }
+  { v:'', i18n:'diffAll', face:null },
+  { v:'auto', label:'Auto', face:'auto' }, { v:'easy', label:'Easy', face:'easy' }, { v:'normal', label:'Normal', face:'normal' },
+  { v:'hard', label:'Hard', face:'hard' }, { v:'harder', label:'Harder', face:'harder' }, { v:'insane', label:'Insane', face:'insane' },
+  { v:'easy demon', label:'Easy Demon', face:'demon-easy' }, { v:'medium demon', label:'Medium Demon', face:'demon-medium' }, { v:'hard demon', label:'Hard Demon', face:'demon-hard' },
+  { v:'insane demon', label:'Insane Demon', face:'demon-insane' }, { v:'extreme demon', label:'Extreme Demon', face:'demon-extreme' },
+  { v:'na', i18n:'diffNA', face:'unrated' }
 ];
 let dashDiff = '', dashLoaded = false;
 function diffOptionLabel(o){ return o.i18n ? t(o.i18n) : o.label; }
+function diffOptionIcon(o){ return o.face ? '<img src="https://gdbrowser.com/assets/difficulties/'+o.face+'.png" alt="" loading="lazy">' : ''; }
 function buildDiffChips(){
-  $('diff-chips').innerHTML = DIFF_OPTIONS.map(function(o){ return '<button class="chip'+(dashDiff===o.v?' active':'')+'" data-diff="'+escapeHTML(o.v)+'">'+escapeHTML(diffOptionLabel(o))+'</button>'; }).join('');
+  $('diff-chips').innerHTML = DIFF_OPTIONS.map(function(o){ return '<button class="chip'+(dashDiff===o.v?' active':'')+'" data-diff="'+escapeHTML(o.v)+'">'+diffOptionIcon(o)+'<span>'+escapeHTML(diffOptionLabel(o))+'</span></button>'; }).join('');
 }
 $('diff-chips').addEventListener('click', function(e){
   const c = e.target.closest('.chip'); if(!c || c.dataset.diff == null || c.dataset.diff === dashDiff) return;
@@ -2240,28 +2303,39 @@ $('btn-delete-account').addEventListener('click', async function(){
   else toast(ERR(r.data.error), 'error');
 });
 
-/* ================= RANDOM LEVEL DISCOVERY (Signal Search) ================= */
-/* Concept: a radio-telescope style "frequency sweep". Candidate level names
-   flicker through a scrambled monospace readout while a needle hunts across a
-   frequency band; the sweep decelerates, locks on, and the chosen level's name
-   decodes character by character before the result card materializes.
-   Deliberately NOT a wheel / roulette / case opening. */
+/* ================= LEVEL DISCOVERY ================= */
+/* A curated discovery studio: dial in filters on the left panel, hit Discover,
+   and a featured level materializes on the stage with a staggered reveal
+   (hero image wipe-in, flash, cascading meta). Deliberately NOT a wheel /
+   roulette / case-opening mechanic. */
 const discModal = $('discover-modal');
-const DISC_POP = [ ['awarded','popAny'], ['featured','popFeatured'], ['magic','popMagic'], ['trending','popTrending'], ['mostdownloaded','popDownloads'], ['mostliked','popLiked'], ['recent','popRecent'] ];
+const DISC_CATS = [ ['awarded','popRated'], ['featured','popFeatured'], ['magic','popMagic'], ['trending','popTrending'] ];
+const DISC_POP = [ ['','popDefault'], ['mostdownloaded','popDownloads'], ['mostliked','popLiked'], ['recent','popRecent'] ];
 const DISC_LEN = [ ['', 'lenAny'], ['0','Tiny'], ['1','Short'], ['2','Medium'], ['3','Long'], ['4','XL'] ];
+const DISC_RATE = [ ['', 'rateAny'], ['low','rateLow'], ['mid','rateMid'], ['high','rateHigh'], ['demon','rateDemon'] ];
 const DISC_PAGES = { awarded: 40, featured: 30, magic: 15, trending: 6, mostdownloaded: 40, mostliked: 40, recent: 10 };
-const DISC_GLYPHS = '▓▒░#@%&$§ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-let discBusy = false;
+let discBusy = false, discDiff = '', discCat = 'awarded';
 
 function buildDiscFilters(){
-  $('disc-diff').innerHTML = DIFF_OPTIONS.map(function(o){ return '<option value="'+escapeHTML(o.v)+'">'+escapeHTML(diffOptionLabel(o))+'</option>'; }).join('');
+  $('disc-diff-grid').innerHTML = DIFF_OPTIONS.map(function(o){
+    const icon = o.face ? '<img src="https://gdbrowser.com/assets/difficulties/'+o.face+'.png" alt="" loading="lazy">' : '<span class="ddo-any">✦</span>';
+    return '<button type="button" class="disc-diff-opt'+(discDiff===o.v?' active':'')+'" data-ddiff="'+escapeHTML(o.v)+'" title="'+escapeHTML(diffOptionLabel(o))+'">'+icon+'<span class="ddo-label">'+escapeHTML(diffOptionLabel(o))+'</span></button>';
+  }).join('');
+  $('disc-cat').innerHTML = DISC_CATS.map(function(c){ return '<button type="button" class="chip'+(discCat===c[0]?' active':'')+'" data-dcat="'+c[0]+'">'+escapeHTML(t(c[1]))+'</button>'; }).join('');
   $('disc-pop').innerHTML = DISC_POP.map(function(p){ return '<option value="'+p[0]+'">'+escapeHTML(t(p[1]))+'</option>'; }).join('');
   $('disc-len').innerHTML = DISC_LEN.map(function(p){ return '<option value="'+p[0]+'">'+escapeHTML(p[1] === 'lenAny' ? t('lenAny') : p[1])+'</option>'; }).join('');
+  $('disc-rate').innerHTML = DISC_RATE.map(function(p){ return '<option value="'+p[0]+'">'+escapeHTML(t(p[1]))+'</option>'; }).join('');
 }
+$('disc-diff-grid').addEventListener('click', function(e){ const b = e.target.closest('.disc-diff-opt'); if(!b) return; discDiff = b.dataset.ddiff; qsa('#disc-diff-grid .disc-diff-opt').forEach(function(x){ x.classList.toggle('active', x.dataset.ddiff === discDiff); }); });
+$('disc-cat').addEventListener('click', function(e){ const b = e.target.closest('.chip'); if(!b) return; discCat = b.dataset.dcat; qsa('#disc-cat .chip').forEach(function(x){ x.classList.toggle('active', x.dataset.dcat === discCat); }); });
+
+/* An explicit popularity sort overrides the category; otherwise the category
+   chip (Rated / Featured / Magic / Trending) drives the archive query. */
+function discType(){ return $('disc-pop').value || discCat || 'awarded'; }
 function discQuery(page){
   const params = new URLSearchParams(); params.set('count','10'); params.set('page', String(page));
-  params.set('type', $('disc-pop').value || 'awarded');
-  const d = $('disc-diff').value;
+  params.set('type', discType());
+  const d = discDiff;
   if(d === 'auto') params.set('diff','-3');
   else if(d === 'na') params.set('diff','-1');
   else if(d.indexOf('demon') !== -1){ params.set('diff','-2'); params.set('demonFilter', String({'easy demon':1,'medium demon':2,'hard demon':3,'insane demon':4,'extreme demon':5}[d] || 3)); }
@@ -2269,29 +2343,41 @@ function discQuery(page){
   const len = $('disc-len').value; if(len !== '') params.set('length', len);
   return 'https://gdbrowser.com/api/search/*?' + params.toString();
 }
+function discRateMatch(lv){
+  const mode = $('disc-rate').value; if(!mode) return true;
+  const s = Number(lv.stars || 0);
+  if(mode === 'low') return s >= 1 && s <= 3;
+  if(mode === 'mid') return s >= 4 && s <= 6;
+  if(mode === 'high') return s >= 7 && s <= 9;
+  if(mode === 'demon') return s >= 10;
+  return true;
+}
 /* Random page first for variety, then narrower pages as fallback so tight
    filter combinations still find something. */
 async function discFetchCandidates(){
-  const type = $('disc-pop').value || 'awarded';
+  const type = discType();
   const maxPage = DISC_PAGES[type] || 10;
   const pages = [ Math.floor(Math.random()*maxPage), Math.floor(Math.random()*Math.min(4,maxPage)), 0 ];
   for(let i=0;i<pages.length;i++){
     try{
       const res = await fetch(discQuery(pages[i]));
       const d = res.ok ? await res.json() : null;
-      if(d && d !== '-1' && Array.isArray(d) && d.length) return d;
+      if(d && d !== '-1' && Array.isArray(d) && d.length){
+        const filtered = d.filter(discRateMatch);
+        if(filtered.length) return filtered;
+      }
     }catch(e){}
   }
   return null;
 }
-function discScramble(n){ let s=''; for(let i=0;i<n;i++){ s += DISC_GLYPHS[Math.floor(Math.random()*DISC_GLYPHS.length)]; } return s; }
-function discSetStatus(key){ $('disc-status').textContent = t(key); }
-function discNeedleTo(p){ $('disc-needle').style.left = (6 + p*88).toFixed(2) + '%'; }
+function discShow(state){
+  $('disc-idle').hidden = state !== 'idle';
+  $('disc-searching').hidden = state !== 'searching';
+  $('disc-found').hidden = state !== 'found';
+}
 function discReset(){
-  $('disc-result').hidden = true; $('disc-result').innerHTML = '';
-  const stage = $('disc-stage'); stage.hidden = false; stage.classList.remove('locked','scanning');
-  $('disc-readout').innerHTML = '<span class="dr-dim">— — —</span>';
-  discSetStatus('discIdle'); discNeedleTo(0.02);
+  discShow('idle'); $('disc-found').innerHTML = '';
+  const st = $('disc-search-status'); st.classList.remove('disc-noresult'); st.textContent = '';
   const b = $('disc-scan-btn'); b.textContent = t('discScan'); b.disabled = false;
 }
 function openDiscovery(){ buildDiscFilters(); discReset(); openModalOverlay(discModal); }
@@ -2301,63 +2387,90 @@ $('disc-close').addEventListener('click', function(){ closeModalOverlay(discModa
 discModal.addEventListener('click', function(e){ if(e.target === discModal && !discBusy) closeModalOverlay(discModal); });
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && discModal.classList.contains('show') && !discBusy) closeModalOverlay(discModal); });
 
+const GD_LENGTH_NAMES = ['Tiny','Short','Medium','Long','XL'];
+function discLengthLabel(lv){ if(lv == null) return '—'; const raw = lv.length; if(typeof raw === 'string' && raw) return raw; const n = Number(raw); return GD_LENGTH_NAMES[n] || '—'; }
+
 async function runDiscovery(){
   if(discBusy) return;
   discBusy = true;
-  discReset();
   const btn = $('disc-scan-btn'); btn.disabled = true;
-  const stage = $('disc-stage'); stage.classList.add('scanning');
-  discSetStatus('discCalibrating');
+  discShow('searching');
+  const st = $('disc-search-status'); st.classList.remove('disc-noresult');
+  const phases = ['discSearch1','discSearch2','discSearch3']; let phase = 0;
+  st.textContent = t(phases[0]);
+  const phaseTimer = setInterval(function(){ phase = Math.min(phases.length-1, phase+1); st.textContent = t(phases[phase]); }, 650);
+  const started = performance.now();
   const candidates = await discFetchCandidates();
-  if(!candidates){ stage.classList.remove('scanning'); discSetStatus('discNoSignal'); btn.disabled = false; discBusy = false; return; }
-  discSetStatus('discSweeping');
-  const readout = $('disc-readout');
-  const final = candidates[Math.floor(Math.random()*candidates.length)];
-  const names = candidates.map(function(c){ return String(c.name || '').toUpperCase() || '#'+c.id; });
-  const start = performance.now(), DURATION = 3400;
-  let tick = 0;
-  await new Promise(function(resolve){
-    (function loop(){
-      const prog = Math.min(1, (performance.now() - start) / DURATION);
-      // The needle hunts wildly at first, then converges toward the center.
-      discNeedleTo(prog < 0.75 ? Math.random() : 0.5 + (Math.random()-0.5)*(1-prog));
-      const name = names[tick % names.length]; tick++;
-      const reveal = Math.floor(name.length * Math.max(0, (prog - 0.35) / 0.65));
-      readout.innerHTML = escapeHTML(name.slice(0, reveal)) + '<span class="dr-dim">' + escapeHTML(discScramble(Math.max(1, name.length - reveal))) + '</span>';
-      if(prog > 0.55) discSetStatus('discTuning');
-      if(prog >= 1) return resolve();
-      setTimeout(loop, 60 + 380 * prog * prog); // ticks decelerate quadratically
-    })();
-  });
-  // Lock-in: decode the chosen level's name character by character.
-  const fname = (String(final.name || ('#'+final.id))).toUpperCase();
-  stage.classList.remove('scanning'); stage.classList.add('locked'); discNeedleTo(0.5);
-  discSetStatus('discLocked');
-  for(let i=0; i<=fname.length; i++){
-    readout.innerHTML = escapeHTML(fname.slice(0, i)) + '<span class="dr-dim">' + escapeHTML(discScramble(fname.length - i)) + '</span>';
-    await new Promise(function(r){ setTimeout(r, 34); });
-  }
-  readout.classList.add('disc-glitch'); setTimeout(function(){ readout.classList.remove('disc-glitch'); }, 700);
-  await new Promise(function(r){ setTimeout(r, 450); });
-  renderDiscResult(final);
+  /* Let the search animation breathe for at least ~1.6s so the reveal lands. */
+  const waitLeft = Math.max(0, 1600 - (performance.now() - started));
+  await new Promise(function(r){ setTimeout(r, waitLeft); });
+  clearInterval(phaseTimer);
+  if(!candidates){ st.classList.add('disc-noresult'); st.textContent = t('discNoSignal'); btn.disabled = false; discBusy = false; return; }
+  renderDiscResult(candidates[Math.floor(Math.random()*candidates.length)]);
   btn.textContent = t('discAgain'); btn.disabled = false;
   discBusy = false;
 }
 function renderDiscResult(lv){
-  const thumb = 'https://levelthumbs.prevter.me/thumbnail/'+encodeURIComponent(lv.id)+'/small';
-  const box = $('disc-result');
-  $('disc-stage').hidden = true;
-  box.hidden = false;
-  box.innerHTML = '<div class="disc-card"><div class="disc-card-bg" style="background-image:url(\''+thumb+'\')"></div><div class="disc-card-body">'
-    + '<div class="disc-card-name">'+(lv.difficultyFace ? '<img src="https://gdbrowser.com/assets/difficulties/'+encodeURIComponent(lv.difficultyFace)+'.png" alt="">' : '')+escapeHTML(lv.name || ('#'+lv.id))+'</div>'
-    + '<div class="disc-card-meta">#'+escapeHTML(String(lv.id))+' · by '+escapeHTML(lv.author || '—')+(lv.difficulty ? ' · '+escapeHTML(lv.difficulty) : '')+(lv.stars ? ' · ★ '+lv.stars : '')+'</div>'
-    + '<div class="lc-stats disc-card-stats">'+(lv.length ? '<span class="lc-stat">'+escapeHTML(String(lv.length))+'</span>' : '')+(lv.downloads != null ? '<span class="lc-stat">⬇ <b>'+Number(lv.downloads).toLocaleString()+'</b></span>' : '')+(lv.likes != null ? '<span class="lc-stat">♥ <b>'+Number(lv.likes).toLocaleString()+'</b></span>' : '')+'</div>'
-    + '<div class="disc-card-actions"><button class="modal-btn solid" id="disc-open-level">'+escapeHTML(t('discOpen'))+'</button><button class="modal-btn ghost" id="disc-review-level">'+escapeHTML(t('discReview'))+'</button></div>'
-    + '</div></div>';
-  $('disc-open-level').addEventListener('click', function(){ closeModalOverlay(discModal); openLevelPage(lv.id); });
-  $('disc-review-level').addEventListener('click', function(){ closeModalOverlay(discModal); $('level-id-input').value = String(lv.id); showScreen('create'); searchLevel(); });
+  const id = String(lv.id);
+  const thumb = 'https://levelthumbs.prevter.me/thumbnail/'+encodeURIComponent(id)+'/small';
+  const face = lv.difficultyFace ? 'https://gdbrowser.com/assets/difficulties/'+encodeURIComponent(lv.difficultyFace)+'.png' : '';
+  const box = $('disc-found');
+  discShow('found');
+  box.innerHTML = '<div class="disc-hero"><img src="'+thumb+'" alt="" onerror="this.remove()"><div class="disc-hero-flash"></div><div class="disc-hero-name">'+escapeHTML(lv.name || ('#'+id))+'</div></div>'
+    + '<div class="disc-found-body">'
+    + '<div class="disc-meta-row">'
+    + '<span class="disc-diff-badge">'+(face ? '<img src="'+face+'" alt="">' : '')+escapeHTML(lv.difficulty || '—')+'</span>'
+    + '<span class="disc-creator">#'+escapeHTML(id)+' · by <b>'+escapeHTML(lv.author || '—')+'</b></span>'
+    + '</div>'
+    + '<div class="disc-stat-grid">'
+    + '<div class="disc-stat"><div class="disc-stat-k">'+escapeHTML(t('discStatLen'))+'</div><div class="disc-stat-v">'+escapeHTML(discLengthLabel(lv))+'</div></div>'
+    + '<div class="disc-stat"><div class="disc-stat-k">'+escapeHTML(t('discStatDownloads'))+'</div><div class="disc-stat-v">⬇ '+(lv.downloads != null ? Number(lv.downloads).toLocaleString() : '—')+'</div></div>'
+    + '<div class="disc-stat"><div class="disc-stat-k">'+escapeHTML(t('discStatLikes'))+'</div><div class="disc-stat-v">♥ '+(lv.likes != null ? Number(lv.likes).toLocaleString() : '—')+'</div></div>'
+    + '<div class="disc-stat"><div class="disc-stat-k">'+escapeHTML(t('discStatStars'))+'</div><div class="disc-stat-v">★ '+(lv.stars || 0)+'</div></div>'
+    + '<div class="disc-stat"><div class="disc-stat-k">'+escapeHTML(t('discStatScore'))+'</div><div class="disc-stat-v" id="disc-our-score">…</div></div>'
+    + '</div>'
+    + '<div class="disc-actions"><button class="modal-btn solid" id="disc-open-level">'+escapeHTML(t('discOpen'))+'</button><button class="modal-btn ghost" id="disc-review-level">'+escapeHTML(t('discReview'))+'</button></div>'
+    + '</div>';
+  /* Community rating from our own archive, loaded asynchronously. */
+  api('/levels/'+encodeURIComponent(id)).then(function(r){
+    const el = $('disc-our-score'); if(!el) return;
+    const revs = (r.ok && Array.isArray(r.data.reviews)) ? r.data.reviews : [];
+    if(!revs.length){ el.textContent = t('discNoReviews'); el.style.fontSize = '10.5px'; return; }
+    const avg = revs.reduce(function(a,x){ return a + parseFloat(x.final_score || 0); }, 0) / revs.length;
+    el.textContent = avg.toFixed(1)+'/10 · '+t('discReviewsCount').replace('{n}', revs.length);
+  });
+  $('disc-open-level').addEventListener('click', function(){ closeModalOverlay(discModal); openLevelPage(id); });
+  $('disc-review-level').addEventListener('click', function(){ closeModalOverlay(discModal); $('level-id-input').value = id; showScreen('create'); searchLevel(); });
 }
 $('disc-scan-btn').addEventListener('click', runDiscovery);
+
+/* ================= CAROUSEL DRAG-TO-SCROLL ================= */
+/* Hold & drag with the mouse on the level rows (touch already scrolls
+   natively). A real drag suppresses the following click so cards don't open
+   accidentally after dragging. */
+(function(){
+  qsa('.rank-row').forEach(function(row){
+    let down = false, dragged = false, startX = 0, startScroll = 0, pid = null;
+    row.addEventListener('pointerdown', function(e){
+      if(e.pointerType !== 'mouse' || e.button !== 0) return;
+      down = true; dragged = false; startX = e.clientX; startScroll = row.scrollLeft; pid = e.pointerId;
+    });
+    row.addEventListener('pointermove', function(e){
+      if(!down) return;
+      const dx = e.clientX - startX;
+      if(!dragged && Math.abs(dx) > 6){ dragged = true; row.classList.add('dragging'); try{ row.setPointerCapture(pid); }catch(err){} }
+      if(dragged) row.scrollLeft = startScroll - dx;
+    });
+    function release(){
+      if(!down) return;
+      down = false;
+      if(dragged){ row.classList.remove('dragging'); setTimeout(function(){ dragged = false; }, 0); }
+    }
+    row.addEventListener('pointerup', release);
+    row.addEventListener('pointercancel', release);
+    row.addEventListener('click', function(e){ if(dragged){ e.stopPropagation(); e.preventDefault(); } }, true);
+  });
+})();
 
 /* ================= INIT ================= */
 window.addEventListener('load', async function(){
