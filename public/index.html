@@ -103,7 +103,6 @@
   .admin-wt-info{ flex:1; min-width:220px; display:flex; flex-direction:column; gap:6px; }
   .admin-wt-title{ font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:17px; color:var(--white); }
   .admin-wt-meta{ font-size:12px; color:var(--dim); } .admin-wt-meta b{color:var(--white);}
-  .admin-wt-desc{ font-size:12.5px; color:var(--dim); line-height:1.6; white-space:pre-wrap; }
   .admin-wt-link{ font-family:'Space Mono',monospace; font-size:11px; color:var(--dim); word-break:break-all; text-decoration:underline; } .admin-wt-link:hover{color:var(--white);}
   .admin-wt-actions{ display:flex; flex-direction:column; gap:8px; justify-content:center; }
   .admin-approve{ background:var(--white); color:#0a0a0a; border:none; border-radius:8px; padding:12px 22px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; cursor:pointer; transition:all .2s var(--spring); }
@@ -905,13 +904,6 @@
     <div class="modal-text" style="margin-bottom:18px;" data-i18n="wtModalText">Share a YouTube video showing how to beat this level. An admin will review it before it appears on the level page.</div>
     <label class="modal-input-label" data-i18n="wtUrlLabel">YouTube link</label>
     <input type="text" id="wt-url" class="modal-input" placeholder="https://youtube.com/watch?v=…">
-    <label class="modal-input-label" data-i18n="wtDescLabel">Short description (optional)</label>
-    <input type="text" id="wt-desc" class="modal-input" maxlength="500" data-i18n-ph="wtDescPh">
-    <div class="review-rules" style="margin-bottom:16px;">
-      <svg viewBox="0 0 24 24"><path d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 6h2v6h-2V7zm0 8h2v2h-2v-2z"/></svg>
-      <span data-i18n="reviewRules">Review rules: no abusive insults, no advertising, no external links. Every submission is checked automatically before it is published.</span>
-    </div>
-    <div class="mod-reject-banner" id="mod-reject-wt"></div>
     <div class="modal-actions">
       <button class="modal-btn solid" id="wt-submit-btn" data-i18n="wtSubmitBtn">Submit for Review</button>
       <button class="modal-btn ghost" id="wt-cancel-btn" data-i18n="cancel">Cancel</button>
@@ -963,7 +955,7 @@ const i18n = {
     btnPublish:'Publish Review', createFindFirst:'Search for a level first', published:'Review published!',
     modalDupTitle:'Level already reviewed', modalDupText:'You already have a review for this level. Overwrite it?', modalOverwrite:'Overwrite',
     navAdmin:'Admin', adminQueueTitle:'Walkthrough Submissions', adminEmptyTitle:'Queue is empty', adminEmptySub:'No pending walkthrough submissions.', adminLevel:'Level', adminBy:'by', adminApprove:'Approve', adminReject:'Reject', adminApproved:'Walkthrough approved', adminRejected:'Walkthrough rejected', adminRejectTitle:'Reject this walkthrough?', adminRejectText:'The video will not be shown on the level page.',
-    wtWatch:'Watch Walkthrough', wtSubmit:'Submit Walkthrough', wtModalTitle:'Submit Walkthrough', wtModalText:'Share a YouTube video showing how to beat this level. An admin will review it before it appears on the level page.', wtUrlLabel:'YouTube link', wtDescLabel:'Short description (optional)', wtDescPh:'e.g. Full walkthrough with all coins', wtSubmitBtn:'Submit for Review', wtSubmitted:'Submitted! It will appear after admin approval.', wtUrlRequired:'Paste a YouTube link first',
+    wtWatch:'Watch Walkthrough', wtSubmit:'Submit Walkthrough', wtModalTitle:'Submit Walkthrough', wtModalText:'Share a YouTube video showing how to beat this level. An admin will review it before it appears on the level page.', wtUrlLabel:'YouTube link', wtSubmitBtn:'Submit for Review', wtSubmitted:'Submitted! It will appear after admin approval.', wtUrlRequired:'Paste a YouTube link first',
     err_invalid_youtube_url:'That does not look like a valid YouTube link', err_walkthrough_exists:'This video was already submitted for this level', err_admin_only:'Admin access required',
     enterQuery:'Enter level name or ID', levelNotFoundCreate:'Level not found. Check the spelling or ID.',
     btnEditProf:'Edit Profile', changeAvatar:'Change', changeBanner:'Change banner',
@@ -1019,7 +1011,7 @@ const i18n = {
     btnPublish:'Опубликовать', createFindFirst:'Сначала найдите уровень', published:'Рецензия опубликована!',
     modalDupTitle:'Уровень уже оценён', modalDupText:'У вас уже есть рецензия на этот уровень. Заменить её?', modalOverwrite:'Заменить',
     navAdmin:'Админ', adminQueueTitle:'Заявки на прохождения', adminEmptyTitle:'Очередь пуста', adminEmptySub:'Нет заявок, ожидающих проверки.', adminLevel:'Уровень', adminBy:'от', adminApprove:'Одобрить', adminReject:'Отклонить', adminApproved:'Прохождение одобрено', adminRejected:'Прохождение отклонено', adminRejectTitle:'Отклонить это прохождение?', adminRejectText:'Видео не будет показано на странице уровня.',
-    wtWatch:'Смотреть прохождение', wtSubmit:'Предложить прохождение', wtModalTitle:'Предложить прохождение', wtModalText:'Поделитесь YouTube-видео с прохождением уровня. Админ проверит его перед публикацией на странице уровня.', wtUrlLabel:'Ссылка на YouTube', wtDescLabel:'Короткое описание (необязательно)', wtDescPh:'например: полное прохождение со всеми монетами', wtSubmitBtn:'Отправить на проверку', wtSubmitted:'Отправлено! Появится после одобрения админом.', wtUrlRequired:'Сначала вставьте ссылку на YouTube',
+    wtWatch:'Смотреть прохождение', wtSubmit:'Предложить прохождение', wtModalTitle:'Предложить прохождение', wtModalText:'Поделитесь YouTube-видео с прохождением уровня. Админ проверит его перед публикацией на странице уровня.', wtUrlLabel:'Ссылка на YouTube', wtSubmitBtn:'Отправить на проверку', wtSubmitted:'Отправлено! Появится после одобрения админом.', wtUrlRequired:'Сначала вставьте ссылку на YouTube',
     err_invalid_youtube_url:'Это не похоже на корректную ссылку YouTube', err_walkthrough_exists:'Это видео уже предложено для этого уровня', err_admin_only:'Требуются права администратора',
     enterQuery:'Введите название или ID', levelNotFoundCreate:'Уровень не найден. Проверьте название или ID.',
     btnEditProf:'Редактировать', changeAvatar:'Заменить', changeBanner:'Заменить баннер',
@@ -1431,8 +1423,7 @@ const wtModal = $('walkthrough-modal');
 $('lvl-submit-wt').addEventListener('click', function(){
   if(!levelPage.id) return;
   if(!tokenGet()){ toast(ERR('auth_required'), 'error'); return; }
-  $('wt-url').value = ''; $('wt-desc').value = '';
-  hideModReject('mod-reject-wt');
+  $('wt-url').value = '';
   openModalOverlay(wtModal);
   setTimeout(function(){ $('wt-url').focus(); }, 100);
 });
@@ -1444,15 +1435,10 @@ $('wt-submit-btn').addEventListener('click', async function(){
   const url = $('wt-url').value.trim();
   if(!url){ toast(t('wtUrlRequired'), 'error'); $('wt-url').focus(); return; }
   const levelName = (levelPage.info && levelPage.info.name) || (levelPage.reviews[0] && levelPage.reviews[0].name) || '';
-  hideModReject('mod-reject-wt');
   setBusy(btn, true);
-  const r = await api('/levels/'+encodeURIComponent(levelPage.id)+'/walkthroughs', { method:'POST', body:{ youtube_url: url, description: $('wt-desc').value.trim(), level_name: levelName } });
+  const r = await api('/levels/'+encodeURIComponent(levelPage.id)+'/walkthroughs', { method:'POST', body:{ youtube_url: url, level_name: levelName } });
   setBusy(btn, false);
-  if(!r.ok){
-    if(isModerationError(r.data.error)) showModReject('mod-reject-wt', r.data);
-    toast(ERR(r.data.error), 'error');
-    return;
-  }
+  if(!r.ok){ toast(ERR(r.data.error), 'error'); return; }
   closeModalOverlay(wtModal);
   toast(t('wtSubmitted'), 'ok');
 });
@@ -1469,7 +1455,6 @@ async function loadAdminQueue(){
       + '<a href="'+escapeHTML(w.youtube_url)+'" target="_blank" rel="noopener noreferrer"><img class="admin-wt-thumb" src="https://i.ytimg.com/vi/'+encodeURIComponent(w.video_id)+'/mqdefault.jpg" alt="" loading="lazy"></a>'
       + '<div class="admin-wt-info"><div class="admin-wt-title">'+escapeHTML(w.level_name || ('#'+w.level_id))+'</div>'
       + '<div class="admin-wt-meta">'+t('adminLevel')+' <b>#'+escapeHTML(w.level_id)+'</b> · '+t('adminBy')+' <b>'+escapeHTML(w.username || '—')+'</b> · '+timeAgo(w.submitted_at)+'</div>'
-      + (w.description ? '<div class="admin-wt-desc">'+escapeHTML(w.description)+'</div>' : '')
       + '<a class="admin-wt-link" href="'+escapeHTML(w.youtube_url)+'" target="_blank" rel="noopener noreferrer">'+escapeHTML(w.youtube_url)+'</a></div>'
       + '<div class="admin-wt-actions"><button class="admin-approve" data-wt-action="approve" data-wt-id="'+w.id+'">'+escapeHTML(t('adminApprove'))+'</button>'
       + '<button class="admin-reject" data-wt-action="reject" data-wt-id="'+w.id+'">'+escapeHTML(t('adminReject'))+'</button></div></div>';
