@@ -1,7 +1,6 @@
 'use strict';
 const express = require('express');
 const path = require('path');
-const https = require('https');
 const cors = require('cors');
 const helmet = require('helmet');
 const { Pool } = require('pg');
@@ -9,6 +8,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Resend } = require('resend');
 const { buildCodeEmail, buildCodeEmailText } = require('./email-templates');
+const { moderateText, moderateImage } = require('./moderation');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -124,6 +124,23 @@ async function initDb() {
             ADD COLUMN IF NOT EXISTS register_ip VARCHAR(45);
         `).catch(() => {});
         await client.query(`ALTER TABLE reviews ADD COLUMN IF NOT EXISTS title VARCHAR(120);`).catch(() => {});
+        // New 5-axis scoring system (Gameplay / Sync / Design / Creativity /
+        // Optimization). Legacy 6-axis data is backfilled so old reviews keep
+        // meaningful values: music -> sync_rhythm, decoration -> design_deco,
+        // originality -> creativity. Old columns are kept for history.
+        await client.query(`
+            ALTER TABLE reviews
+            ADD COLUMN IF NOT EXISTS sync_rhythm INTEGER,
+            ADD COLUMN IF NOT EXISTS design_deco INTEGER,
+            ADD COLUMN IF NOT EXISTS creativity INTEGER;
+        `).catch(() => {});
+        await client.query(`
+            UPDATE reviews SET
+                sync_rhythm = COALESCE(sync_rhythm, music),
+                design_deco = COALESCE(design_deco, decoration),
+                creativity  = COALESCE(creativity, originality)
+            WHERE sync_rhythm IS NULL OR design_deco IS NULL OR creativity IS NULL;
+        `).catch(err => console.error('⚠️  Could not backfill new rating columns:', err.message));
         await client.query(`
             CREATE TABLE IF NOT EXISTS review_likes (
                 id SERIAL PRIMARY KEY,
@@ -136,6 +153,32 @@ async function initDb() {
             CREATE INDEX IF NOT EXISTS idx_reviews_saved ON reviews(saved_at DESC);
             CREATE INDEX IF NOT EXISTS idx_likes_review ON review_likes(review_id);
         `);
+        // Walkthrough submissions + admin flag.
+        await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;`).catch(() => {});
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS walkthroughs (
+                id SERIAL PRIMARY KEY,
+                level_id VARCHAR(50) NOT NULL,
+                level_name VARCHAR(255),
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                youtube_url TEXT NOT NULL,
+                video_id VARCHAR(20) NOT NULL,
+                description TEXT,
+                status VARCHAR(20) DEFAULT 'pending',
+                submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                reviewed_at TIMESTAMP,
+                reviewed_by INTEGER REFERENCES users(id) ON DELETE SET NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_walkthroughs_level ON walkthroughs(level_id, status);
+            CREATE INDEX IF NOT EXISTS idx_walkthroughs_status ON walkthroughs(status, submitted_at DESC);
+        `);
+        // Bootstrap admins from ADMIN_EMAILS (comma-separated) so the first
+        // moderators can be promoted without manual SQL.
+        const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+        if (adminEmails.length) {
+            await client.query('UPDATE users SET is_admin = TRUE WHERE LOWER(email) = ANY($1)', [adminEmails])
+                .catch(err => console.error('⚠️  Admin bootstrap failed:', err.message));
+        }
         console.log('✅ Database ready');
     } finally { client.release(); }
 }
@@ -146,6 +189,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 /* ============ HELPERS ============ */
 const fail = (res, status, code) => res.status(status).json({ error: code });
+
+// Structured moderation rejection so the client can explain exactly why the
+// content was blocked and offer a retry flow.
+// 422 = content rejected by moderation, 503 = moderation provider unreachable
+// (strict mode: nothing is published while moderation is down; retry later).
+const rejectContent = (res, verdict, field) => res.status(verdict.reason === 'unavailable' ? 503 : 422).json({
+    error: verdict.reason === 'unavailable' ? 'moderation_unavailable' : 'content_rejected',
+    reason: verdict.reason,
+    field,
+});
 
 // Stricter RFC-5322-ish email check: bounds local/domain part lengths,
 // rejects consecutive dots and leading/trailing dots, and requires a
@@ -198,6 +251,33 @@ const optionalAuth = (req, res, next) => {
     jwt.verify(token, JWT_SECRET, (err, user) => { if (!err) req.user = user; next(); });
 };
 
+// Must run after authenticateToken. Checks the is_admin flag in the DB on
+// every request so revoking admin rights takes effect immediately.
+const requireAdmin = async (req, res, next) => {
+    try {
+        const r = await pool.query('SELECT is_admin FROM users WHERE id = $1', [req.user.userId]);
+        if (!r.rows.length || !r.rows[0].is_admin) return fail(res, 403, 'admin_only');
+        next();
+    } catch (err) { fail(res, 500, 'server_error'); }
+};
+
+// Accepts youtube.com/watch?v=, youtu.be/, /shorts/, /embed/ and /live/
+// URLs; returns the canonical 11-char video id or null.
+function parseYouTubeId(raw) {
+    if (typeof raw !== 'string') return null;
+    let url;
+    try { url = new URL(raw.trim()); } catch (e) { return null; }
+    if (!/^https?:$/.test(url.protocol)) return null;
+    const host = url.hostname.toLowerCase().replace(/^www\.|^m\./, '');
+    let id = null;
+    if (host === 'youtu.be') id = url.pathname.slice(1).split('/')[0];
+    else if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+        if (url.pathname === '/watch') id = url.searchParams.get('v');
+        else if (/^\/(shorts|embed|live)\//.test(url.pathname)) id = url.pathname.split('/')[2];
+    }
+    return (id && /^[A-Za-z0-9_-]{11}$/.test(id)) ? id : null;
+}
+
 /* Simple in-memory rate limiter for sensitive endpoints */
 const rlStore = new Map();
 function rateLimit(max, windowMs) {
@@ -243,7 +323,7 @@ async function uploadToCloud(base64Image) {
 
 const REVIEW_FIELDS = `
     r.id, r.level_id, r.level_name, r.level_author, r.difficulty, r.difficulty_face, r.stars,
-    r.gameplay, r.flow, r.decoration, r.music, r.originality, r.optimization,
+    r.gameplay, r.sync_rhythm AS sync, r.design_deco AS design, r.creativity, r.optimization,
     r.final_score, r.title, r.review_text, r.saved_at`;
 const REVIEW_WITH_USER = `
     SELECT ${REVIEW_FIELDS}, u.username, u.avatar, u.frame,
@@ -427,7 +507,7 @@ app.delete('/api/account', authenticateToken, async (req, res) => {
 app.get('/api/profile', authenticateToken, async (req, res) => {
     try {
         const result = await pool.query(`
-            SELECT u.username, u.email, u.avatar, u.banner, u.frame, u.description, u.socials, u.created_at,
+            SELECT u.username, u.email, u.avatar, u.banner, u.frame, u.description, u.socials, u.created_at, u.is_admin,
                 (SELECT COUNT(*)::int FROM reviews r WHERE r.user_id = u.id) AS review_count,
                 (SELECT COUNT(*)::int FROM review_likes l JOIN reviews r ON r.id = l.review_id WHERE r.user_id = u.id) AS likes_received
             FROM users u WHERE u.id = $1`, [req.user.userId]);
@@ -440,6 +520,17 @@ app.post('/api/profile', authenticateToken, async (req, res) => {
     try {
         let { avatar, banner, frame, description, socials } = req.body;
         if (description && String(description).length > 300) description = String(description).slice(0, 300);
+        // Automatic moderation BEFORE anything is stored or uploaded.
+        const bioVerdict = await moderateText(description || '');
+        if (!bioVerdict.ok) return rejectContent(res, bioVerdict, 'description');
+        if (avatar && String(avatar).startsWith('data:image')) {
+            const v = await moderateImage(avatar);
+            if (!v.ok) return rejectContent(res, v, 'avatar');
+        }
+        if (banner && String(banner).startsWith('data:image')) {
+            const v = await moderateImage(banner);
+            if (!v.ok) return rejectContent(res, v, 'banner');
+        }
         avatar = await uploadToCloud(avatar);
         banner = await uploadToCloud(banner);
         await pool.query('UPDATE users SET avatar = $1, banner = $2, frame = $3, description = $4, socials = $5 WHERE id = $6',
@@ -475,7 +566,7 @@ app.post('/api/reviews', authenticateToken, async (req, res) => {
     try {
         const { level_id, level_name, level_author, difficulty, difficulty_face, stars, ratings, finalScore, title, text } = req.body;
         if (!level_id || !ratings || typeof ratings !== 'object') return fail(res, 400, 'invalid_payload');
-        const keys = ['gameplay', 'flow', 'decoration', 'music', 'originality', 'optimization'];
+        const keys = ['gameplay', 'sync', 'design', 'creativity', 'optimization'];
         for (const k of keys) {
             const v = Number(ratings[k]);
             if (!Number.isInteger(v) || v < 1 || v > 10) return fail(res, 400, 'invalid_payload');
@@ -485,15 +576,19 @@ app.post('/api/reviews', authenticateToken, async (req, res) => {
         const safeTitle = String(title || '').slice(0, 120);
         const safeText = String(text || '').slice(0, 5000);
 
+        // Automatic moderation BEFORE the review is published (or updated).
+        const verdict = await moderateText(`${safeTitle}\n${safeText}`);
+        if (!verdict.ok) return rejectContent(res, verdict, 'review');
+
         const existing = await pool.query('SELECT id FROM reviews WHERE user_id = $1 AND level_id = $2', [req.user.userId, String(level_id)]);
         if (existing.rows.length > 0) {
-            await pool.query(`UPDATE reviews SET gameplay=$1, flow=$2, decoration=$3, music=$4, originality=$5, optimization=$6, final_score=$7, title=$8, review_text=$9, saved_at=CURRENT_TIMESTAMP WHERE id=$10`,
-                [ratings.gameplay, ratings.flow, ratings.decoration, ratings.music, ratings.originality, ratings.optimization, score, safeTitle, safeText, existing.rows[0].id]);
+            await pool.query(`UPDATE reviews SET gameplay=$1, sync_rhythm=$2, design_deco=$3, creativity=$4, optimization=$5, final_score=$6, title=$7, review_text=$8, saved_at=CURRENT_TIMESTAMP WHERE id=$9`,
+                [ratings.gameplay, ratings.sync, ratings.design, ratings.creativity, ratings.optimization, score, safeTitle, safeText, existing.rows[0].id]);
             return res.json({ message: 'review_updated', id: existing.rows[0].id });
         }
-        const ins = await pool.query(`INSERT INTO reviews (user_id, level_id, level_name, level_author, difficulty, difficulty_face, stars, gameplay, flow, decoration, music, originality, optimization, final_score, title, review_text)
-            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING id`,
-            [req.user.userId, String(level_id), level_name, level_author, difficulty, difficulty_face, stars || 0, ratings.gameplay, ratings.flow, ratings.decoration, ratings.music, ratings.originality, ratings.optimization, score, safeTitle, safeText]);
+        const ins = await pool.query(`INSERT INTO reviews (user_id, level_id, level_name, level_author, difficulty, difficulty_face, stars, gameplay, sync_rhythm, design_deco, creativity, optimization, final_score, title, review_text)
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id`,
+            [req.user.userId, String(level_id), level_name, level_author, difficulty, difficulty_face, stars || 0, ratings.gameplay, ratings.sync, ratings.design, ratings.creativity, ratings.optimization, score, safeTitle, safeText]);
         res.json({ message: 'review_saved', id: ins.rows[0].id });
     } catch (err) { console.error(err); fail(res, 500, 'server_error'); }
 });
@@ -561,7 +656,7 @@ app.get('/api/feed/levels', async (req, res) => {
             SELECT r.level_id, MAX(r.level_name) AS level_name, MAX(r.level_author) AS level_author,
                 MAX(r.difficulty) AS difficulty, MAX(r.difficulty_face) AS difficulty_face, MAX(r.stars) AS stars,
                 COUNT(*)::int AS review_count, ROUND(AVG(r.final_score), 2) AS avg_score,
-                ROUND(AVG(r.decoration), 2) AS avg_beauty, MAX(r.saved_at) AS last_at,
+                ROUND(AVG(r.design_deco), 2) AS avg_beauty, MAX(r.saved_at) AS last_at,
                 MIN(CASE LOWER(COALESCE(r.difficulty, ''))
                     WHEN 'auto' THEN 0 WHEN 'easy' THEN 1 WHEN 'normal' THEN 2 WHEN 'hard' THEN 3
                     WHEN 'harder' THEN 4 WHEN 'insane' THEN 5 WHEN 'easy demon' THEN 6 WHEN 'medium demon' THEN 7
@@ -576,31 +671,62 @@ app.get('/api/feed/levels', async (req, res) => {
 app.get('/api/levels/:levelId', optionalAuth, async (req, res) => {
     try {
         const viewerId = req.user ? req.user.userId : null;
-        const result = await pool.query(`${REVIEW_WITH_USER} WHERE r.level_id = $2 GROUP BY r.id, u.id ORDER BY r.saved_at DESC LIMIT 200`, [viewerId, String(req.params.levelId)]);
-        res.json({ reviews: result.rows });
+        const levelId = String(req.params.levelId);
+        const [result, wt] = await Promise.all([
+            pool.query(`${REVIEW_WITH_USER} WHERE r.level_id = $2 GROUP BY r.id, u.id ORDER BY r.saved_at DESC LIMIT 200`, [viewerId, levelId]),
+            pool.query(`SELECT youtube_url, video_id FROM walkthroughs WHERE level_id = $1 AND status = 'approved' ORDER BY reviewed_at DESC LIMIT 1`, [levelId]),
+        ]);
+        res.json({ reviews: result.rows, walkthrough: wt.rows[0] || null });
     } catch (err) { fail(res, 500, 'server_error'); }
 });
 
-/* ============ AUDIO PROXY ============ */
-app.get('/api/audio', (req, res) => {
-    const audioUrl = req.query.url;
-    if (!audioUrl) return res.status(400).send('URL missing');
-    let parsed;
-    try { parsed = new URL(audioUrl); } catch (e) { return res.status(400).send('Bad URL'); }
-    if (parsed.protocol !== 'https:' || !/(^|\.)ngfiles\.com$|(^|\.)newgrounds\.com$/.test(parsed.hostname)) {
-        return res.status(400).send('Host not allowed');
-    }
-    const options = { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36', 'Referer': 'https://www.newgrounds.com/', 'Accept': '*/*' } };
-    let hops = 0;
-    const fetchAudio = (urlToFetch) => {
-        if (++hops > 5) { if (!res.headersSent) res.status(508).send('Too many redirects'); return; }
-        https.get(urlToFetch, options, (proxyRes) => {
-            if (proxyRes.statusCode >= 300 && proxyRes.statusCode < 400 && proxyRes.headers.location) return fetchAudio(proxyRes.headers.location);
-            res.writeHead(proxyRes.statusCode, proxyRes.headers);
-            proxyRes.pipe(res);
-        }).on('error', () => { if (!res.headersSent) res.status(500).send('Proxy error'); });
-    };
-    fetchAudio(audioUrl);
+/* ============ WALKTHROUGHS ============ */
+app.post('/api/levels/:levelId/walkthroughs', authenticateToken, rateLimit(5, 600000), async (req, res) => {
+    try {
+        const levelId = String(req.params.levelId);
+        const videoId = parseYouTubeId(req.body.youtube_url);
+        if (!videoId) return fail(res, 400, 'invalid_youtube_url');
+        const description = String(req.body.description || '').slice(0, 500);
+        // Automatic moderation BEFORE the submission enters the admin queue.
+        const verdict = await moderateText(description);
+        if (!verdict.ok) return rejectContent(res, verdict, 'walkthrough_description');
+        const levelName = String(req.body.level_name || '').slice(0, 255);
+        const dup = await pool.query(`SELECT id FROM walkthroughs WHERE level_id = $1 AND video_id = $2 AND status IN ('pending','approved')`, [levelId, videoId]);
+        if (dup.rows.length) return fail(res, 400, 'walkthrough_exists');
+        await pool.query(
+            'INSERT INTO walkthroughs (level_id, level_name, user_id, youtube_url, video_id, description) VALUES ($1,$2,$3,$4,$5,$6)',
+            [levelId, levelName || null, req.user.userId, `https://www.youtube.com/watch?v=${videoId}`, videoId, description || null]
+        );
+        res.json({ message: 'walkthrough_submitted' });
+    } catch (err) { console.error(err); fail(res, 500, 'server_error'); }
+});
+
+app.get('/api/admin/walkthroughs', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const status = ['pending', 'approved', 'rejected'].includes(String(req.query.status)) ? String(req.query.status) : 'pending';
+        const r = await pool.query(`
+            SELECT w.id, w.level_id, w.level_name, w.youtube_url, w.video_id, w.description, w.status, w.submitted_at, u.username
+            FROM walkthroughs w LEFT JOIN users u ON u.id = w.user_id
+            WHERE w.status = $1 ORDER BY w.submitted_at ASC LIMIT 100`, [status]);
+        res.json(r.rows);
+    } catch (err) { fail(res, 500, 'server_error'); }
+});
+
+app.post('/api/admin/walkthroughs/:id/decision', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const id = parseInt(req.params.id, 10);
+        const action = String(req.body.action || '');
+        if (!Number.isInteger(id) || !['approve', 'reject'].includes(action)) return fail(res, 400, 'invalid_payload');
+        const w = await pool.query('SELECT id, level_id FROM walkthroughs WHERE id = $1', [id]);
+        if (!w.rows.length) return fail(res, 404, 'not_found');
+        if (action === 'approve') {
+            // Only one approved walkthrough per level — demote any previous one.
+            await pool.query(`UPDATE walkthroughs SET status = 'rejected' WHERE level_id = $1 AND status = 'approved' AND id <> $2`, [w.rows[0].level_id, id]);
+        }
+        await pool.query('UPDATE walkthroughs SET status = $1, reviewed_at = CURRENT_TIMESTAMP, reviewed_by = $2 WHERE id = $3',
+            [action === 'approve' ? 'approved' : 'rejected', req.user.userId, id]);
+        res.json({ message: 'ok' });
+    } catch (err) { fail(res, 500, 'server_error'); }
 });
 
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
