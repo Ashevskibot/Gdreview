@@ -92,16 +92,11 @@
   .level-stars{ display:inline-flex; align-items:center; gap:6px; margin-left:14px; color:var(--white); font-size:13px; font-weight:700; }
 
   /* ---------- WALKTHROUGH ---------- */
-  .yt-icon-btn{ position:absolute; top:20px; right:20px; z-index:3; display:flex; align-items:center; justify-content:center; width:40px; height:40px; padding:0; background:#0a0a0a; border:1px solid var(--line2); border-radius:10px; color:var(--white); cursor:pointer; transition:all .22s var(--spring); }
-  .yt-icon-btn svg{width:20px;height:20px;fill:currentColor;flex-shrink:0;display:block;}
-  .yt-icon-btn:hover{ background:var(--white); color:#0a0a0a; transform:translateY(-2px) scale(1.04); box-shadow:0 8px 24px rgba(255,255,255,0.18); }
-  .yt-icon-btn[hidden]{display:none;}
+  .watch-walkthrough-btn{ display:inline-flex; align-items:center; gap:10px; margin-top:22px; padding:13px 22px; background:#0a0a0a; border:1px solid var(--line2); border-radius:10px; color:var(--white); font-size:12px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; cursor:pointer; text-decoration:none; transition:all .22s var(--spring); }
+  .watch-walkthrough-btn svg{width:20px;height:20px;fill:currentColor;flex-shrink:0;}
+  .watch-walkthrough-btn:hover{ background:var(--white); color:#0a0a0a; transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,255,255,0.18); }
   .submit-walkthrough-btn{ background:transparent; border:1px solid var(--line); color:var(--dim); border-radius:8px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; padding:12px 18px; cursor:pointer; transition:all .22s var(--spring); }
   .submit-walkthrough-btn:hover{ color:var(--white); border-color:var(--line2); transform:translateY(-1px); }
-  /* ---------- WALKTHROUGH PLAYER MODAL ---------- */
-  .wt-player-box{ max-width:880px; width:100%; padding:16px; background:var(--panel); text-align:left; }
-  .wt-player-frame{ position:relative; width:100%; padding-top:56.25%; border-radius:10px; overflow:hidden; background:#000; }
-  .wt-player-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
   .admin-queue{ display:flex; flex-direction:column; gap:16px; }
   .admin-wt-card{ display:flex; gap:18px; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px; opacity:0; transform:translateY(14px); animation:barIn .5s var(--ease) forwards; flex-wrap:wrap; }
   .admin-wt-thumb{ width:200px; max-width:100%; aspect-ratio:16/9; border-radius:10px; border:1px solid var(--line); object-fit:cover; background:var(--black2); flex-shrink:0; }
@@ -670,7 +665,6 @@
       <div class="api-status" id="api-status"></div>
 
       <div class="level-block" id="level-block">
-        <button class="yt-icon-btn" id="create-yt-btn" type="button" aria-label="Watch walkthrough" hidden></button>
         <div class="level-banner" id="level-banner"></div>
         <div class="level-content">
           <div class="eyebrow" data-i18n="nowReviewing">Now Reviewing</div>
@@ -916,15 +910,6 @@
     </div>
   </div>
 </div>
-
-<div class="modal-overlay" id="wt-player-modal">
-  <div class="modal-box wt-player-box">
-    <button class="modal-close" id="wt-player-close-btn" aria-label="Close">&times;</button>
-    <div class="wt-player-frame">
-      <iframe id="wt-player-iframe" src="" title="Walkthrough" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-    </div>
-  </div>
-</div>
 <script>
 'use strict';
 /* ================= UTILS ================= */
@@ -936,33 +921,6 @@ const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 const HEART = '<svg viewBox="0 0 24 24" width="14" height="14"><path d="M12 21s-7.6-4.7-10.1-9.3C.3 8.6 2.3 5 5.7 5c2 0 3.4 1.1 4.3 2.6h4C14.9 6.1 16.3 5 18.3 5c3.4 0 5.4 3.6 3.8 6.7C19.6 16.3 12 21 12 21z" fill="currentColor"/></svg>';
 /* Monochrome YouTube glyph — inherits currentColor from the button. */
 const YT_ICON = '<svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4L15.8 12z"/></svg>';
-/* ---------- WALKTHROUGH EMBED PLAYER ---------- */
-function youtubeVideoId(url){
-  if(!url) return null;
-  try{
-    const u = new URL(url);
-    const host = u.hostname.replace(/^www\./, '');
-    if(host === 'youtu.be') return u.pathname.slice(1).split('/')[0] || null;
-    if(host === 'youtube.com' || host === 'm.youtube.com' || host === 'music.youtube.com'){
-      if(u.searchParams.get('v')) return u.searchParams.get('v');
-      const parts = u.pathname.split('/').filter(Boolean);
-      const idx = parts.findIndex(function(p){ return p === 'embed' || p === 'shorts' || p === 'live'; });
-      if(idx !== -1 && parts[idx+1]) return parts[idx+1];
-    }
-  }catch(e){}
-  return null;
-}
-const wtPlayerModal = $('wt-player-modal'), wtPlayerIframe = $('wt-player-iframe');
-function openWalkthroughPlayer(url){
-  const vid = youtubeVideoId(url);
-  if(!vid){ toast(ERR('err_invalid_youtube_url'), 'error'); return; }
-  wtPlayerIframe.src = 'https://www.youtube.com/embed/'+encodeURIComponent(vid)+'?autoplay=1&rel=0';
-  openModalOverlay(wtPlayerModal);
-}
-function closeWalkthroughPlayer(){ closeModalOverlay(wtPlayerModal); wtPlayerIframe.src = ''; }
-$('wt-player-close-btn').addEventListener('click', closeWalkthroughPlayer);
-wtPlayerModal.addEventListener('click', function(e){ if(e.target === wtPlayerModal) closeWalkthroughPlayer(); });
-document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && wtPlayerModal.classList.contains('show')) closeWalkthroughPlayer(); });
 function scoreColors(score){ if(score >= 8.5) return {color:'#ffffff', glow:'rgba(255,255,255,0.5)'}; if(score >= 7) return {color:'#e4e4e4', glow:'rgba(255,255,255,0.4)'}; if(score >= 5) return {color:'#b8b8b8', glow:'rgba(255,255,255,0.25)'}; if(score >= 3) return {color:'#8a8a8a', glow:'rgba(255,255,255,0.12)'}; return {color:'#5a5a5a', glow:'rgba(255,255,255,0.05)'}; }
 
 /* ================= I18N ================= */
@@ -1426,18 +1384,14 @@ async function openLevelPage(id){
   const diff = info ? info.difficulty : first.difficulty;
   const thumb = 'https://levelthumbs.prevter.me/thumbnail/'+encodeURIComponent(id)+'/small';
   $('lvl-hero').innerHTML = '<div class="level-banner" style="background-image:url(\''+thumb+'\')"></div>'
-    + (levelPage.walkthrough ? '<button type="button" class="yt-icon-btn" data-wt-url="'+escapeHTML(levelPage.walkthrough.youtube_url)+'" aria-label="'+escapeHTML(t('wtWatch'))+'" title="'+escapeHTML(t('wtWatch'))+'">'+YT_ICON+'</button>' : '')
     + '<div class="level-content"><div class="eyebrow">'+t('lvlEyebrow')+' #'+escapeHTML(String(id))+'</div>'
     + '<div class="level-header-row"><div class="level-name">'+escapeHTML(name)+'</div>'+(face ? '<img class="diff-face show" src="https://gdbrowser.com/assets/difficulties/'+encodeURIComponent(face)+'.png" alt="">' : '')+'</div>'
     + '<div class="level-author">by <b>'+escapeHTML(author)+'</b>'+(stars ? '<span class="level-stars">★ '+stars+'</span>' : '')+(diff ? '<span class="level-stars">· '+escapeHTML(diff)+'</span>' : '')+'</div>'
+    + (levelPage.walkthrough ? '<a class="watch-walkthrough-btn" href="'+escapeHTML(levelPage.walkthrough.youtube_url)+'" target="_blank" rel="noopener noreferrer">'+YT_ICON+'<span>'+escapeHTML(t('wtWatch'))+'</span></a>' : '')
     + (function(){ const d = (info && info.description) ? String(info.description).trim() : ''; return '<div class="level-desc"><div class="level-desc-label">'+t('lvlDescription')+'</div><div class="level-desc-text'+(d ? '' : ' empty')+'">'+escapeHTML(d || t('lvlNoDescription'))+'</div></div>'; })()
     + '</div>';
   renderLevelStats(); renderLevelReviews();
 }
-$('lvl-hero').addEventListener('click', function(e){
-  const btn = e.target.closest('.yt-icon-btn');
-  if(btn && btn.dataset.wtUrl) openWalkthroughPlayer(btn.dataset.wtUrl);
-});
 function renderLevelStats(){
   const rs = levelPage.reviews;
   const el = $('lvl-avg');
@@ -1634,11 +1588,6 @@ async function searchLevel(){
     const data = await res.json();
     if(!data || data.error || !data.name) throw new Error('nf');
     currentLevel = { id: data.id, name: data.name, author: data.author || 'Unknown', difficulty: data.difficulty || '', difficultyFace: data.difficultyFace || '', stars: data.stars || 0 };
-    const ourInfo = await api('/levels/'+encodeURIComponent(data.id));
-    currentLevel.walkthrough = ourInfo.ok ? (ourInfo.data.walkthrough || null) : null;
-    const createYtBtn = $('create-yt-btn');
-    if(currentLevel.walkthrough){ createYtBtn.dataset.wtUrl = currentLevel.walkthrough.youtube_url; createYtBtn.hidden = false; }
-    else { delete createYtBtn.dataset.wtUrl; createYtBtn.hidden = true; }
     // Auto levels are rated on Direction & Camera instead of raw gameplay.
     $('label-text-gameplay').textContent = gameplayLabelFor(currentLevel.difficulty);
     $('level-name').textContent = data.name;
@@ -1655,11 +1604,9 @@ async function searchLevel(){
     statusEl.textContent = '✓ #'+data.id; statusEl.className = 'api-status ok';
   } catch(err){
     currentLevel = null; levelBlock.classList.remove('show'); ratingSection.classList.remove('show');
-    const createYtBtn = $('create-yt-btn'); delete createYtBtn.dataset.wtUrl; createYtBtn.hidden = true;
     statusEl.textContent = t('levelNotFoundCreate'); statusEl.className = 'api-status error';
   }
 }
-$('create-yt-btn').addEventListener('click', function(){ if(this.dataset.wtUrl) openWalkthroughPlayer(this.dataset.wtUrl); });
 $('search-btn').addEventListener('click', searchLevel);
 $('level-id-input').addEventListener('keydown', function(e){ if(e.key === 'Enter') searchLevel(); });
 
