@@ -516,16 +516,6 @@
   .fx-particle{ position:fixed; border-radius:50%; z-index:99998; pointer-events:none; animation:fxParticleBurst cubic-bezier(.16,.84,.44,1) forwards; } @keyframes fxParticleBurst{ 0%{transform:translate(0,0) scale(1);opacity:1;} 100%{transform:translate(var(--p-x,0),var(--p-y,0)) scale(0);opacity:0;} }
   .fx-score-pulse{animation:fxScorePulse 1s var(--ease);} @keyframes fxScorePulse{ 0%{text-shadow:none;transform:scale(1);} 30%{text-shadow:0 0 20px #fff, 0 0 44px #fff, 0 0 70px rgba(255,214,120,0.85);transform:scale(1.35);} 100%{text-shadow:none;transform:scale(1);} }
 
-  /* ---------- Встроенный YouTube Плеер и новая кнопка ---------- */
-  .yt-btn { position:absolute; top:32px; right:32px; z-index:10; background:rgba(10,10,10,0.65); backdrop-filter:blur(6px); border:1px solid var(--line2); border-radius:12px; color:var(--white); padding:12px; cursor:pointer; transition:all .25s var(--spring); display:flex; align-items:center; justify-content:center; }
-  .yt-btn svg { width:24px; height:24px; fill:currentColor; transition:transform .2s var(--spring); }
-  .yt-btn:hover { background:var(--white); color:#0a0a0a; border-color:var(--white); box-shadow:0 8px 24px rgba(255,255,255,0.2); transform:translateY(-2px); }
-  .yt-btn:hover svg { transform:scale(1.1); }
-  .yt-btn:active { transform:scale(0.95); }
-
-  .yt-wrapper { position:relative; width:100%; padding-bottom:56.25%; height:0; border-radius:12px; overflow:hidden; background:#000; margin-bottom:8px; box-shadow:0 10px 40px rgba(0,0,0,0.5); }
-  .yt-wrapper iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:none; }
-
   @media(max-width:760px){ header.top{justify-content:center;} nav.tabs{flex-wrap:wrap;justify-content:center;} .profile-info-bar{padding:0 20px 24px;} .home-search button{padding:14px 18px;} }
 </style>
 </head>
@@ -674,9 +664,8 @@
       </div>
       <div class="api-status" id="api-status"></div>
 
-   <div class="level-block" id="level-block">
+      <div class="level-block" id="level-block">
         <div class="level-banner" id="level-banner"></div>
-        <button class="yt-btn" id="create-yt-btn" hidden></button>
         <div class="level-content">
           <div class="eyebrow" data-i18n="nowReviewing">Now Reviewing</div>
           <div class="level-header-row">
@@ -904,15 +893,6 @@
     <div class="modal-actions">
       <button class="modal-btn solid" id="confirm-ok"></button>
       <button class="modal-btn ghost" id="confirm-cancel" data-i18n="cancel">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="yt-modal">
-  <div class="modal-box" style="max-width:860px; width:95%; padding:24px;">
-    <button class="modal-close" id="yt-close-btn" aria-label="Close">&times;</button>
-    <div class="yt-wrapper">
-      <iframe id="yt-iframe" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
     </div>
   </div>
 </div>
@@ -1403,11 +1383,11 @@ async function openLevelPage(id){
   const face = info ? info.difficultyFace : first.difficultyFace;
   const diff = info ? info.difficulty : first.difficulty;
   const thumb = 'https://levelthumbs.prevter.me/thumbnail/'+encodeURIComponent(id)+'/small';
-$('lvl-hero').innerHTML = '<div class="level-banner" style="background-image:url(\''+thumb+'\')"></div>'
-    + (levelPage.walkthrough ? '<button class="yt-btn" onclick="openVideo(\''+escapeHTML(levelPage.walkthrough.video_id)+'\')">'+YT_ICON+'</button>' : '')
+  $('lvl-hero').innerHTML = '<div class="level-banner" style="background-image:url(\''+thumb+'\')"></div>'
     + '<div class="level-content"><div class="eyebrow">'+t('lvlEyebrow')+' #'+escapeHTML(String(id))+'</div>'
     + '<div class="level-header-row"><div class="level-name">'+escapeHTML(name)+'</div>'+(face ? '<img class="diff-face show" src="https://gdbrowser.com/assets/difficulties/'+encodeURIComponent(face)+'.png" alt="">' : '')+'</div>'
     + '<div class="level-author">by <b>'+escapeHTML(author)+'</b>'+(stars ? '<span class="level-stars">★ '+stars+'</span>' : '')+(diff ? '<span class="level-stars">· '+escapeHTML(diff)+'</span>' : '')+'</div>'
+    + (levelPage.walkthrough ? '<a class="watch-walkthrough-btn" href="'+escapeHTML(levelPage.walkthrough.youtube_url)+'" target="_blank" rel="noopener noreferrer">'+YT_ICON+'<span>'+escapeHTML(t('wtWatch'))+'</span></a>' : '')
     + (function(){ const d = (info && info.description) ? String(info.description).trim() : ''; return '<div class="level-desc"><div class="level-desc-label">'+t('lvlDescription')+'</div><div class="level-desc-text'+(d ? '' : ' empty')+'">'+escapeHTML(d || t('lvlNoDescription'))+'</div></div>'; })()
     + '</div>';
   renderLevelStats(); renderLevelReviews();
@@ -1602,11 +1582,8 @@ async function searchLevel(){
     if(!searchRes.ok) throw new Error('nf');
     const searchData = await searchRes.json();
     if(!searchData || searchData === '-1' || !searchData.length) throw new Error('nf');
-  const targetId = searchData[0].id;
-    const [res, ours] = await Promise.all([
-      fetch('https://gdbrowser.com/api/level/'+targetId),
-      api('/levels/'+targetId)
-    ]);
+    const targetId = searchData[0].id;
+    const res = await fetch('https://gdbrowser.com/api/level/'+targetId);
     if(!res.ok) throw new Error('nf');
     const data = await res.json();
     if(!data || data.error || !data.name) throw new Error('nf');
@@ -1623,15 +1600,7 @@ async function searchLevel(){
     $('level-desc').style.display = 'block';
     $('level-desc-text').textContent = lvlDescription || t('lvlNoDescription');
     $('level-desc-text').classList.toggle('empty', !lvlDescription);
-  levelBlock.classList.add('show'); ratingSection.classList.add('show');
-    
-    if(ours.ok && ours.data.walkthrough) {
-        $('create-yt-btn').hidden = false;
-        $('create-yt-btn').onclick = () => openVideo(ours.data.walkthrough.video_id);
-    } else {
-        $('create-yt-btn').hidden = true;
-    }
-    
+    levelBlock.classList.add('show'); ratingSection.classList.add('show');
     statusEl.textContent = '✓ #'+data.id; statusEl.className = 'api-status ok';
   } catch(err){
     currentLevel = null; levelBlock.classList.remove('show'); ratingSection.classList.remove('show');
@@ -1941,7 +1910,6 @@ $('btn-delete-account').addEventListener('click', async function(){
 
 /* ================= INIT ================= */
 window.addEventListener('load', async function(){
-  $('create-yt-btn').innerHTML = YT_ICON;
   $('footer-year').textContent = new Date().getFullYear();
   applyI18n(); injectEyes(); buildSocialFields(); renderCriteriaGuide(); initStars();
   if(tokenGet()){
@@ -1950,21 +1918,6 @@ window.addEventListener('load', async function(){
     else if(!navigator.onLine === false){ localStorage.removeItem('gd_token'); localStorage.removeItem('gd_username'); }
   }
   setTimeout(function(){ document.body.classList.add('loaded'); }, 700);
-});
-  /* ================= YOUTUBE PLAYER ================= */
-function openVideo(videoId) {
-    $('yt-iframe').src = 'https://www.youtube.com/embed/' + encodeURIComponent(videoId) + '?autoplay=1&rel=0';
-    openModalOverlay($('yt-modal'));
-}
-$('yt-close-btn').addEventListener('click', function() {
-    closeModalOverlay($('yt-modal'));
-    $('yt-iframe').src = '';
-});
-$('yt-modal').addEventListener('click', function(e) {
-    if (e.target === $('yt-modal')) {
-        closeModalOverlay($('yt-modal'));
-        $('yt-iframe').src = '';
-    }
 });
 </script>
 </body>
