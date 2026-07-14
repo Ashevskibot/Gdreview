@@ -793,6 +793,122 @@ app.get('/api/feed/levels', async (req, res) => {
     } catch (err) { console.error(err); fail(res, 500, 'server_error'); }
 });
 
+/* ============ HOME DASHBOARD ============ */
+// Maps a difficulty filter value from the UI to a SQL WHERE fragment.
+// 'na' matches levels without a rating; everything else is an exact match
+// against the difficulty stored with the review ('easy demon', 'auto', ...).
+function difficultyFilter(diff, params) {
+    const d = String(diff || '').trim().toLowerCase();
+    if (!d) return '';
+    if (d === 'na') return `WHERE (r.difficulty IS NULL OR r.difficulty = '' OR LOWER(r.difficulty) IN ('na', 'n/a', 'unrated'))`;
+    params.push(d);
+    return `WHERE LOWER(r.difficulty) = $${params.length}`;
+}
+
+/* ---- Ranking configuration ----
+   POPULARITY SCORE (used by "Most Popular" and "Popular This Week"):
+       popularity = 3 × likes + 2 × reviews
+   Likes are the strongest endorsement signal (a reader explicitly approved a
+   review of the level); each written review counts slightly less but still
+   matters, so heavily-reviewed levels cannot be overtaken by a single review
+   that picked up a couple of likes.
+
+   TOP RATED uses an IMDb-style Bayesian weighted rating to avoid low-sample
+   bias:
+       rating = (v × R + m × C) / (v + m)
+   where v = number of reviews for the level in the window, R = the level's
+   mean score, C = the global mean score across all reviews, and m = the
+   prior weight (RANK_BAYES_PRIOR). With few reviews the rating is pulled
+   toward the global mean; it converges to the true average as v grows.
+   Levels additionally need at least RANK_MIN_REVIEWS reviews in the ranking
+   window before they appear in Top Rated at all. */
+const RANK_MIN_REVIEWS = Math.max(1, parseInt(process.env.RANK_MIN_REVIEWS, 10) || 2);
+const RANK_BAYES_PRIOR = Math.max(1, parseInt(process.env.RANK_BAYES_PRIOR, 10) || 5);
+
+/* Short-lived in-memory cache for homepage responses. The dashboard is the
+   most-hit surface and its data changes slowly, so ~45 s of staleness is a
+   good trade for eliminating nearly all repeated ranking queries. */
+const homeCache = new Map();
+const HOME_CACHE_TTL = 45000;
+function homeCacheGet(key) {
+    const hit = homeCache.get(key);
+    if (hit && Date.now() - hit.at < HOME_CACHE_TTL) return hit.payload;
+    homeCache.delete(key);
+    return null;
+}
+function homeCacheSet(key, payload) { homeCache.set(key, { at: Date.now(), payload }); }
+
+// Both RANK_BAYES_PRIOR and globalMean are server-derived numbers (never user
+// input), so inlining them into the SQL text is safe.
+const rankingFields = (globalMean) => `
+    SELECT r.level_id, MAX(r.level_name) AS level_name, MAX(r.level_author) AS level_author,
+        MAX(r.difficulty) AS difficulty, MAX(r.difficulty_face) AS difficulty_face, MAX(r.stars) AS stars,
+        COUNT(DISTINCT r.id)::int AS review_count,
+        ROUND(AVG(r.final_score), 2) AS avg_score,
+        COUNT(l.id)::int AS total_likes,
+        (COUNT(l.id) * 3 + COUNT(DISTINCT r.id) * 2)::int AS popularity,
+        ROUND((COUNT(DISTINCT r.id) * AVG(r.final_score) + ${RANK_BAYES_PRIOR} * ${globalMean}) / (COUNT(DISTINCT r.id) + ${RANK_BAYES_PRIOR}), 2) AS rating,
+        MAX(r.saved_at) AS last_at
+    FROM reviews r LEFT JOIN review_likes l ON l.review_id = r.id`;
+
+// All four homepage ranking sections in a single request so the dashboard
+// can update atomically when the difficulty filter changes.
+app.get('/api/home/rankings', async (req, res) => {
+    try {
+        const diffKey = String(req.query.difficulty || '').trim().toLowerCase();
+        const cached = homeCacheGet('rankings:' + diffKey);
+        if (cached) return res.json(cached);
+
+        const meanRes = await pool.query('SELECT ROUND(COALESCE(AVG(final_score), 5), 3) AS c FROM reviews');
+        const globalMean = Number(meanRes.rows[0].c) || 5;
+        const FIELDS = rankingFields(globalMean);
+
+        const params = [];
+        const where = difficultyFilter(diffKey, params);
+        const and = where ? where + ' AND' : 'WHERE';
+        const q = (extraWhere, having, order) => pool.query(
+            `${FIELDS} ${extraWhere} GROUP BY r.level_id ${having} ORDER BY ${order} LIMIT 8`, params);
+        const minHaving = `HAVING COUNT(DISTINCT r.id) >= ${RANK_MIN_REVIEWS}`;
+        const [popularAll, topToday, popularWeek, discussed] = await Promise.all([
+            q(where, '', 'popularity DESC, total_likes DESC, last_at DESC'),
+            // Top Rated Today: Bayesian rating over today's activity + minimum sample size.
+            q(`${and} r.saved_at > NOW() - INTERVAL '1 day'`, minHaving, 'rating DESC, popularity DESC'),
+            q(`${and} r.saved_at > NOW() - INTERVAL '7 days'`, '', 'popularity DESC, rating DESC'),
+            q(where, '', 'review_count DESC, last_at DESC'),
+        ]);
+        const payload = { popular_all: popularAll.rows, top_today: topToday.rows, popular_week: popularWeek.rows, discussed: discussed.rows };
+        homeCacheSet('rankings:' + diffKey, payload);
+        res.json(payload);
+    } catch (err) { console.error(err); fail(res, 500, 'server_error'); }
+});
+
+// Top-10 reviewer leaderboard (by total likes received) + global site stats.
+app.get('/api/home/community', async (req, res) => {
+    try {
+        const cached = homeCacheGet('community');
+        if (cached) return res.json(cached);
+        const [lb, stats] = await Promise.all([
+            pool.query(`
+                SELECT u.username, u.avatar, u.frame,
+                    COUNT(DISTINCT r.id)::int AS review_count,
+                    COUNT(l.id)::int AS likes_received
+                FROM users u
+                JOIN reviews r ON r.user_id = u.id
+                LEFT JOIN review_likes l ON l.review_id = r.id
+                WHERE u.is_verified = TRUE
+                GROUP BY u.id
+                ORDER BY likes_received DESC, review_count DESC
+                LIMIT 10`),
+            pool.query(`
+                SELECT (SELECT COUNT(*) FROM reviews)::int AS total_reviews,
+                       (SELECT COUNT(*) FROM users WHERE is_verified = TRUE)::int AS total_users`),
+        ]);
+        const payload = { leaderboard: lb.rows, stats: stats.rows[0] };
+        homeCacheSet('community', payload);
+        res.json(payload);
+    } catch (err) { console.error(err); fail(res, 500, 'server_error'); }
+});
+
 /* ============ LEVEL PAGE ============ */
 app.get('/api/levels/:levelId', optionalAuth, async (req, res) => {
     try {
