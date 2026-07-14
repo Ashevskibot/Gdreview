@@ -92,9 +92,15 @@
   .level-stars{ display:inline-flex; align-items:center; gap:6px; margin-left:14px; color:var(--white); font-size:13px; font-weight:700; }
 
   /* ---------- WALKTHROUGH ---------- */
-  .watch-walkthrough-btn{ display:inline-flex; align-items:center; gap:10px; margin-top:22px; padding:13px 22px; background:#0a0a0a; border:1px solid var(--line2); border-radius:10px; color:var(--white); font-size:12px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; cursor:pointer; text-decoration:none; transition:all .22s var(--spring); }
-  .watch-walkthrough-btn svg{width:20px;height:20px;fill:currentColor;flex-shrink:0;}
-  .watch-walkthrough-btn:hover{ background:var(--white); color:#0a0a0a; transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,255,255,0.18); }
+  /* Icon-only walkthrough button — pinned top-right of the level container */
+  .wt-icon-btn{ position:absolute; top:18px; right:18px; z-index:5; width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:rgba(10,10,10,0.65); backdrop-filter:blur(4px); border:1px solid var(--line2); border-radius:10px; color:var(--white); cursor:pointer; transition:all .22s var(--spring); }
+  .wt-icon-btn svg{ width:22px; height:22px; fill:currentColor; display:block; }
+  .wt-icon-btn:hover{ background:var(--white); color:#0a0a0a; transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,255,255,0.18); }
+  .wt-icon-btn[hidden]{ display:none; }
+  /* Embedded YouTube player modal */
+  .wt-player-box{ max-width:860px; width:100%; padding:52px 16px 16px; background:var(--black2); }
+  .wt-video-wrap{ position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:10px; overflow:hidden; border:1px solid var(--line); }
+  .wt-video-wrap iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
   .submit-walkthrough-btn{ background:transparent; border:1px solid var(--line); color:var(--dim); border-radius:8px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; padding:12px 18px; cursor:pointer; transition:all .22s var(--spring); }
   .submit-walkthrough-btn:hover{ color:var(--white); border-color:var(--line2); transform:translateY(-1px); }
   .admin-queue{ display:flex; flex-direction:column; gap:16px; }
@@ -665,6 +671,7 @@
       <div class="api-status" id="api-status"></div>
 
       <div class="level-block" id="level-block">
+        <button class="wt-icon-btn" id="create-wt-play" hidden aria-label="Watch Walkthrough" title="Watch Walkthrough"></button>
         <div class="level-banner" id="level-banner"></div>
         <div class="level-content">
           <div class="eyebrow" data-i18n="nowReviewing">Now Reviewing</div>
@@ -908,6 +915,13 @@
       <button class="modal-btn solid" id="wt-submit-btn" data-i18n="wtSubmitBtn">Submit for Review</button>
       <button class="modal-btn ghost" id="wt-cancel-btn" data-i18n="cancel">Cancel</button>
     </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="wt-player-modal">
+  <div class="modal-box wt-player-box">
+    <button class="modal-close" id="wt-player-close" aria-label="Close">&times;</button>
+    <div class="wt-video-wrap" id="wt-video-wrap"></div>
   </div>
 </div>
 <script>
@@ -1387,9 +1401,11 @@ async function openLevelPage(id){
     + '<div class="level-content"><div class="eyebrow">'+t('lvlEyebrow')+' #'+escapeHTML(String(id))+'</div>'
     + '<div class="level-header-row"><div class="level-name">'+escapeHTML(name)+'</div>'+(face ? '<img class="diff-face show" src="https://gdbrowser.com/assets/difficulties/'+encodeURIComponent(face)+'.png" alt="">' : '')+'</div>'
     + '<div class="level-author">by <b>'+escapeHTML(author)+'</b>'+(stars ? '<span class="level-stars">★ '+stars+'</span>' : '')+(diff ? '<span class="level-stars">· '+escapeHTML(diff)+'</span>' : '')+'</div>'
-    + (levelPage.walkthrough ? '<a class="watch-walkthrough-btn" href="'+escapeHTML(levelPage.walkthrough.youtube_url)+'" target="_blank" rel="noopener noreferrer">'+YT_ICON+'<span>'+escapeHTML(t('wtWatch'))+'</span></a>' : '')
+    + (levelPage.walkthrough ? '<button class="wt-icon-btn" id="lvl-wt-play" title="'+escapeHTML(t('wtWatch'))+'" aria-label="'+escapeHTML(t('wtWatch'))+'">'+YT_ICON+'</button>' : '')
     + (function(){ const d = (info && info.description) ? String(info.description).trim() : ''; return '<div class="level-desc"><div class="level-desc-label">'+t('lvlDescription')+'</div><div class="level-desc-text'+(d ? '' : ' empty')+'">'+escapeHTML(d || t('lvlNoDescription'))+'</div></div>'; })()
     + '</div>';
+  const wtPlay = $('lvl-wt-play');
+  if(wtPlay) wtPlay.addEventListener('click', function(){ openWalkthroughPlayer(levelPage.walkthrough); });
   renderLevelStats(); renderLevelReviews();
 }
 function renderLevelStats(){
@@ -1417,6 +1433,43 @@ function renderLevelReviews(){
 $('lvl-sort').addEventListener('change', renderLevelReviews);
 $('level-back').addEventListener('click', function(){ showScreen('home'); if(!$('feed-content').innerHTML.trim()) loadFeed(); });
 $('lvl-write-btn').addEventListener('click', function(){ if(!levelPage.id) return; $('level-id-input').value = levelPage.id; showScreen('create'); searchLevel(); });
+
+/* ================= WALKTHROUGH PLAYER ================= */
+const wtPlayerModal = $('wt-player-modal');
+/* Robust client-side ID extraction: youtu.be/ID, watch?v=ID, /shorts/, /embed/,
+   /live/, music.youtube, protocol-less links, and bare 11-char IDs. */
+function parseYouTubeIdClient(raw){
+  if(typeof raw !== 'string') return null;
+  const s = raw.trim();
+  if(/^[A-Za-z0-9_-]{11}$/.test(s)) return s;
+  let url; try{ url = new URL(/^https?:\/\//i.test(s) ? s : 'https://'+s); }catch(e){ return null; }
+  const host = url.hostname.toLowerCase().replace(/^www\.|^m\./,'');
+  let id = null;
+  if(host === 'youtu.be') id = url.pathname.slice(1).split('/')[0];
+  else if(host === 'youtube.com' || host === 'youtube-nocookie.com' || host === 'music.youtube.com'){
+    if(url.pathname === '/watch') id = url.searchParams.get('v');
+    else { const m = url.pathname.match(/^\/(shorts|embed|live|v)\/([^\/?#]+)/); if(m) id = m[2]; }
+  }
+  return (id && /^[A-Za-z0-9_-]{11}$/.test(id)) ? id : null;
+}
+function openWalkthroughPlayer(wt){
+  if(!wt) return;
+  const id = (wt.video_id && /^[A-Za-z0-9_-]{11}$/.test(wt.video_id)) ? wt.video_id : parseYouTubeIdClient(wt.youtube_url);
+  if(!id){ toast(ERR('invalid_youtube_url'), 'error'); return; }
+  /* Always the official embed format — prevents playback error 153. The explicit
+     referrerpolicy overrides the page-level no-referrer meta (another 153 cause). */
+  $('wt-video-wrap').innerHTML = '<iframe src="https://www.youtube.com/embed/'+encodeURIComponent(id)+'?autoplay=1&rel=0" title="Walkthrough" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+  openModalOverlay(wtPlayerModal);
+}
+function closeWalkthroughPlayer(){
+  closeModalOverlay(wtPlayerModal);
+  $('wt-video-wrap').innerHTML = ''; // remove the iframe from the DOM so audio stops
+}
+$('wt-player-close').addEventListener('click', closeWalkthroughPlayer);
+wtPlayerModal.addEventListener('click', function(e){ if(e.target === wtPlayerModal) closeWalkthroughPlayer(); });
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && wtPlayerModal.classList.contains('show')) closeWalkthroughPlayer(); });
+$('create-wt-play').innerHTML = YT_ICON;
+$('create-wt-play').addEventListener('click', function(){ if(currentLevel && currentLevel.walkthrough) openWalkthroughPlayer(currentLevel.walkthrough); });
 
 /* ================= WALKTHROUGHS ================= */
 const wtModal = $('walkthrough-modal');
@@ -1588,6 +1641,13 @@ async function searchLevel(){
     const data = await res.json();
     if(!data || data.error || !data.name) throw new Error('nf');
     currentLevel = { id: data.id, name: data.name, author: data.author || 'Unknown', difficulty: data.difficulty || '', difficultyFace: data.difficultyFace || '', stars: data.stars || 0 };
+    // Load the approved walkthrough (if any) so the icon shows on this page too.
+    currentLevel.walkthrough = null;
+    $('create-wt-play').hidden = true;
+    api('/levels/'+encodeURIComponent(data.id)).then(function(wr){
+      const wt = wr.ok ? (wr.data.walkthrough || null) : null;
+      if(currentLevel && String(currentLevel.id) === String(data.id)){ currentLevel.walkthrough = wt; $('create-wt-play').hidden = !wt; }
+    });
     // Auto levels are rated on Direction & Camera instead of raw gameplay.
     $('label-text-gameplay').textContent = gameplayLabelFor(currentLevel.difficulty);
     $('level-name').textContent = data.name;
@@ -1604,6 +1664,7 @@ async function searchLevel(){
     statusEl.textContent = '✓ #'+data.id; statusEl.className = 'api-status ok';
   } catch(err){
     currentLevel = null; levelBlock.classList.remove('show'); ratingSection.classList.remove('show');
+    $('create-wt-play').hidden = true;
     statusEl.textContent = t('levelNotFoundCreate'); statusEl.className = 'api-status error';
   }
 }
