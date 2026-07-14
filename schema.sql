@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(100) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255),         -- NULL для аккаунтов, созданных через Google Sign-In
+    google_id VARCHAR(255),             -- Google OAuth subject (sub); уникальный индекс ниже
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     avatar TEXT,
     banner TEXT,
@@ -107,3 +108,11 @@ CREATE TABLE IF NOT EXISTS walkthroughs (
 
 CREATE INDEX IF NOT EXISTS idx_walkthroughs_level ON walkthroughs(level_id, status);
 CREATE INDEX IF NOT EXISTS idx_walkthroughs_status ON walkthroughs(status, submitted_at DESC);
+
+-- ============================================================
+-- Google Sign-In (server.js применяет автоматически при старте)
+-- ============================================================
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255);
+ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);
