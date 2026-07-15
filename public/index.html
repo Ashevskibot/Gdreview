@@ -546,7 +546,6 @@
   .wheel-marker.tick .wheel-marker-tip.top{ transform:translateY(3px); }
   .wheel-marker.tick .wheel-marker-tip.bottom{ transform:translateY(-3px); }
   .wheel-empty{ position:absolute; inset:0; z-index:6; display:flex; align-items:center; justify-content:center; text-align:center; padding:20px; font-family:'Space Mono',monospace; font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:#e8a1a1; background:rgba(8,8,8,0.66); backdrop-filter:blur(4px); animation:fadeIn .3s ease; }
-  .wheel-empty.loading{ color:rgba(255,255,255,0.9); }
   .wheel-empty[hidden]{ display:none; }
 
   /* ---------- RANDOM LEVEL: CONTROLS & FILTERS ---------- */
@@ -1354,7 +1353,7 @@ const i18n = {
     secPopularAll:'Most Popular Levels — All Time', secTopToday:'Top Rated Popular Levels — Today', secPopularWeek:'Popular Levels — This Week', secDiscussed:'Most Discussed Levels', secCommunity:'Global Statistics & Top Reviewers', secLatest:'Latest Reviews',
     spinBannerTitle:'Random Level', spinBannerSub:'Enter the spin room — a living wheel of levels picks your next one to play & review', spinBannerCta:'Enter →',
     spinEyebrow:'Random Level', spinTitle:'Spin the Wheel', spinBtn:'Spin', spinBtnBusy:'Spinning…', spinFDiff:'Difficulties', spinFCat:'Category', spinFLen:'Length', spinFMinDl:'Minimum downloads', spinFExtra:'Extras', spinFStarred:'Starred levels only', spinDlAny:'Any',
-    spinPoolCount:'{n} levels in the wheel', spinPoolEmpty:'No levels match — loosen the filters', spinLoading:'Filling the wheel…', spinSearching:'Searching the archive… {matches}/{target} eligible · {pages} pages scanned', spinSearchPaused:'Archive search paused — check your connection or change a filter', spinDiffLocked:'Keep at least one difficulty on', spinResultEyebrow:'Your level', spinOpen:'Open Level', spinReview:'Write Review', spinAgain:'Spin Again',
+    spinPoolCount:'{n} levels in the wheel', spinPoolEmpty:'No levels match — loosen the filters', spinLoading:'Filling the wheel…', spinDiffLocked:'Keep at least one difficulty on', spinResultEyebrow:'Your level', spinOpen:'Open Level', spinReview:'Write Review', spinAgain:'Spin Again',
     spinModeGlobal:'Global Random', spinModeCustom:'Custom Wheel', spinCatAll:'Entire Archive', spinPoolStream:'{n} levels discovered — the entire archive is in play',
     spinCustomTitle:'Build your wheel', spinCustomSub:'Search any level, add it to your wheel and drag to reorder — perfect for challenge wheels with friends or community events.', spinCustomCount:'{n} levels in your wheel', spinCustomEmpty:'Your wheel is empty — search and add levels below', spinCustomAdd:'Add', spinCustomAdded:'In wheel', spinCustomRemove:'Remove', spinCustomSearchPh:'Search levels by name or ID…', spinCustomSearchEmpty:'No levels found', spinCustomLimit:'Wheel is full ({n} levels max)',
     spinStatLen:'Length', spinStatDownloads:'Downloads', spinStatLikes:'Likes', spinStatStars:'Stars', spinStatScore:'Community Score', spinNoReviews:'No reviews yet', spinReviewsCount:'{n} reviews',
@@ -1423,7 +1422,7 @@ const i18n = {
     secPopularAll:'Самые популярные уровни — за всё время', secTopToday:'Лучшие среди популярных — сегодня', secPopularWeek:'Популярные уровни — за неделю', secDiscussed:'Самые обсуждаемые уровни', secCommunity:'Статистика и топ рецензентов', secLatest:'Последние рецензии',
     spinBannerTitle:'Случайный уровень', spinBannerSub:'Войдите в спин-зал — живое колесо уровней выберет, что играть и оценивать дальше', spinBannerCta:'Войти →',
     spinEyebrow:'Случайный уровень', spinTitle:'Крутите колесо', spinBtn:'Крутить', spinBtnBusy:'Крутится…', spinFDiff:'Сложности', spinFCat:'Категория', spinFLen:'Длина', spinFMinDl:'Минимум скачиваний', spinFExtra:'Дополнительно', spinFStarred:'Только со звёздами', spinDlAny:'Любое',
-    spinPoolCount:'Уровней в колесе: {n}', spinPoolEmpty:'Ничего не подходит — ослабьте фильтры', spinLoading:'Заполняем колесо…', spinSearching:'Ищем в архиве… подходит: {matches}/{target} · страниц: {pages}', spinSearchPaused:'Поиск в архиве приостановлен — проверьте соединение или измените фильтр', spinDiffLocked:'Оставьте хотя бы одну сложность', spinResultEyebrow:'Ваш уровень', spinOpen:'Открыть уровень', spinReview:'Написать рецензию', spinAgain:'Крутить ещё',
+    spinPoolCount:'Уровней в колесе: {n}', spinPoolEmpty:'Ничего не подходит — ослабьте фильтры', spinLoading:'Заполняем колесо…', spinDiffLocked:'Оставьте хотя бы одну сложность', spinResultEyebrow:'Ваш уровень', spinOpen:'Открыть уровень', spinReview:'Написать рецензию', spinAgain:'Крутить ещё',
     spinModeGlobal:'Общий рандом', spinModeCustom:'Своё колесо', spinCatAll:'Весь архив', spinPoolStream:'Найдено уровней: {n} — в игре весь архив', 
     spinCustomTitle:'Соберите своё колесо', spinCustomSub:'Найдите любой уровень, добавьте его в колесо и перетаскивайте для изменения порядка — идеально для челленджей с друзьями и комьюнити-ивентов.', spinCustomCount:'Уровней в вашем колесе: {n}', spinCustomEmpty:'Колесо пустое — найдите и добавьте уровни ниже', spinCustomAdd:'Добавить', spinCustomAdded:'В колесе', spinCustomRemove:'Убрать', spinCustomSearchPh:'Поиск уровней по названию или ID…', spinCustomSearchEmpty:'Ничего не найдено', spinCustomLimit:'Колесо заполнено (макс. {n})',
     spinStatLen:'Длина', spinStatDownloads:'Скачивания', spinStatLikes:'Лайки', spinStatStars:'Звёзды', spinStatScore:'Оценка сообщества', spinNoReviews:'Пока нет рецензий', spinReviewsCount:'{n} рец.',
@@ -2549,10 +2548,10 @@ const SFX = { tick:function(){}, spinStart:function(){}, slowdown:function(){}, 
 const WHEEL_STEP = 248; /* card width 232px + 16px gap — keep in sync with CSS */
 const SPIN_CATS = [ ['recent','spinCatAll'], ['awarded','popRated'], ['featured','popFeatured'], ['magic','popMagic'], ['trending','popTrending'] ];
 const SPIN_LEN = [ ['','lenAny'], ['0','Tiny'], ['1','Short'], ['2','Medium'], ['3','Long'], ['4','XL'] ];
-/* The scanner deliberately builds a substantial eligible pool before the
-   wheel becomes playable. Tune this within the 200–500 range if needed. */
-const WHEEL_TARGET_POOL = 300;
-const ARCHIVE_SCAN_BATCH = 5;
+/* Random-page window per category. 'recent' walks the raw upload stream of
+   the whole archive; the fetcher falls back to shallower pages when a deep
+   random page comes back empty. */
+const SPIN_PAGES = { recent:6000, awarded:40, featured:30, magic:15, trending:6 };
 const DL_STEPS = [ 0, 1000, 10000, 50000, 100000, 500000, 1000000 ];
 const GD_LENGTH_NAMES = ['Tiny','Short','Medium','Long','XL'];
 function levelLengthLabel(lv){ if(lv == null) return '—'; const raw = lv.length; if(typeof raw === 'string' && raw) return raw; const n = Number(raw); return GD_LENGTH_NAMES[n] || '—'; }
@@ -2563,10 +2562,11 @@ const spinFilters = {
   cat: 'recent', len: '', minDl: 0, starred: false
 };
 const spinState = { mode:'global' };
-/* `seen` is an archive cache, never evidence that there are no matches. The
-   scanner advances through every page until it has a useful eligible pool or
-   the upstream search endpoint explicitly reports that the archive is over. */
-const wheel = { seen:new Map(), queue:[], recycleBag:[], seq:0, base:0, offset:0, vel:0, idleVel:26, raf:0, lastTs:0, lastTick:-1, spinning:false, anim:null, searching:false, exhausted:false, searchError:false, nextPage:0, pagesScanned:0, fetchToken:0, active:false, result:null };
+/* Streaming pool: `seen` holds every level discovered this session, `queue`
+   holds upcoming eligible levels. The queue is refilled endlessly from random
+   archive pages, so the whole database is in play while the DOM only ever
+   contains a small recycled strip of cards. */
+const wheel = { seen:new Map(), queue:[], recycleBag:[], seq:0, base:0, offset:0, vel:0, idleVel:26, raf:0, lastTs:0, lastTick:-1, spinning:false, anim:null, refilling:false, fetchToken:0, active:false, result:null };
 /* Custom Wheel: a user-built collection, persisted locally (sharing-ready). */
 const CUSTOM_MAX = 50;
 let customWheel = safeParse(localStorage.getItem('gd_custom_wheel')) || [];
@@ -2583,17 +2583,6 @@ function eligibleWheelCount(){
   let n = wheel.queue.length;
   for(let i = 0; i < wheel.recycleBag.length; i++) if(spinEligible(wheel.recycleBag[i])) n++;
   return n;
-}
-function matchingArchiveCount(){
-  let n = 0;
-  wheel.seen.forEach(function(lv){ if(spinEligible(lv)) n++; });
-  return n;
-}
-function spinSearchText(){
-  return t('spinSearching')
-    .replace('{matches}', String(matchingArchiveCount()))
-    .replace('{target}', String(WHEEL_TARGET_POOL))
-    .replace('{pages}', String(wheel.pagesScanned));
 }
 
 function normDiff(lv){ const d = String(lv.difficulty || '').toLowerCase().trim(); if(!d || d === 'n/a' || d === 'unrated') return 'na'; return d; }
@@ -2635,7 +2624,7 @@ function nextWheelLevel(){
     if(!customWheel.length) return null;
     return customWheel[wheel.seq % customWheel.length];
   }
-  ensureArchivePool();
+  maybeRefill();
   if(wheel.queue.length){
     const lv = wheel.queue.shift();
     wheel.recycleBag.push(lv);
@@ -2681,31 +2670,10 @@ function initWheelStrip(){
   wheelApplyTransform(); updateSpinButton();
 }
 function updateWheelEmpty(){
+  const empty = eligibleWheelCount() === 0 && !wheel.refilling;
   const box = $('wheel-empty');
-  const empty = eligibleWheelCount() === 0;
-  if(spinState.mode === 'custom'){
-    box.hidden = !empty;
-    box.classList.remove('loading');
-    if(empty) box.textContent = t('spinCustomEmpty');
-    return;
-  }
-  /* An empty wheel during a scan is progress, not a negative result. */
-  if(empty && wheel.searching){
-    box.hidden = false;
-    box.classList.add('loading');
-    box.textContent = spinSearchText();
-  } else if(empty && wheel.searchError){
-    box.hidden = false;
-    box.classList.add('loading');
-    box.textContent = t('spinSearchPaused');
-  } else if(empty && wheel.exhausted){
-    box.hidden = false;
-    box.classList.remove('loading');
-    box.textContent = t('spinPoolEmpty');
-  } else {
-    box.hidden = true;
-    box.classList.remove('loading');
-  }
+  box.hidden = !empty;
+  if(empty) box.textContent = t(spinState.mode === 'custom' ? 'spinCustomEmpty' : 'spinPoolEmpty');
 }
 
 /* ---- Motion: idle drift, spin tween, blur, parallax, marker ticks ---- */
@@ -2766,8 +2734,7 @@ function wheelTickCheck(){
 /* ---- Spin: pick a far-ahead landing card and tween the exact distance ---- */
 function updateSpinButton(){
   const btn = $('spin-btn');
-  const archiveStillBuilding = spinState.mode === 'global' && wheel.searching;
-  btn.disabled = wheel.spinning || archiveStillBuilding || eligibleWheelCount() < 2;
+  btn.disabled = wheel.spinning || eligibleWheelCount() < 2;
   btn.textContent = wheel.spinning ? t('spinBtnBusy') : t('spinBtn');
 }
 function updatePoolStatus(){
@@ -2776,13 +2743,11 @@ function updatePoolStatus(){
     el.textContent = customWheel.length ? t('spinCustomCount').replace('{n}', customWheel.length) : t('spinCustomEmpty');
     return;
   }
-  if(wheel.searching){ el.textContent = spinSearchText(); return; }
-  if(wheel.searchError){ el.textContent = t('spinSearchPaused'); return; }
-  if(wheel.exhausted && !matchingArchiveCount()){ el.textContent = t('spinPoolEmpty'); return; }
-  el.textContent = matchingArchiveCount() ? t('spinPoolStream').replace('{n}', matchingArchiveCount()) : t('spinLoading');
+  if(wheel.refilling && !wheel.seen.size){ el.textContent = t('spinLoading'); return; }
+  el.textContent = eligibleWheelCount() ? t('spinPoolStream').replace('{n}', wheel.seen.size) : t('spinPoolEmpty');
 }
 function startSpin(){
-  if(wheel.spinning || wheel.searching || eligibleWheelCount() < 2 || wheel.anim) return;
+  if(wheel.spinning || eligibleWheelCount() < 2 || wheel.anim) return;
   const cards = liveWheelCards();
   const ref = cards[cards.length - 1];
   if(!ref) return;
@@ -2869,7 +2834,7 @@ function hideSpinResult(){
 $('sr-backdrop').addEventListener('click', hideSpinResult);
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !$('spin-result').hidden) hideSpinResult(); });
 
-/* ---- Streaming pool: sequential archive scan, never cache-only emptiness ---- */
+/* ---- Streaming pool: endless random pages from the whole archive ---- */
 function spinQuery(page){
   const params = new URLSearchParams();
   params.set('count','10'); params.set('page', String(page)); params.set('type', spinFilters.cat);
@@ -2877,106 +2842,61 @@ function spinQuery(page){
   return 'https://gdbrowser.com/api/search/*?' + params.toString();
 }
 function shuffleArr(arr){ for(let i = arr.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp; } return arr; }
-function rebuildEligibleQueue(){
-  const pool = [];
-  wheel.seen.forEach(function(lv){ if(spinEligible(lv)) pool.push(lv); });
-  wheel.queue = shuffleArr(pool);
-  wheel.recycleBag = [];
-}
-async function fetchArchivePage(page){
-  /* A failed request is not an empty archive. Retry before pausing the scan,
-     then leave the wheel in a recoverable progress state instead of lying. */
-  for(let attempt = 0; attempt < 3; attempt++){
-    try{
-      const res = await fetch(spinQuery(page));
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      const data = await res.json();
-      if(data === '-1' || (Array.isArray(data) && data.length === 0)) return { end:true, levels:[] };
-      if(Array.isArray(data)) return { end:false, levels:data };
-      throw new Error('Unexpected archive response');
-    }catch(err){
-      if(attempt === 2) return { error:true };
-    }
-  }
-  return { error:true };
-}
-function addArchiveLevels(levels){
-  const fresh = [];
-  levels.forEach(function(lv){
-    if(!lv || lv.id == null) return;
-    const id = String(lv.id);
-    if(wheel.seen.has(id)) return;
-    wheel.seen.set(id, lv);
-    if(spinEligible(lv)) fresh.push(lv);
-  });
-  shuffleArr(fresh);
-  fresh.forEach(function(lv){ wheel.queue.push(lv); });
-}
-function ensureArchivePool(){
-  if(spinState.mode !== 'global' || wheel.searching || wheel.exhausted || matchingArchiveCount() >= WHEEL_TARGET_POOL) return;
-  scanArchive();
-}
-async function scanArchive(){
-  if(wheel.searching || spinState.mode !== 'global') return;
-  wheel.searching = true;
-  wheel.searchError = false;
+function maybeRefill(){ if(spinState.mode === 'global' && wheel.queue.length < 40 && !wheel.refilling) refillQueue(); }
+async function refillQueue(){
+  if(wheel.refilling || spinState.mode !== 'global') return;
+  wheel.refilling = true;
   const token = wheel.fetchToken;
-  updatePoolStatus(); updateSpinButton(); updateWheelEmpty();
-  while(spinState.mode === 'global' && token === wheel.fetchToken && !wheel.exhausted && matchingArchiveCount() < WHEEL_TARGET_POOL){
-    const pages = [];
-    for(let i = 0; i < ARCHIVE_SCAN_BATCH; i++) pages.push(wheel.nextPage + i);
-    const results = await Promise.all(pages.map(fetchArchivePage));
-    if(spinState.mode !== 'global' || token !== wheel.fetchToken) return;
-    let retryPage = null;
-    for(let i = 0; i < results.length; i++){
-      const result = results[i];
-      if(result.error){ retryPage = pages[i]; break; }
-      wheel.nextPage = pages[i] + 1;
-      wheel.pagesScanned++;
-      if(result.end){ wheel.exhausted = true; break; }
-      addArchiveLevels(result.levels);
-      if(matchingArchiveCount() >= WHEEL_TARGET_POOL) break;
-    }
-    if(retryPage != null){
-      /* Keep searching; a transient network failure can never be treated as
-         archive exhaustion or as evidence that filters have no matches. */
-      wheel.nextPage = retryPage;
-      wheel.searchError = true;
-      updatePoolStatus(); updateWheelEmpty();
-      await new Promise(function(resolve){ setTimeout(resolve, 1500); });
-      continue;
-    }
-    wheel.searchError = false;
-    updatePoolStatus(); updateWheelEmpty();
-    if(wheel.active && eligibleWheelCount()){
-      if(!liveWheelCards().length) initWheelStrip(); else ensureWheelFilled();
-    }
+  /* Random deep pages first for maximum variety across the whole archive;
+     progressively shallower ranges as a fallback so results always arrive. */
+  const ranges = [ SPIN_PAGES[spinFilters.cat] || 10, 60, 8 ];
+  let added = 0;
+  for(let r = 0; r < ranges.length && added === 0; r++){
+    const cap = Math.max(4, ranges[r]);
+    const pages = []; const used = {};
+    while(pages.length < 4){ const p = Math.floor(Math.random() * cap); if(!used[p]){ used[p] = 1; pages.push(p); } }
+    const results = await Promise.all(pages.map(function(p){
+      return fetch(spinQuery(p)).then(function(res){ return res.ok ? res.json() : null; }).catch(function(){ return null; });
+    }));
+    if(spinState.mode !== 'global' || token !== wheel.fetchToken){ if(token === wheel.fetchToken) wheel.refilling = false; return; }
+    const fresh = [];
+    results.forEach(function(d){ if(d && d !== '-1' && Array.isArray(d)) d.forEach(function(lv){
+      if(!lv || lv.id == null) return;
+      const id = String(lv.id);
+      if(wheel.seen.has(id)) return;
+      wheel.seen.set(id, lv);
+      if(spinEligible(lv)) fresh.push(lv);
+    }); });
+    shuffleArr(fresh);
+    fresh.forEach(function(lv){ wheel.queue.push(lv); });
+    added = fresh.length;
   }
-  if(token !== wheel.fetchToken) return;
-  wheel.searching = false;
+  wheel.refilling = false;
   updatePoolStatus(); updateSpinButton(); updateWheelEmpty();
-  if(wheel.active && eligibleWheelCount()){
-    if(!liveWheelCards().length) initWheelStrip(); else ensureWheelFilled();
-  }
+  if(wheel.active && eligibleWheelCount()){ if(!liveWheelCards().length) initWheelStrip(); else ensureWheelFilled(); }
 }
-function loadSpinStream(){
-  ++wheel.fetchToken;
-  wheel.seen = new Map(); wheel.queue = []; wheel.recycleBag = [];
-  wheel.searching = false; wheel.exhausted = false; wheel.searchError = false;
-  wheel.nextPage = 0; wheel.pagesScanned = 0;
-  ensureArchivePool();
+async function loadSpinStream(){
+  const token = ++wheel.fetchToken;
+  wheel.seen = new Map(); wheel.queue = []; wheel.recycleBag = []; wheel.refilling = false;
+  $('wheel-empty').hidden = true;
+  const first = refillQueue();
+  updatePoolStatus(); updateSpinButton();
+  await first;
+  if(token !== wheel.fetchToken) return;
   initWheelStrip();
-  updatePoolStatus(); updateSpinButton(); updateWheelEmpty();
+  updatePoolStatus(); updateSpinButton();
 }
 
 /* ---- Animated live filtering: ineligible cards physically leave the wheel,
    the remaining cards slide together, and the pool updates in real time ---- */
 function applySpinEligibility(){
   if(spinState.mode !== 'global') return;
-  /* Rebuild from the known archive slice, then keep scanning beyond it until
-     the selected filters have a full pool or the endpoint is exhausted. */
-  rebuildEligibleQueue();
-  ensureArchivePool();
+  /* Rebuild the upcoming queue from everything discovered so far — levels
+     from re-enabled difficulties immediately rejoin the wheel. */
+  const arr = [];
+  wheel.seen.forEach(function(lv){ if(spinEligible(lv)) arr.push(lv); });
+  wheel.queue = shuffleArr(arr);
+  wheel.recycleBag = [];
   updatePoolStatus(); updateSpinButton();
   /* Ineligible cards physically leave the wheel; the rest slide together. */
   qsa('#wheel-track .wheel-card').forEach(function(el){
@@ -2990,6 +2910,7 @@ function applySpinEligibility(){
   });
   updateWheelEmpty();
   if(eligibleWheelCount()){ if(!liveWheelCards().length) initWheelStrip(); else ensureWheelFilled(); }
+  maybeRefill();
 }
 
 /* ---- Filter panel ---- */
@@ -3168,16 +3089,9 @@ $('spin-mode').addEventListener('click', function(e){
   qsa('#spin-mode .spin-mode-opt').forEach(function(x){ x.classList.toggle('on', x.dataset.mode === spinState.mode); });
   $('spin-filters').hidden = spinState.mode !== 'global';
   $('spin-custom').hidden = spinState.mode !== 'custom';
-  if(spinState.mode === 'custom'){
-    ++wheel.fetchToken; /* cancel an in-flight archive scan */
-    wheel.searching = false;
-    renderCustomList(); initWheelStrip();
-  } else if(!wheel.seen.size && !wheel.searching){
-    loadSpinStream();
-  } else {
-    ensureArchivePool();
-    initWheelStrip();
-  }
+  if(spinState.mode === 'custom'){ renderCustomList(); initWheelStrip(); }
+  else if(!wheel.seen.size && !wheel.refilling){ loadSpinStream(); }
+  else { initWheelStrip(); }
   updatePoolStatus(); updateSpinButton(); updateWheelEmpty();
 });
 
@@ -3211,7 +3125,7 @@ let spinBuilt = false;
 function startSpinPage(){
   if(!spinBuilt){ spinBuilt = true; buildSpinFilters(); renderCustomList(); }
   wheel.active = true; wheel.lastTs = 0;
-  if(spinState.mode === 'global' && !wheel.seen.size && !wheel.searching) loadSpinStream();
+  if(spinState.mode === 'global' && !wheel.seen.size && !wheel.refilling) loadSpinStream();
   else { updatePoolStatus(); updateSpinButton(); updateWheelEmpty(); if(!liveWheelCards().length) initWheelStrip(); }
   cancelAnimationFrame(wheel.raf);
   wheel.raf = requestAnimationFrame(wheelFrame);
