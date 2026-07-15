@@ -621,7 +621,60 @@
   .sr-stat-v{ font-family:'Space Mono',monospace; font-size:13px; font-weight:700; color:var(--white); }
   .sr-actions{ display:flex; gap:10px; flex-wrap:wrap; animation:riseIn .5s var(--ease) .64s both; }
   .sr-actions .modal-btn{ width:auto; flex:1; min-width:140px; padding:14px 16px; font-size:11px; }
-  @media(max-width:640px){ .wheel-stage{ height:300px; } .spin-btn{ width:100%; } }
+  /* ---------- RANDOM LEVEL: MODE SWITCH ---------- */
+  .spin-mode{ display:flex; gap:4px; margin:0 auto 26px; max-width:420px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:4px; }
+  .spin-mode-opt{ flex:1; background:transparent; border:none; border-radius:9px; color:var(--dim); font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; padding:13px 10px; cursor:pointer; transition:all .25s var(--spring); }
+  .spin-mode-opt:hover{ color:var(--white); }
+  .spin-mode-opt:active{ transform:scale(0.96); }
+  .spin-mode-opt.on{ background:var(--white); color:#0a0a0a; box-shadow:0 0 18px rgba(255,255,255,0.22); }
+
+  /* ---------- RANDOM LEVEL: CUSTOM WHEEL BUILDER ---------- */
+  .spin-filters[hidden], .spin-custom[hidden], .cw-results[hidden]{ display:none; }
+  .spin-custom{ border:1px solid var(--line); border-radius:18px; background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent 60%), var(--panel); padding:26px 26px 28px; display:flex; flex-direction:column; gap:18px; transition:opacity .35s ease; }
+  .spin-custom.locked{ opacity:0.45; pointer-events:none; }
+  .cw-sub{ font-size:12.5px; color:var(--dim2); line-height:1.6; margin-top:2px; }
+  .cw-search{ display:flex; gap:10px; }
+  .cw-search input{ flex:1; min-width:0; background:var(--black2); border:1px solid var(--line); border-radius:10px; color:var(--white); font-size:13px; padding:13px 16px; outline:none; transition:border-color .25s var(--ease), box-shadow .25s var(--ease); }
+  .cw-search input:focus{ border-color:var(--white); box-shadow:0 0 0 3px rgba(255,255,255,0.08); }
+  .cw-search button{ background:var(--white); color:#0a0a0a; border:none; border-radius:10px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; padding:0 22px; cursor:pointer; transition:all .2s var(--spring); }
+  .cw-search button:hover{ filter:brightness(0.92); transform:translateY(-1px); box-shadow:0 4px 18px rgba(255,255,255,0.2); }
+  .cw-search button:active{ transform:scale(0.95); }
+  .cw-results, .cw-list{ display:flex; flex-direction:column; gap:8px; }
+  .cw-result, .cw-item{ display:flex; align-items:center; gap:12px; background:rgba(255,255,255,0.02); border:1px solid var(--line); border-radius:12px; padding:8px 12px 8px 8px; opacity:0; animation:barIn .4s var(--ease) forwards; transition:border-color .22s ease, transform .22s var(--ease), box-shadow .22s ease; }
+  .cw-result:hover, .cw-item:hover{ border-color:var(--line2); transform:translateX(3px); }
+  .cw-thumb{ width:64px; height:36px; object-fit:cover; border-radius:7px; border:1px solid var(--line); background:var(--black2); flex-shrink:0; }
+  .cw-face{ width:22px; height:22px; object-fit:contain; flex-shrink:0; }
+  .cw-name{ font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:12.5px; color:var(--white); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:40%; }
+  .cw-meta{ font-family:'Space Mono',monospace; font-size:10px; color:var(--dim2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; min-width:40px; }
+  .cw-add{ flex-shrink:0; background:var(--white); color:#0a0a0a; border:1px solid transparent; border-radius:999px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; padding:9px 16px; cursor:pointer; transition:all .2s var(--spring); }
+  .cw-add:hover{ transform:translateY(-1px); box-shadow:0 4px 16px rgba(255,255,255,0.25); }
+  .cw-add:active{ transform:scale(0.93); }
+  .cw-add.added{ background:transparent; color:var(--dim); border-color:var(--line2); pointer-events:none; box-shadow:none; }
+  .cw-item{ cursor:grab; }
+  .cw-item:active{ cursor:grabbing; }
+  .cw-item.dragging{ opacity:0.35 !important; }
+  .cw-item.drop-above{ box-shadow:0 -3px 0 -1px var(--white); }
+  .cw-item.drop-below{ box-shadow:0 3px 0 -1px var(--white); }
+  .cw-grip{ color:var(--dim2); font-size:14px; flex-shrink:0; padding:0 3px; user-select:none; -webkit-user-select:none; }
+  .cw-remove{ flex-shrink:0; width:30px; height:30px; display:flex; align-items:center; justify-content:center; background:transparent; border:1px solid var(--line); border-radius:8px; color:var(--dim); font-size:16px; line-height:1; cursor:pointer; transition:all .2s var(--ease); }
+  .cw-remove:hover{ border-color:var(--red); color:var(--red); background:rgba(224,85,85,0.08); }
+  .cw-remove:active{ transform:scale(0.9); }
+  .cw-empty{ padding:22px; text-align:center; border:1px dashed var(--line); border-radius:12px; color:var(--dim2); font-size:12px; animation:fadeIn .3s ease; }
+
+  /* ---------- RANDOM LEVEL: BANNER COLLAGE ---------- */
+  .disc-banner-collage{ position:absolute; inset:0; z-index:0; display:flex; transition:transform .5s var(--ease); will-change:transform; }
+  .bc-tile{ flex:1; position:relative; overflow:hidden; transform:skewX(-8deg) scale(1.14); animation:bcDrift 18s ease-in-out infinite; }
+  .bc-tile img{ width:100%; height:100%; object-fit:cover; opacity:0.5; filter:saturate(0.6) brightness(0.75); transition:opacity .45s ease, filter .45s ease; }
+  @keyframes bcDrift{ 0%,100%{ transform:skewX(-8deg) scale(1.14) translateY(0); } 50%{ transform:skewX(-8deg) scale(1.2) translateY(-7px); } }
+  .disc-banner-shade{ position:absolute; inset:0; z-index:1; background:linear-gradient(90deg, rgba(10,10,10,0.94) 0%, rgba(10,10,10,0.74) 45%, rgba(10,10,10,0.42) 100%); pointer-events:none; }
+  .discover-banner .disc-banner-text, .discover-banner .disc-banner-cta{ position:relative; z-index:2; }
+  .discover-banner::after{ z-index:3; }
+  .discover-banner:hover .bc-tile img{ opacity:0.8; filter:saturate(0.95) brightness(0.92); }
+  .discover-banner:active{ transform:translateY(0) scale(0.99); }
+  .discover-banner:hover .disc-banner-cta{ transform:scale(1.05); box-shadow:0 6px 24px rgba(255,255,255,0.25); }
+  .disc-banner-cta{ transition:all .25s var(--spring); }
+
+  @media(max-width:640px){ .wheel-stage{ height:300px; } .spin-btn{ width:100%; } .cw-name{ max-width:32%; } .cw-thumb{ width:52px; height:30px; } }
 
   /* ---------- DIFFICULTY NAVIGATOR (home ranking chips) ---------- */
   #diff-chips{ gap:8px; }
@@ -871,6 +924,8 @@
       <div id="home-dashboard">
 
         <div class="discover-banner" id="spin-open" role="button" tabindex="0">
+          <div class="disc-banner-collage" id="spin-banner-collage" aria-hidden="true"></div>
+          <div class="disc-banner-shade" aria-hidden="true"></div>
           <div class="disc-banner-text">
             <div class="disc-banner-title" data-i18n="spinBannerTitle">Random Level</div>
             <div class="disc-banner-sub" data-i18n="spinBannerSub">Enter the spin room — a living wheel of levels picks your next one to play &amp; review</div>
@@ -1093,6 +1148,11 @@
         <div class="spin-sub" id="spin-pool-status"></div>
       </div>
 
+      <div class="spin-mode" id="spin-mode">
+        <button type="button" class="spin-mode-opt on" data-mode="global" data-i18n="spinModeGlobal">Global Random</button>
+        <button type="button" class="spin-mode-opt" data-mode="custom" data-i18n="spinModeCustom">Custom Wheel</button>
+      </div>
+
       <div class="wheel-stage" id="wheel-stage">
         <div class="wheel-parallax" id="wheel-parallax"></div>
         <div class="wheel-track" id="wheel-track"></div>
@@ -1125,6 +1185,20 @@
             <div class="sf-toggle-row"><span class="sf-toggle-name" data-i18n="spinFStarred">Starred levels only</span><button class="sf-switch" id="sf-starred" role="switch" aria-checked="false"><span class="sf-knob"></span></button></div>
           </div>
         </div>
+      </div>
+
+      <div class="spin-custom" id="spin-custom" hidden>
+        <div>
+          <div class="sf-label" data-i18n="spinCustomTitle">Build your wheel</div>
+          <div class="cw-sub" data-i18n="spinCustomSub">Search any level, add it to your wheel and drag to reorder — perfect for challenge wheels with friends or community events.</div>
+        </div>
+        <div class="cw-search">
+          <input type="text" id="cw-search-input" data-i18n-ph="spinCustomSearchPh" inputmode="search">
+          <button id="cw-search-btn" data-i18n="searchBtn">Search</button>
+        </div>
+        <div class="cw-results" id="cw-results" hidden></div>
+        <div class="sf-label" style="margin-bottom:0;" id="cw-count"></div>
+        <div class="cw-list" id="cw-list"></div>
       </div>
 
       <div class="spin-result" id="spin-result" hidden>
@@ -1280,6 +1354,8 @@ const i18n = {
     spinBannerTitle:'Random Level', spinBannerSub:'Enter the spin room — a living wheel of levels picks your next one to play & review', spinBannerCta:'Enter →',
     spinEyebrow:'Random Level', spinTitle:'Spin the Wheel', spinBtn:'Spin', spinBtnBusy:'Spinning…', spinFDiff:'Difficulties', spinFCat:'Category', spinFLen:'Length', spinFMinDl:'Minimum downloads', spinFExtra:'Extras', spinFStarred:'Starred levels only', spinDlAny:'Any',
     spinPoolCount:'{n} levels in the wheel', spinPoolEmpty:'No levels match — loosen the filters', spinLoading:'Filling the wheel…', spinDiffLocked:'Keep at least one difficulty on', spinResultEyebrow:'Your level', spinOpen:'Open Level', spinReview:'Write Review', spinAgain:'Spin Again',
+    spinModeGlobal:'Global Random', spinModeCustom:'Custom Wheel', spinCatAll:'Entire Archive', spinPoolStream:'{n} levels discovered — the entire archive is in play',
+    spinCustomTitle:'Build your wheel', spinCustomSub:'Search any level, add it to your wheel and drag to reorder — perfect for challenge wheels with friends or community events.', spinCustomCount:'{n} levels in your wheel', spinCustomEmpty:'Your wheel is empty — search and add levels below', spinCustomAdd:'Add', spinCustomAdded:'In wheel', spinCustomRemove:'Remove', spinCustomSearchPh:'Search levels by name or ID…', spinCustomSearchEmpty:'No levels found', spinCustomLimit:'Wheel is full ({n} levels max)',
     spinStatLen:'Length', spinStatDownloads:'Downloads', spinStatLikes:'Likes', spinStatStars:'Stars', spinStatScore:'Community Score', spinNoReviews:'No reviews yet', spinReviewsCount:'{n} reviews',
     popRated:'Rated', popFeatured:'Featured', popMagic:'Magic', popTrending:'Trending', popDefault:'By category', popDownloads:'Most Downloaded', popLiked:'Most Liked', popRecent:'Recent', lenAny:'Any length',
     rateAny:'Any rating', rateLow:'★ 1–3', rateMid:'★ 4–6', rateHigh:'★ 7–9', rateDemon:'★ 10 (Demon)',
@@ -1347,6 +1423,8 @@ const i18n = {
     spinBannerTitle:'Случайный уровень', spinBannerSub:'Войдите в спин-зал — живое колесо уровней выберет, что играть и оценивать дальше', spinBannerCta:'Войти →',
     spinEyebrow:'Случайный уровень', spinTitle:'Крутите колесо', spinBtn:'Крутить', spinBtnBusy:'Крутится…', spinFDiff:'Сложности', spinFCat:'Категория', spinFLen:'Длина', spinFMinDl:'Минимум скачиваний', spinFExtra:'Дополнительно', spinFStarred:'Только со звёздами', spinDlAny:'Любое',
     spinPoolCount:'Уровней в колесе: {n}', spinPoolEmpty:'Ничего не подходит — ослабьте фильтры', spinLoading:'Заполняем колесо…', spinDiffLocked:'Оставьте хотя бы одну сложность', spinResultEyebrow:'Ваш уровень', spinOpen:'Открыть уровень', spinReview:'Написать рецензию', spinAgain:'Крутить ещё',
+    spinModeGlobal:'Общий рандом', spinModeCustom:'Своё колесо', spinCatAll:'Весь архив', spinPoolStream:'Найдено уровней: {n} — в игре весь архив', 
+    spinCustomTitle:'Соберите своё колесо', spinCustomSub:'Найдите любой уровень, добавьте его в колесо и перетаскивайте для изменения порядка — идеально для челленджей с друзьями и комьюнити-ивентов.', spinCustomCount:'Уровней в вашем колесе: {n}', spinCustomEmpty:'Колесо пустое — найдите и добавьте уровни ниже', spinCustomAdd:'Добавить', spinCustomAdded:'В колесе', spinCustomRemove:'Убрать', spinCustomSearchPh:'Поиск уровней по названию или ID…', spinCustomSearchEmpty:'Ничего не найдено', spinCustomLimit:'Колесо заполнено (макс. {n})',
     spinStatLen:'Длина', spinStatDownloads:'Скачивания', spinStatLikes:'Лайки', spinStatStars:'Звёзды', spinStatScore:'Оценка сообщества', spinNoReviews:'Пока нет рецензий', spinReviewsCount:'{n} рец.',
     popRated:'Оценённые', popFeatured:'Featured', popMagic:'Magic', popTrending:'В тренде', popDefault:'По категории', popDownloads:'Самые скачиваемые', popLiked:'Самые залайканные', popRecent:'Новые', lenAny:'Любая длина',
     rateAny:'Любой рейтинг', rateLow:'★ 1–3', rateMid:'★ 4–6', rateHigh:'★ 7–9', rateDemon:'★ 10 (демон)',
@@ -1477,7 +1555,7 @@ function injectEyes(){
   let mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my;
   window.addEventListener('mousemove', function(e){ mx=e.clientX; my=e.clientY; dot.style.left=mx+'px'; dot.style.top=my+'px'; if(glow) glow.style.background = 'radial-gradient(600px circle at '+mx+'px '+my+'px, rgba(255,255,255,0.06), transparent 70%)'; });
   (function animateRing(){ rx += (mx-rx)*0.18; ry += (my-ry)*0.18; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animateRing); })();
-  const hoverSel = 'button, input, textarea, select, a, .tab-btn, .delete-btn, .seg, .review-bar, .modal-close, .audio-waveform, .eye-btn, .chip, .like-btn, .feed-card, .level-card, .lang-opt, .back-btn, .fc-level, .fc-user, .fc-ava, .img-edit-overlay, .frame-option, .discover-banner, .sf-diff-opt, .sf-seg-opt, .sf-switch, .spin-btn';
+  const hoverSel = 'button, input, textarea, select, a, .tab-btn, .delete-btn, .seg, .review-bar, .modal-close, .audio-waveform, .eye-btn, .chip, .like-btn, .feed-card, .level-card, .lang-opt, .back-btn, .fc-level, .fc-user, .fc-ava, .img-edit-overlay, .frame-option, .discover-banner, .sf-diff-opt, .sf-seg-opt, .sf-switch, .spin-btn, .spin-mode-opt, .cw-item, .cw-result';
   document.addEventListener('mouseover', function(e){ if(e.target.closest(hoverSel)) document.body.classList.add('cursor-hover'); });
   document.addEventListener('mouseout', function(e){ if(e.target.closest(hoverSel)) document.body.classList.remove('cursor-hover'); });
 })();
@@ -2410,6 +2488,7 @@ function setLang(l){
   lang = l; localStorage.setItem('gd_lang', l); applyI18n(); fillSettings();
   CATEGORIES.forEach(function(cat){ const lbl = $('label-text-'+cat.key); if(lbl) lbl.textContent = axisLabel(cat.key, currentLevel ? currentLevel.difficulty : ''); });
   renderCriteriaGuide();
+  if(spinBuilt){ buildSpinFilters(); renderCustomList(); updatePoolStatus(); updateSpinButton(); updateWheelEmpty(); }
   if($('screen-home').classList.contains('active')) loadDashboard();
   if($('screen-profile').classList.contains('active')) renderProfile();
   if($('screen-level').classList.contains('active') && levelPage.id){ renderLevelStats(); renderLevelReviews(); }
@@ -2467,9 +2546,12 @@ $('btn-delete-account').addEventListener('click', async function(){
 const SFX = { tick:function(){}, spinStart:function(){}, slowdown:function(){}, reveal:function(){} };
 
 const WHEEL_STEP = 248; /* card width 232px + 16px gap — keep in sync with CSS */
-const SPIN_CATS = [ ['awarded','popRated'], ['featured','popFeatured'], ['magic','popMagic'], ['trending','popTrending'] ];
+const SPIN_CATS = [ ['recent','spinCatAll'], ['awarded','popRated'], ['featured','popFeatured'], ['magic','popMagic'], ['trending','popTrending'] ];
 const SPIN_LEN = [ ['','lenAny'], ['0','Tiny'], ['1','Short'], ['2','Medium'], ['3','Long'], ['4','XL'] ];
-const SPIN_PAGES = { awarded:40, featured:30, magic:15, trending:6 };
+/* Random-page window per category. 'recent' walks the raw upload stream of
+   the whole archive; the fetcher falls back to shallower pages when a deep
+   random page comes back empty. */
+const SPIN_PAGES = { recent:6000, awarded:40, featured:30, magic:15, trending:6 };
 const DL_STEPS = [ 0, 1000, 10000, 50000, 100000, 500000, 1000000 ];
 const GD_LENGTH_NAMES = ['Tiny','Short','Medium','Long','XL'];
 function levelLengthLabel(lv){ if(lv == null) return '—'; const raw = lv.length; if(typeof raw === 'string' && raw) return raw; const n = Number(raw); return GD_LENGTH_NAMES[n] || '—'; }
@@ -2477,9 +2559,31 @@ function fmtNum(n){ n = Number(n || 0); if(n >= 1e6) return (n/1e6).toFixed(1).r
 
 const spinFilters = {
   diffs: new Set(DIFF_OPTIONS.filter(function(o){ return o.v; }).map(function(o){ return o.v; })),
-  cat: 'awarded', len: '', minDl: 0, starred: false
+  cat: 'recent', len: '', minDl: 0, starred: false
 };
-const wheel = { raw:[], rawMap:new Map(), pool:[], seq:0, base:0, offset:0, vel:0, idleVel:26, raf:0, lastTs:0, lastTick:-1, spinning:false, anim:null, loading:false, fetchToken:0, active:false, result:null };
+const spinState = { mode:'global' };
+/* Streaming pool: `seen` holds every level discovered this session, `queue`
+   holds upcoming eligible levels. The queue is refilled endlessly from random
+   archive pages, so the whole database is in play while the DOM only ever
+   contains a small recycled strip of cards. */
+const wheel = { seen:new Map(), queue:[], recycleBag:[], seq:0, base:0, offset:0, vel:0, idleVel:26, raf:0, lastTs:0, lastTick:-1, spinning:false, anim:null, refilling:false, fetchToken:0, active:false, result:null };
+/* Custom Wheel: a user-built collection, persisted locally (sharing-ready). */
+const CUSTOM_MAX = 50;
+let customWheel = safeParse(localStorage.getItem('gd_custom_wheel')) || [];
+if(!Array.isArray(customWheel)) customWheel = [];
+function saveCustomWheel(){ try{ localStorage.setItem('gd_custom_wheel', JSON.stringify(customWheel)); }catch(e){} }
+function customHas(id){ return customWheel.some(function(l){ return String(l.id) === String(id); }); }
+function slimLevel(lv){ return { id:lv.id, name:lv.name, author:lv.author, difficulty:lv.difficulty, difficultyFace:lv.difficultyFace, stars:lv.stars, downloads:lv.downloads, likes:lv.likes, length:lv.length, featured:lv.featured, epic:lv.epic }; }
+function getWheelLevel(id){
+  if(spinState.mode === 'custom') return customWheel.find(function(l){ return String(l.id) === String(id); }) || null;
+  return wheel.seen.get(String(id)) || null;
+}
+function eligibleWheelCount(){
+  if(spinState.mode === 'custom') return customWheel.length;
+  let n = wheel.queue.length;
+  for(let i = 0; i < wheel.recycleBag.length; i++) if(spinEligible(wheel.recycleBag[i])) n++;
+  return n;
+}
 
 function normDiff(lv){ const d = String(lv.difficulty || '').toLowerCase().trim(); if(!d || d === 'n/a' || d === 'unrated') return 'na'; return d; }
 function spinEligible(lv){
@@ -2515,10 +2619,35 @@ function buildWheelCard(lv){
   return el;
 }
 function wheelApplyTransform(){ $('wheel-track').style.transform = 'translate3d('+(-(wheel.offset - wheel.base)).toFixed(2)+'px,-50%,0)'; }
-function appendWheelCard(){ if(!wheel.pool.length) return; const lv = wheel.pool[wheel.seq % wheel.pool.length]; const el = buildWheelCard(lv); el.dataset.seq = String(wheel.seq); wheel.seq++; $('wheel-track').appendChild(el); }
+function nextWheelLevel(){
+  if(spinState.mode === 'custom'){
+    if(!customWheel.length) return null;
+    return customWheel[wheel.seq % customWheel.length];
+  }
+  maybeRefill();
+  if(wheel.queue.length){
+    const lv = wheel.queue.shift();
+    wheel.recycleBag.push(lv);
+    if(wheel.recycleBag.length > 400) wheel.recycleBag.splice(0, wheel.recycleBag.length - 400);
+    return lv;
+  }
+  /* Network is slower than the wheel: cycle already-discovered eligible
+     levels so the motion never stalls while the queue refills. */
+  const bag = wheel.recycleBag.filter(spinEligible);
+  if(!bag.length) return null;
+  return bag[Math.floor(Math.random() * bag.length)];
+}
+function appendWheelCard(){
+  const lv = nextWheelLevel();
+  if(!lv) return false;
+  const el = buildWheelCard(lv);
+  el.dataset.seq = String(wheel.seq); wheel.seq++;
+  $('wheel-track').appendChild(el);
+  return true;
+}
 function wheelStripSize(){ return Math.ceil(($('wheel-stage').clientWidth || 1040) / WHEEL_STEP) + 7; }
 function liveWheelCards(){ return qsa('#wheel-track .wheel-card').filter(function(c){ return !c.dataset.dying; }); }
-function ensureWheelFilled(){ if(!wheel.pool.length) return; const need = wheelStripSize() - liveWheelCards().length; for(let i = 0; i < need; i++) appendWheelCard(); }
+function ensureWheelFilled(){ const need = wheelStripSize() - liveWheelCards().length; for(let i = 0; i < need; i++){ if(!appendWheelCard()) break; } }
 function wheelRecycle(){
   const track = $('wheel-track');
   let guard = 0;
@@ -2534,11 +2663,17 @@ function initWheelStrip(){
   const track = $('wheel-track');
   track.innerHTML = '';
   wheel.base = 0; wheel.offset = 0; wheel.seq = 0; wheel.vel = 0; wheel.lastTick = -1;
-  $('wheel-empty').hidden = !!wheel.pool.length || wheel.loading;
-  if(!wheel.pool.length){ wheelApplyTransform(); updateSpinButton(); return; }
+  updateWheelEmpty();
+  if(eligibleWheelCount() === 0){ wheelApplyTransform(); updateSpinButton(); return; }
   const n = wheelStripSize();
-  for(let i = 0; i < n; i++) appendWheelCard();
+  for(let i = 0; i < n; i++){ if(!appendWheelCard()) break; }
   wheelApplyTransform(); updateSpinButton();
+}
+function updateWheelEmpty(){
+  const empty = eligibleWheelCount() === 0 && !wheel.refilling;
+  const box = $('wheel-empty');
+  box.hidden = !empty;
+  if(empty) box.textContent = t(spinState.mode === 'custom' ? 'spinCustomEmpty' : 'spinPoolEmpty');
 }
 
 /* ---- Motion: idle drift, spin tween, blur, parallax, marker ticks ---- */
@@ -2570,7 +2705,7 @@ function wheelFrame(ts){
       if(p >= 1){ wheel.anim = null; finishSpin(); }
     }
     wheel.vel = (wheel.offset - prev) / dt;
-  } else if(!wheel.spinning && wheel.pool.length){
+  } else if(!wheel.spinning && $('wheel-track').firstElementChild){
     /* Gentle idle motion — the wheel is alive before the user even spins. */
     wheel.vel += (wheel.idleVel - wheel.vel) * Math.min(1, dt * 2.2);
     wheel.offset += wheel.vel * dt;
@@ -2599,21 +2734,26 @@ function wheelTickCheck(){
 /* ---- Spin: pick a far-ahead landing card and tween the exact distance ---- */
 function updateSpinButton(){
   const btn = $('spin-btn');
-  btn.disabled = wheel.spinning || wheel.loading || wheel.pool.length < 2;
+  btn.disabled = wheel.spinning || eligibleWheelCount() < 2;
   btn.textContent = wheel.spinning ? t('spinBtnBusy') : t('spinBtn');
 }
 function updatePoolStatus(){
   const el = $('spin-pool-status');
-  if(wheel.loading){ el.textContent = t('spinLoading'); return; }
-  el.textContent = wheel.pool.length ? t('spinPoolCount').replace('{n}', wheel.pool.length) : t('spinPoolEmpty');
+  if(spinState.mode === 'custom'){
+    el.textContent = customWheel.length ? t('spinCustomCount').replace('{n}', customWheel.length) : t('spinCustomEmpty');
+    return;
+  }
+  if(wheel.refilling && !wheel.seen.size){ el.textContent = t('spinLoading'); return; }
+  el.textContent = eligibleWheelCount() ? t('spinPoolStream').replace('{n}', wheel.seen.size) : t('spinPoolEmpty');
 }
 function startSpin(){
-  if(wheel.spinning || wheel.loading || wheel.pool.length < 2 || wheel.anim) return;
+  if(wheel.spinning || eligibleWheelCount() < 2 || wheel.anim) return;
   const cards = liveWheelCards();
   const ref = cards[cards.length - 1];
   if(!ref) return;
   wheel.spinning = true;
   $('spin-filters').classList.add('locked');
+  $('spin-custom').classList.add('locked');
   updateSpinButton();
   SFX.spinStart();
   const rect = $('wheel-stage').getBoundingClientRect();
@@ -2636,8 +2776,8 @@ function finishSpin(){
     const d = Math.abs(r.left + r.width / 2 - centerX);
     if(d < bestD){ bestD = d; best = c; }
   });
-  const lv = best ? wheel.rawMap.get(best.dataset.id) : null;
-  if(!lv){ wheel.spinning = false; $('spin-filters').classList.remove('locked'); updateSpinButton(); return; }
+  const lv = best ? getWheelLevel(best.dataset.id) : null;
+  if(!lv){ wheel.spinning = false; $('spin-filters').classList.remove('locked'); $('spin-custom').classList.remove('locked'); updateSpinButton(); return; }
   wheel.result = lv;
   best.classList.add('wheel-win');
   SFX.reveal();
@@ -2688,58 +2828,89 @@ function hideSpinResult(){
   $('sr-card').innerHTML = '';
   wheel.spinning = false;
   $('spin-filters').classList.remove('locked');
+  $('spin-custom').classList.remove('locked');
   updateSpinButton();
 }
 $('sr-backdrop').addEventListener('click', hideSpinResult);
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !$('spin-result').hidden) hideSpinResult(); });
 
-/* ---- Pool: fetch random archive pages, filter client-side ---- */
+/* ---- Streaming pool: endless random pages from the whole archive ---- */
 function spinQuery(page){
   const params = new URLSearchParams();
   params.set('count','10'); params.set('page', String(page)); params.set('type', spinFilters.cat);
   if(spinFilters.len !== '') params.set('length', spinFilters.len);
   return 'https://gdbrowser.com/api/search/*?' + params.toString();
 }
-async function loadSpinPool(){
+function shuffleArr(arr){ for(let i = arr.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp; } return arr; }
+function maybeRefill(){ if(spinState.mode === 'global' && wheel.queue.length < 40 && !wheel.refilling) refillQueue(); }
+async function refillQueue(){
+  if(wheel.refilling || spinState.mode !== 'global') return;
+  wheel.refilling = true;
+  const token = wheel.fetchToken;
+  /* Random deep pages first for maximum variety across the whole archive;
+     progressively shallower ranges as a fallback so results always arrive. */
+  const ranges = [ SPIN_PAGES[spinFilters.cat] || 10, 60, 8 ];
+  let added = 0;
+  for(let r = 0; r < ranges.length && added === 0; r++){
+    const cap = Math.max(4, ranges[r]);
+    const pages = []; const used = {};
+    while(pages.length < 4){ const p = Math.floor(Math.random() * cap); if(!used[p]){ used[p] = 1; pages.push(p); } }
+    const results = await Promise.all(pages.map(function(p){
+      return fetch(spinQuery(p)).then(function(res){ return res.ok ? res.json() : null; }).catch(function(){ return null; });
+    }));
+    if(spinState.mode !== 'global' || token !== wheel.fetchToken){ if(token === wheel.fetchToken) wheel.refilling = false; return; }
+    const fresh = [];
+    results.forEach(function(d){ if(d && d !== '-1' && Array.isArray(d)) d.forEach(function(lv){
+      if(!lv || lv.id == null) return;
+      const id = String(lv.id);
+      if(wheel.seen.has(id)) return;
+      wheel.seen.set(id, lv);
+      if(spinEligible(lv)) fresh.push(lv);
+    }); });
+    shuffleArr(fresh);
+    fresh.forEach(function(lv){ wheel.queue.push(lv); });
+    added = fresh.length;
+  }
+  wheel.refilling = false;
+  updatePoolStatus(); updateSpinButton(); updateWheelEmpty();
+  if(wheel.active && eligibleWheelCount()){ if(!liveWheelCards().length) initWheelStrip(); else ensureWheelFilled(); }
+}
+async function loadSpinStream(){
   const token = ++wheel.fetchToken;
-  wheel.loading = true; updatePoolStatus(); updateSpinButton();
+  wheel.seen = new Map(); wheel.queue = []; wheel.recycleBag = []; wheel.refilling = false;
   $('wheel-empty').hidden = true;
-  const maxPage = SPIN_PAGES[spinFilters.cat] || 10;
-  const pages = []; const seen = {};
-  while(pages.length < Math.min(4, maxPage)){ const p = Math.floor(Math.random() * maxPage); if(!seen[p]){ seen[p] = 1; pages.push(p); } }
-  const results = await Promise.all(pages.map(function(p){
-    return fetch(spinQuery(p)).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; });
-  }));
-  if(token !== wheel.fetchToken) return; /* superseded by a newer request */
-  const map = new Map();
-  results.forEach(function(d){ if(d && d !== '-1' && Array.isArray(d)) d.forEach(function(lv){ if(lv && lv.id != null) map.set(String(lv.id), lv); }); });
-  wheel.raw = Array.from(map.values());
-  /* Shuffle once so the wheel order feels random but stays stable in a spin. */
-  for(let i = wheel.raw.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const tmp = wheel.raw[i]; wheel.raw[i] = wheel.raw[j]; wheel.raw[j] = tmp; }
-  wheel.rawMap = map;
-  wheel.loading = false;
-  wheel.pool = wheel.raw.filter(spinEligible);
-  updatePoolStatus();
+  const first = refillQueue();
+  updatePoolStatus(); updateSpinButton();
+  await first;
+  if(token !== wheel.fetchToken) return;
   initWheelStrip();
+  updatePoolStatus(); updateSpinButton();
 }
 
 /* ---- Animated live filtering: ineligible cards physically leave the wheel,
    the remaining cards slide together, and the pool updates in real time ---- */
 function applySpinEligibility(){
-  wheel.pool = wheel.raw.filter(spinEligible);
+  if(spinState.mode !== 'global') return;
+  /* Rebuild the upcoming queue from everything discovered so far — levels
+     from re-enabled difficulties immediately rejoin the wheel. */
+  const arr = [];
+  wheel.seen.forEach(function(lv){ if(spinEligible(lv)) arr.push(lv); });
+  wheel.queue = shuffleArr(arr);
+  wheel.recycleBag = [];
   updatePoolStatus(); updateSpinButton();
+  /* Ineligible cards physically leave the wheel; the rest slide together. */
   qsa('#wheel-track .wheel-card').forEach(function(el){
     if(el.dataset.dying) return;
-    const lv = wheel.rawMap.get(el.dataset.id);
+    const lv = wheel.seen.get(el.dataset.id);
     if(lv && !spinEligible(lv)){
       el.dataset.dying = '1';
       el.classList.add('wheel-card-out');
       setTimeout(function(){ el.remove(); }, 500);
     }
   });
-  if(!wheel.pool.length){ $('wheel-empty').hidden = false; return; }
-  $('wheel-empty').hidden = true;
-  if(!liveWheelCards().length) initWheelStrip(); else ensureWheelFilled();
+  updateWheelEmpty();
+  if(eligibleWheelCount()){ if(!liveWheelCards().length) initWheelStrip(); else ensureWheelFilled(); }
+  maybeRefill();
 }
 
 /* ---- Filter panel ---- */
@@ -2772,13 +2943,13 @@ $('sf-cat').addEventListener('click', function(e){
   const b = e.target.closest('.sf-seg-opt'); if(!b || wheel.spinning || b.dataset.scat === spinFilters.cat) return;
   spinFilters.cat = b.dataset.scat;
   qsa('#sf-cat .sf-seg-opt').forEach(function(x){ x.classList.toggle('on', x.dataset.scat === spinFilters.cat); });
-  loadSpinPool(); /* category changes the source archive — refill the wheel */
+  loadSpinStream(); /* category changes the source archive — restart the stream */
 });
 $('sf-len').addEventListener('click', function(e){
   const b = e.target.closest('.sf-seg-opt'); if(!b || wheel.spinning || b.dataset.slen == null || b.dataset.slen === spinFilters.len) return;
   spinFilters.len = b.dataset.slen;
   qsa('#sf-len .sf-seg-opt').forEach(function(x){ x.classList.toggle('on', x.dataset.slen === spinFilters.len); });
-  loadSpinPool();
+  loadSpinStream();
 });
 $('sf-dl').addEventListener('input', function(){
   spinFilters.minDl = DL_STEPS[Number(this.value)] || 0;
@@ -2797,13 +2968,165 @@ $('spin-back').addEventListener('click', goBack);
 $('spin-open').addEventListener('click', function(){ navigateTo({ screen:'spin' }); });
 $('spin-open').addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); navigateTo({ screen:'spin' }); } });
 
+/* ---- Custom Wheel: search, add, remove, drag-to-reorder ---- */
+const cwResults = new Map();
+function renderCustomList(){
+  const box = $('cw-list'); if(!box) return;
+  $('cw-count').textContent = t('spinCustomCount').replace('{n}', customWheel.length);
+  if(!customWheel.length){ box.innerHTML = '<div class="cw-empty">'+escapeHTML(t('spinCustomEmpty'))+'</div>'; return; }
+  box.innerHTML = customWheel.map(function(lv, i){
+    return '<div class="cw-item" draggable="true" data-idx="'+i+'" data-id="'+escapeHTML(String(lv.id))+'" style="animation-delay:'+(Math.min(i,12)*0.03)+'s">'
+      + '<span class="cw-grip" aria-hidden="true">⣿</span>'
+      + '<img class="cw-thumb" src="https://levelthumbs.prevter.me/thumbnail/'+encodeURIComponent(lv.id)+'/small" alt="" loading="lazy" onerror="this.style.visibility=&quot;hidden&quot;">'
+      + (lv.difficultyFace ? '<img class="cw-face" src="https://gdbrowser.com/assets/difficulties/'+encodeURIComponent(lv.difficultyFace)+'.png" alt="" loading="lazy">' : '')
+      + '<span class="cw-name">'+escapeHTML(lv.name || ('#'+lv.id))+'</span>'
+      + '<span class="cw-meta">#'+escapeHTML(String(lv.id))+' · '+escapeHTML(lv.author || '—')+'</span>'
+      + '<button class="cw-remove" data-remove="'+escapeHTML(String(lv.id))+'" title="'+escapeHTML(t('spinCustomRemove'))+'" aria-label="'+escapeHTML(t('spinCustomRemove'))+'">×</button>'
+      + '</div>';
+  }).join('');
+}
+async function customSearch(){
+  const q = $('cw-search-input').value.trim(); if(!q) return;
+  const box = $('cw-results');
+  box.hidden = false;
+  box.innerHTML = '<div class="feed-loading">'+t('loading')+'</div>';
+  try{
+    const res = await fetch('https://gdbrowser.com/api/search/'+encodeURIComponent(q)+'?count=8');
+    const d = res.ok ? await res.json() : null;
+    if(!d || d === '-1' || !Array.isArray(d) || !d.length) throw 0;
+    cwResults.clear();
+    box.innerHTML = d.map(function(lv, i){
+      const id = String(lv.id);
+      cwResults.set(id, lv);
+      const inWheel = customHas(id);
+      return '<div class="cw-result" style="animation-delay:'+(i*0.04)+'s">'
+        + '<img class="cw-thumb" src="https://levelthumbs.prevter.me/thumbnail/'+encodeURIComponent(id)+'/small" alt="" loading="lazy" onerror="this.style.visibility=&quot;hidden&quot;">'
+        + (lv.difficultyFace ? '<img class="cw-face" src="https://gdbrowser.com/assets/difficulties/'+encodeURIComponent(lv.difficultyFace)+'.png" alt="" loading="lazy">' : '')
+        + '<span class="cw-name">'+escapeHTML(lv.name || ('#'+id))+'</span>'
+        + '<span class="cw-meta">#'+escapeHTML(id)+' · '+escapeHTML(lv.author || '—')+'</span>'
+        + '<button class="cw-add'+(inWheel ? ' added' : '')+'" data-add="'+escapeHTML(id)+'"'+(inWheel ? ' disabled' : '')+'>'+escapeHTML(t(inWheel ? 'spinCustomAdded' : 'spinCustomAdd'))+'</button>'
+        + '</div>';
+    }).join('');
+  }catch(e){ box.innerHTML = '<div class="cw-empty">'+escapeHTML(t('spinCustomSearchEmpty'))+'</div>'; }
+}
+$('cw-search-btn').addEventListener('click', customSearch);
+$('cw-search-input').addEventListener('keydown', function(e){ if(e.key === 'Enter') customSearch(); });
+function onCustomChanged(removedId){
+  updatePoolStatus(); updateSpinButton();
+  if(spinState.mode !== 'custom') return;
+  if(removedId != null){
+    qsa('#wheel-track .wheel-card').forEach(function(el){
+      if(el.dataset.id === String(removedId) && !el.dataset.dying){
+        el.dataset.dying = '1';
+        el.classList.add('wheel-card-out');
+        setTimeout(function(){ el.remove(); }, 500);
+      }
+    });
+  }
+  updateWheelEmpty();
+  if(eligibleWheelCount()){ if(!liveWheelCards().length) initWheelStrip(); else ensureWheelFilled(); }
+}
+$('spin-custom').addEventListener('click', function(e){
+  const add = e.target.closest('[data-add]');
+  if(add && !add.disabled){
+    const lv = cwResults.get(add.dataset.add);
+    if(!lv || customHas(lv.id)) return;
+    if(customWheel.length >= CUSTOM_MAX){ toast(t('spinCustomLimit').replace('{n}', CUSTOM_MAX), 'error'); return; }
+    customWheel.push(slimLevel(lv));
+    saveCustomWheel();
+    add.classList.add('added'); add.disabled = true; add.textContent = t('spinCustomAdded');
+    renderCustomList(); onCustomChanged();
+    return;
+  }
+  const rem = e.target.closest('[data-remove]');
+  if(rem && !wheel.spinning){
+    customWheel = customWheel.filter(function(l){ return String(l.id) !== String(rem.dataset.remove); });
+    saveCustomWheel(); renderCustomList(); onCustomChanged(rem.dataset.remove);
+  }
+});
+/* Drag & drop reordering */
+let cwDragIdx = null;
+$('cw-list').addEventListener('dragstart', function(e){
+  const it = e.target.closest('.cw-item'); if(!it) return;
+  cwDragIdx = Number(it.dataset.idx);
+  it.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+  try{ e.dataTransfer.setData('text/plain', ''); }catch(err){}
+});
+$('cw-list').addEventListener('dragend', function(){
+  cwDragIdx = null;
+  qsa('#cw-list .cw-item').forEach(function(x){ x.classList.remove('dragging','drop-above','drop-below'); });
+});
+$('cw-list').addEventListener('dragover', function(e){
+  if(cwDragIdx == null) return;
+  e.preventDefault();
+  const it = e.target.closest('.cw-item');
+  qsa('#cw-list .cw-item').forEach(function(x){ x.classList.remove('drop-above','drop-below'); });
+  if(!it || Number(it.dataset.idx) === cwDragIdx) return;
+  const r = it.getBoundingClientRect();
+  it.classList.add(e.clientY < r.top + r.height / 2 ? 'drop-above' : 'drop-below');
+});
+$('cw-list').addEventListener('drop', function(e){
+  if(cwDragIdx == null) return;
+  e.preventDefault();
+  const it = e.target.closest('.cw-item'); if(!it) return;
+  const r = it.getBoundingClientRect();
+  let to = Number(it.dataset.idx) + (e.clientY < r.top + r.height / 2 ? 0 : 1);
+  const from = cwDragIdx;
+  if(to > from) to--;
+  if(to !== from && to >= 0 && to < customWheel.length){
+    const moved = customWheel.splice(from, 1)[0];
+    customWheel.splice(to, 0, moved);
+    saveCustomWheel(); renderCustomList(); onCustomChanged();
+  }
+});
+
+/* ---- Mode switch: Global Random <-> Custom Wheel ---- */
+$('spin-mode').addEventListener('click', function(e){
+  const b = e.target.closest('.spin-mode-opt');
+  if(!b || wheel.spinning || b.dataset.mode === spinState.mode) return;
+  spinState.mode = b.dataset.mode;
+  qsa('#spin-mode .spin-mode-opt').forEach(function(x){ x.classList.toggle('on', x.dataset.mode === spinState.mode); });
+  $('spin-filters').hidden = spinState.mode !== 'global';
+  $('spin-custom').hidden = spinState.mode !== 'custom';
+  if(spinState.mode === 'custom'){ renderCustomList(); initWheelStrip(); }
+  else if(!wheel.seen.size && !wheel.refilling){ loadSpinStream(); }
+  else { initWheelStrip(); }
+  updatePoolStatus(); updateSpinButton(); updateWheelEmpty();
+});
+
+/* ---- Homepage banner: animated collage of real level thumbnails ---- */
+async function initSpinBanner(){
+  const box = $('spin-banner-collage');
+  if(!box || box.childElementCount) return;
+  let levels = null;
+  try{
+    const res = await fetch('https://gdbrowser.com/api/search/*?count=10&page='+Math.floor(Math.random() * 20)+'&type=featured');
+    const d = res.ok ? await res.json() : null;
+    if(d && d !== '-1' && Array.isArray(d) && d.length) levels = d;
+  }catch(e){}
+  if(!levels) return; /* graceful fallback: keep the plain premium background */
+  box.innerHTML = levels.slice(0, 8).map(function(lv, i){
+    return '<div class="bc-tile" style="animation-delay:-'+(i * 2.7).toFixed(1)+'s"><img src="https://levelthumbs.prevter.me/thumbnail/'+encodeURIComponent(lv.id)+'/small" alt="" loading="lazy" onerror="this.parentNode.remove()"></div>';
+  }).join('');
+  const banner = $('spin-open');
+  banner.addEventListener('mousemove', function(e){
+    const r = banner.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width - 0.5) * 2;
+    const y = ((e.clientY - r.top) / r.height - 0.5) * 2;
+    box.style.transform = 'translate3d('+(x * -8).toFixed(1)+'px,'+(y * -5).toFixed(1)+'px,0) scale(1.06)';
+  });
+  banner.addEventListener('mouseleave', function(){ box.style.transform = ''; });
+}
+initSpinBanner();
+
 /* ---- Page lifecycle — called by the router when entering / leaving ---- */
 let spinBuilt = false;
 function startSpinPage(){
-  if(!spinBuilt){ spinBuilt = true; buildSpinFilters(); }
+  if(!spinBuilt){ spinBuilt = true; buildSpinFilters(); renderCustomList(); }
   wheel.active = true; wheel.lastTs = 0;
-  if(!wheel.raw.length && !wheel.loading) loadSpinPool();
-  else { updatePoolStatus(); updateSpinButton(); }
+  if(spinState.mode === 'global' && !wheel.seen.size && !wheel.refilling) loadSpinStream();
+  else { updatePoolStatus(); updateSpinButton(); updateWheelEmpty(); if(!liveWheelCards().length) initWheelStrip(); }
   cancelAnimationFrame(wheel.raf);
   wheel.raf = requestAnimationFrame(wheelFrame);
 }
@@ -2811,7 +3134,7 @@ function stopSpinPage(){
   wheel.active = false;
   cancelAnimationFrame(wheel.raf);
   if(!$('spin-result').hidden) hideSpinResult();
-  if(wheel.anim || wheel.spinning){ wheel.anim = null; wheel.spinning = false; $('spin-filters').classList.remove('locked'); updateSpinButton(); }
+  if(wheel.anim || wheel.spinning){ wheel.anim = null; wheel.spinning = false; $('spin-filters').classList.remove('locked'); $('spin-custom').classList.remove('locked'); updateSpinButton(); }
 }
 
 /* ================= CAROUSEL DRAG-TO-SCROLL ================= */
