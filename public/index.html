@@ -488,68 +488,140 @@
   .sk-stat-label{ height:10px; width:80%; }
   .sk-feed-card{ border:1px solid var(--line); border-radius:14px; background:var(--panel); padding:20px 22px; display:flex; flex-direction:column; gap:12px; }
 
-  /* ---------- LEVEL DISCOVERY (full-size studio) ---------- */
-  .discover-box{ max-width:960px; width:100%; text-align:left; padding:34px 34px 28px; max-height:90vh; overflow-y:auto; }
-  .disc-eyebrow{ font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.24em; text-transform:uppercase; color:var(--dim); margin-bottom:8px; }
-  .disc-title{ font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:clamp(22px,4vw,30px); margin-bottom:22px; }
-  .disc-layout{ display:grid; grid-template-columns:264px 1fr; gap:22px; align-items:stretch; }
-  @media(max-width:820px){ .disc-layout{ grid-template-columns:1fr; } }
-  .disc-panel{ display:flex; flex-direction:column; gap:18px; background:var(--black2); border:1px solid var(--line); border-radius:14px; padding:18px; }
-  .disc-filter label{ display:block; font-family:'Space Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.14em; color:var(--dim); margin-bottom:8px; }
-  .disc-filter select{ width:100%; }
-  .disc-diff-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
-  .disc-diff-opt{ position:relative; display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 2px 6px; background:rgba(255,255,255,0.02); border:1px solid var(--line); border-radius:9px; cursor:pointer; transition:all .2s var(--spring); }
-  .disc-diff-opt img{ width:24px; height:24px; object-fit:contain; filter:grayscale(1); opacity:0.75; transition:all .2s var(--ease); }
-  .disc-diff-opt .ddo-any{ width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:16px; color:var(--dim); transition:color .2s; }
-  .disc-diff-opt span.ddo-label{ font-family:'Space Mono',monospace; font-size:8px; letter-spacing:0.02em; text-transform:uppercase; color:var(--dim2); text-align:center; line-height:1.15; transition:color .2s; }
-  .disc-diff-opt:hover{ border-color:var(--line2); transform:translateY(-1px); }
-  .disc-diff-opt:hover img{ opacity:1; transform:scale(1.1); }
-  .disc-diff-opt:hover span.ddo-label{ color:var(--dim); }
-  .disc-diff-opt.active{ background:var(--white); border-color:var(--white); box-shadow:0 0 16px rgba(255,255,255,0.22); animation:diffPop .32s var(--spring); }
-  .disc-diff-opt.active img{ opacity:1; filter:grayscale(1) brightness(0.25); }
-  .disc-diff-opt.active .ddo-any{ color:#0a0a0a; }
-  .disc-diff-opt.active span.ddo-label{ color:#0a0a0a; font-weight:700; }
-  .disc-cat-chips{ display:flex; flex-wrap:wrap; gap:6px; }
-  .disc-cat-chips .chip{ padding:8px 12px; font-size:10px; }
-  .disc-go{ width:100%; background:var(--white); color:#0a0a0a; border:none; border-radius:10px; font-size:12px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; padding:16px; cursor:pointer; transition:all .22s var(--spring); margin-top:auto; }
-  .disc-go:hover{ filter:brightness(0.92); box-shadow:0 6px 26px rgba(255,255,255,0.25); transform:translateY(-2px); }
-  .disc-go:active{ transform:scale(0.96); }
-  .disc-go:disabled{ opacity:0.4; pointer-events:none; }
-  .disc-stage{ position:relative; min-height:430px; border:1px solid var(--line); border-radius:14px; background:var(--black2); overflow:hidden; display:flex; flex-direction:column; }
-  .disc-idle, .disc-searching{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; text-align:center; padding:30px; }
-  .disc-idle[hidden], .disc-searching[hidden], .disc-found[hidden]{ display:none; }
-  .disc-idle-mark{ width:74px; height:74px; border:1px solid var(--line2); border-radius:50%; display:flex; align-items:center; justify-content:center; position:relative; animation:discIdlePulse 3s ease-in-out infinite; }
-  .disc-idle-mark::before{ content:''; position:absolute; inset:-12px; border:1px dashed var(--line); border-radius:50%; animation:discOrbit 14s linear infinite; }
-  .disc-idle-mark svg{ width:32px; height:32px; fill:var(--dim); }
-  @keyframes discIdlePulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(255,255,255,0.1);} 50%{ box-shadow:0 0 0 14px rgba(255,255,255,0);} }
-  @keyframes discOrbit{ to{ transform:rotate(360deg); } }
-  .disc-idle-text{ font-size:13px; color:var(--dim); max-width:300px; line-height:1.6; }
-  .disc-search-viz{ position:relative; width:150px; height:150px; }
-  .disc-search-viz span{ position:absolute; inset:0; border:1px solid rgba(255,255,255,0.25); border-radius:50%; opacity:0; animation:discRipple 1.6s var(--ease) infinite; }
-  .disc-search-viz span:nth-child(2){ animation-delay:.4s; } .disc-search-viz span:nth-child(3){ animation-delay:.8s; }
-  @keyframes discRipple{ 0%{ transform:scale(0.25); opacity:0.9; } 100%{ transform:scale(1); opacity:0; } }
-  .disc-search-core{ position:absolute; top:50%; left:50%; width:14px; height:14px; margin:-7px 0 0 -7px; background:var(--white); border-radius:50%; box-shadow:0 0 24px rgba(255,255,255,0.8); animation:pulse 1.2s infinite; }
-  .disc-search-status{ font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--dim); min-height:16px; animation:pulse 1.4s infinite; }
-  .disc-search-status.disc-noresult{ color:#e8a1a1; animation:none; }
-  .disc-found{ flex:1; display:flex; flex-direction:column; }
-  .disc-hero{ position:relative; height:220px; background:var(--black); border-bottom:1px solid var(--line); overflow:hidden; flex-shrink:0; }
-  .disc-hero img{ width:100%; height:100%; object-fit:cover; animation:discHeroIn .9s var(--ease) both; }
-  @keyframes discHeroIn{ from{ opacity:0; transform:scale(1.12); filter:blur(10px) brightness(1.6);} to{ opacity:1; transform:scale(1); filter:blur(0) brightness(1);} }
-  .disc-hero::after{ content:''; position:absolute; inset:0; background:linear-gradient(to top, rgba(10,10,10,0.85), transparent 55%); pointer-events:none; }
-  .disc-hero-flash{ position:absolute; inset:0; background:#fff; opacity:0; animation:discFlash .7s ease-out both; pointer-events:none; }
-  @keyframes discFlash{ 0%{opacity:0.7;} 100%{opacity:0;} }
-  .disc-hero-name{ position:absolute; left:20px; right:20px; bottom:14px; font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:clamp(20px,3.4vw,30px); line-height:1; word-break:break-word; text-shadow:0 4px 18px rgba(0,0,0,0.8); animation:riseIn .55s var(--ease) .15s both; }
-  .disc-found-body{ padding:18px 20px 20px; display:flex; flex-direction:column; gap:14px; flex:1; }
-  .disc-meta-row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; animation:riseIn .5s var(--ease) .28s both; }
-  .disc-diff-badge{ display:inline-flex; align-items:center; gap:8px; background:var(--panel); border:1px solid var(--line2); border-radius:999px; padding:6px 14px 6px 8px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; }
-  .disc-diff-badge img{ width:22px; height:22px; object-fit:contain; }
-  .disc-creator{ font-size:13px; color:var(--dim); } .disc-creator b{ color:var(--white); }
-  .disc-stat-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(105px,1fr)); gap:8px; animation:riseIn .5s var(--ease) .38s both; }
-  .disc-stat{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:10px 12px; }
-  .disc-stat-k{ font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:var(--dim2); margin-bottom:4px; }
-  .disc-stat-v{ font-family:'Space Mono',monospace; font-size:13px; font-weight:700; color:var(--white); }
-  .disc-actions{ display:flex; gap:10px; margin-top:auto; flex-wrap:wrap; animation:riseIn .5s var(--ease) .48s both; }
-  .disc-actions .modal-btn{ width:auto; flex:1; min-width:130px; padding:14px 16px; font-size:11px; }
+  /* ---------- PAGE TRANSITION (Random Level) ---------- */
+  #page-transition{ position:fixed; inset:0; z-index:999995; pointer-events:none; visibility:hidden; overflow:hidden; }
+  #page-transition.cover, #page-transition.reveal{ visibility:visible; }
+  .pt-panel{ position:absolute; top:-12%; bottom:-12%; left:-16%; right:-16%; transform:translateX(-120%) skewX(-8deg); }
+  .pt-a{ background:#050505; z-index:1; }
+  .pt-b{ background:linear-gradient(105deg,#161616,#090909); z-index:2; box-shadow:0 0 90px rgba(0,0,0,0.85); }
+  #page-transition.cover .pt-a{ animation:ptIn .5s cubic-bezier(.7,0,.2,1) forwards; }
+  #page-transition.cover .pt-b{ animation:ptIn .5s cubic-bezier(.7,0,.2,1) .06s forwards; }
+  #page-transition.reveal .pt-a{ animation:ptOut .62s cubic-bezier(.7,0,.2,1) .1s forwards; }
+  #page-transition.reveal .pt-b{ animation:ptOut .62s cubic-bezier(.7,0,.2,1) forwards; }
+  @keyframes ptIn{ from{ transform:translateX(-120%) skewX(-8deg); } to{ transform:translateX(0) skewX(-8deg); } }
+  @keyframes ptOut{ from{ transform:translateX(0) skewX(-8deg); } to{ transform:translateX(120%) skewX(-8deg); } }
+  .pt-mark{ position:absolute; top:50%; left:50%; z-index:3; transform:translate(-50%,-50%); font-family:'Archivo Black',sans-serif; font-size:clamp(18px,3.4vw,30px); letter-spacing:0.16em; color:var(--white); opacity:0; }
+  .pt-mark span{ color:var(--dim2); }
+  #page-transition.cover .pt-mark{ animation:ptMarkIn .45s var(--ease) .28s forwards; }
+  #page-transition.reveal .pt-mark{ animation:ptMarkOut .28s var(--ease) forwards; }
+  @keyframes ptMarkIn{ from{ opacity:0; transform:translate(-50%,-50%) translateY(16px); } to{ opacity:1; transform:translate(-50%,-50%); } }
+  @keyframes ptMarkOut{ from{ opacity:1; } to{ opacity:0; transform:translate(-50%,-50%) translateY(-16px); } }
+
+  /* ---------- RANDOM LEVEL: PAGE ---------- */
+  .spin-head{ text-align:center; margin-bottom:26px; }
+  .spin-eyebrow{ font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:var(--dim); margin-bottom:10px; }
+  .spin-title{ font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:clamp(28px,6vw,46px); letter-spacing:-0.02em; line-height:1; }
+  .spin-sub{ font-family:'Space Mono',monospace; font-size:11px; color:var(--dim2); letter-spacing:0.12em; text-transform:uppercase; margin-top:12px; min-height:15px; transition:color .3s ease; }
+
+  /* ---------- RANDOM LEVEL: WHEEL ---------- */
+  .wheel-stage{ position:relative; height:322px; border:1px solid var(--line); border-radius:18px; background:linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0.004) 45%), var(--black2); overflow:hidden; margin-bottom:22px; transition:box-shadow .6s var(--ease), transform .6s var(--ease); }
+  .wheel-stage.wheel-live{ transform:scale(1.006); box-shadow:0 34px 90px -34px rgba(255,255,255,0.16), inset 0 0 70px rgba(0,0,0,0.55); }
+  .wheel-parallax{ position:absolute; inset:-60px; pointer-events:none; background-image:radial-gradient(circle at 22% 30%, rgba(255,255,255,0.05), transparent 42%), radial-gradient(circle at 78% 74%, rgba(255,255,255,0.04), transparent 46%); will-change:transform; }
+  .wheel-track{ position:absolute; top:50%; left:0; display:flex; align-items:center; transform:translate3d(0,-50%,0); will-change:transform, filter; }
+  .wheel-track.blur{ filter:blur(1.7px); }
+  .wheel-card{ position:relative; flex:0 0 232px; width:232px; margin-right:16px; border:1px solid var(--line); border-radius:14px; background:var(--panel); overflow:hidden; transition:width .45s var(--ease), flex-basis .45s var(--ease), margin .45s var(--ease), opacity .3s ease, transform .45s var(--ease), border-color .3s ease, box-shadow .3s ease; }
+  .wheel-card-inner{ width:232px; }
+  .wheel-card-out{ width:0 !important; flex-basis:0 !important; margin-right:0 !important; opacity:0; transform:scale(0.82); border-color:transparent; }
+  .wheel-card.wheel-win{ border-color:var(--white); box-shadow:0 0 0 1px rgba(255,255,255,0.65), 0 0 44px rgba(255,255,255,0.28); transform:scale(1.05); z-index:3; }
+  .wc-thumb{ position:relative; height:104px; background:var(--black); border-bottom:1px solid var(--line); }
+  .wc-thumb img.wc-thumb-img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .wc-face{ position:absolute; bottom:8px; right:8px; width:30px; height:30px; object-fit:contain; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.8)); }
+  .wc-rarity{ position:absolute; top:0; left:0; right:0; height:2px; background:var(--wc-acc, transparent); box-shadow:0 0 12px var(--wc-acc, transparent); }
+  .wc-body{ padding:10px 12px 12px; }
+  .wc-name{ font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:3px; }
+  .wc-creator{ font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:0.05em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:8px; }
+  .wc-diff{ display:inline-flex; align-items:center; gap:6px; font-family:'Space Mono',monospace; font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim); background:var(--black2); border:1px solid var(--line); border-radius:999px; padding:3px 9px 3px 5px; margin-bottom:8px; max-width:100%; white-space:nowrap; }
+  .wc-diff img{ width:16px; height:16px; object-fit:contain; }
+  .wc-stats{ display:flex; gap:5px; flex-wrap:wrap; }
+  .wc-stats span{ font-family:'Space Mono',monospace; font-size:9.5px; color:var(--dim); background:rgba(255,255,255,0.03); border:1px solid var(--line); border-radius:6px; padding:2px 6px; }
+  .wheel-fade{ position:absolute; top:0; bottom:0; width:130px; z-index:4; pointer-events:none; }
+  .wheel-fade.left{ left:0; background:linear-gradient(to right, var(--black2), transparent); }
+  .wheel-fade.right{ right:0; background:linear-gradient(to left, var(--black2), transparent); }
+  .wheel-marker{ position:absolute; top:0; bottom:0; left:50%; width:0; z-index:5; pointer-events:none; }
+  .wheel-marker-line{ position:absolute; top:12px; bottom:12px; left:-1px; width:2px; background:linear-gradient(to bottom, transparent, rgba(255,255,255,0.85) 18%, rgba(255,255,255,0.85) 82%, transparent); opacity:0.5; transition:opacity .3s ease; }
+  .wheel-stage.wheel-live .wheel-marker-line{ opacity:1; }
+  .wheel-marker-tip{ position:absolute; left:-7px; width:0; height:0; border-left:7px solid transparent; border-right:7px solid transparent; filter:drop-shadow(0 0 8px rgba(255,255,255,0.5)); transition:transform .16s var(--spring); }
+  .wheel-marker-tip.top{ top:3px; border-top:10px solid var(--white); }
+  .wheel-marker-tip.bottom{ bottom:3px; border-bottom:10px solid var(--white); }
+  .wheel-marker.tick .wheel-marker-tip.top{ transform:translateY(3px); }
+  .wheel-marker.tick .wheel-marker-tip.bottom{ transform:translateY(-3px); }
+  .wheel-empty{ position:absolute; inset:0; z-index:6; display:flex; align-items:center; justify-content:center; text-align:center; padding:20px; font-family:'Space Mono',monospace; font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:#e8a1a1; background:rgba(8,8,8,0.66); backdrop-filter:blur(4px); animation:fadeIn .3s ease; }
+  .wheel-empty[hidden]{ display:none; }
+
+  /* ---------- RANDOM LEVEL: CONTROLS & FILTERS ---------- */
+  .spin-controls{ display:flex; justify-content:center; margin-bottom:36px; }
+  .spin-btn{ position:relative; min-width:230px; background:var(--white); color:#0a0a0a; border:none; border-radius:999px; font-family:'Archivo Black',sans-serif; font-size:15px; letter-spacing:0.22em; text-transform:uppercase; padding:19px 48px; cursor:pointer; overflow:hidden; box-shadow:0 12px 44px -12px rgba(255,255,255,0.4); transition:transform .22s var(--spring), box-shadow .3s var(--ease), opacity .2s ease; }
+  .spin-btn::after{ content:''; position:absolute; top:0; bottom:0; width:64px; left:-90px; background:linear-gradient(100deg, transparent, rgba(0,0,0,0.15), transparent); animation:discSweep 3.4s var(--ease) infinite; }
+  .spin-btn:hover{ transform:translateY(-2px) scale(1.02); box-shadow:0 18px 54px -12px rgba(255,255,255,0.55); }
+  .spin-btn:active{ transform:scale(0.94); }
+  .spin-btn:disabled{ opacity:0.4; pointer-events:none; }
+  .spin-filters{ border:1px solid var(--line); border-radius:18px; background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent 60%), var(--panel); padding:26px 26px 28px; display:flex; flex-direction:column; gap:24px; transition:opacity .35s ease; }
+  .spin-filters.locked{ opacity:0.45; pointer-events:none; }
+  .sf-label{ display:flex; align-items:center; gap:12px; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.22em; text-transform:uppercase; color:var(--dim); margin-bottom:12px; }
+  .sf-label::after{ content:''; flex:1; height:1px; background:var(--line); }
+  .sf-row{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  @media(max-width:720px){ .sf-row{ grid-template-columns:1fr; } }
+  .sf-diff-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(118px,1fr)); gap:8px; }
+  .sf-diff-opt{ position:relative; display:flex; align-items:center; gap:8px; padding:9px 11px; background:rgba(255,255,255,0.02); border:1px solid var(--line); border-radius:10px; cursor:pointer; overflow:hidden; transition:all .25s var(--spring); }
+  .sf-diff-opt::before{ content:''; position:absolute; inset:0; background:radial-gradient(130px circle at 18% 50%, rgba(255,255,255,0.12), transparent 70%); opacity:0; transition:opacity .25s ease; }
+  .sf-diff-opt img{ width:22px; height:22px; object-fit:contain; flex-shrink:0; transition:filter .3s ease, opacity .3s ease, transform .25s var(--spring); }
+  .sf-diff-opt span{ position:relative; font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.04em; text-transform:uppercase; color:var(--dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:color .2s ease; }
+  .sf-diff-opt:hover{ border-color:var(--line2); transform:translateY(-2px); }
+  .sf-diff-opt:hover::before{ opacity:1; }
+  .sf-diff-opt:hover img{ transform:scale(1.12); }
+  .sf-diff-opt:active{ transform:scale(0.93); }
+  .sf-diff-opt.on{ background:rgba(255,255,255,0.07); border-color:rgba(255,255,255,0.45); box-shadow:0 0 18px rgba(255,255,255,0.1); }
+  .sf-diff-opt.on span{ color:var(--white); }
+  .sf-diff-opt:not(.on) img{ filter:grayscale(1); opacity:0.35; }
+  .sf-diff-opt.pop{ animation:diffPop .32s var(--spring); }
+  .sf-seg{ display:flex; gap:4px; background:var(--black2); border:1px solid var(--line); border-radius:10px; padding:4px; flex-wrap:wrap; }
+  .sf-seg-opt{ flex:1; min-width:62px; background:transparent; border:none; border-radius:7px; color:var(--dim); font-size:10.5px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:10px 8px; cursor:pointer; transition:all .22s var(--spring); }
+  .sf-seg-opt:hover{ color:var(--white); }
+  .sf-seg-opt:active{ transform:scale(0.94); }
+  .sf-seg-opt.on{ background:var(--white); color:#0a0a0a; box-shadow:0 0 14px rgba(255,255,255,0.2); }
+  .sf-slider-row{ display:flex; align-items:center; gap:16px; padding:6px 2px; }
+  .sf-range{ -webkit-appearance:none; appearance:none; flex:1; height:4px; border-radius:999px; background:linear-gradient(90deg, var(--white) var(--fill,0%), var(--line) var(--fill,0%)); outline:none; cursor:pointer; }
+  .sf-range::-webkit-slider-thumb{ -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:var(--white); border:none; box-shadow:0 0 0 4px rgba(255,255,255,0.12), 0 2px 10px rgba(0,0,0,0.6); cursor:pointer; transition:transform .2s var(--spring), box-shadow .2s ease; }
+  .sf-range::-webkit-slider-thumb:hover{ transform:scale(1.25); box-shadow:0 0 0 7px rgba(255,255,255,0.16), 0 0 18px rgba(255,255,255,0.45); }
+  .sf-range::-moz-range-thumb{ width:18px; height:18px; border-radius:50%; background:var(--white); border:none; cursor:pointer; }
+  .sf-slider-val{ font-family:'Space Mono',monospace; font-size:12px; font-weight:700; color:var(--white); min-width:52px; text-align:right; }
+  .sf-toggle-row{ display:flex; align-items:center; justify-content:space-between; gap:14px; background:rgba(255,255,255,0.02); border:1px solid var(--line); border-radius:12px; padding:13px 16px; transition:border-color .25s ease; }
+  .sf-toggle-row:hover{ border-color:var(--line2); }
+  .sf-toggle-name{ font-size:12.5px; font-weight:600; color:var(--white); }
+  .sf-switch{ position:relative; flex-shrink:0; width:52px; height:28px; border-radius:999px; background:var(--black2); border:1px solid var(--line2); padding:0; cursor:pointer; transition:background .3s var(--ease), border-color .3s ease, box-shadow .3s ease; }
+  .sf-knob{ position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:999px; background:var(--dim); transition:left .3s var(--spring), width .16s ease, background .3s ease; }
+  .sf-switch:active .sf-knob{ width:25px; }
+  .sf-switch.on{ background:var(--white); border-color:var(--white); box-shadow:0 0 16px rgba(255,255,255,0.3); }
+  .sf-switch.on .sf-knob{ left:27px; background:#0a0a0a; }
+  .sf-switch.on:active .sf-knob{ left:22px; }
+
+  /* ---------- RANDOM LEVEL: RESULT REVEAL ---------- */
+  .spin-result{ position:fixed; inset:0; z-index:100000; display:flex; align-items:center; justify-content:center; padding:24px; }
+  .spin-result[hidden]{ display:none; }
+  .sr-backdrop{ position:absolute; inset:0; background:rgba(4,4,4,0.84); backdrop-filter:blur(10px); animation:fadeIn .4s ease both; }
+  .sr-card{ position:relative; width:100%; max-width:560px; max-height:88vh; overflow-y:auto; background:var(--panel); border:1px solid var(--line2); border-radius:20px; box-shadow:0 50px 120px -30px rgba(0,0,0,0.9), 0 0 60px rgba(255,255,255,0.06); animation:srCardIn .7s cubic-bezier(.22,1.25,.36,1) both; }
+  @keyframes srCardIn{ from{ opacity:0; transform:translateY(48px) scale(0.92); } to{ opacity:1; transform:none; } }
+  .sr-hero{ position:relative; height:238px; background:var(--black); border-bottom:1px solid var(--line); overflow:hidden; border-radius:20px 20px 0 0; }
+  .sr-rays{ position:absolute; inset:-60%; pointer-events:none; background:conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,0.1) 12deg, transparent 24deg, transparent 60deg, rgba(255,255,255,0.08) 72deg, transparent 84deg, transparent 150deg, rgba(255,255,255,0.1) 162deg, transparent 174deg, transparent 240deg, rgba(255,255,255,0.08) 252deg, transparent 264deg, transparent 320deg, rgba(255,255,255,0.1) 332deg, transparent 344deg); animation:srRaysSpin 16s linear infinite; }
+  @keyframes srRaysSpin{ to{ transform:rotate(360deg); } }
+  .sr-hero img{ width:100%; height:100%; object-fit:cover; animation:srHeroIn 1s var(--ease) both; }
+  @keyframes srHeroIn{ from{ transform:scale(1.16); filter:brightness(2.1) blur(12px); } to{ transform:scale(1); filter:brightness(1) blur(0); } }
+  .sr-hero::after{ content:''; position:absolute; inset:0; background:linear-gradient(to top, var(--panel), transparent 55%); pointer-events:none; }
+  .sr-eyebrow{ position:absolute; top:16px; left:18px; z-index:2; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:rgba(255,255,255,0.9); background:rgba(6,6,6,0.55); border:1px solid rgba(255,255,255,0.2); border-radius:999px; padding:6px 12px; backdrop-filter:blur(4px); animation:riseIn .5s var(--ease) .25s both; }
+  .sr-name{ position:absolute; left:22px; right:22px; bottom:12px; z-index:2; font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:clamp(24px,4.6vw,36px); line-height:0.95; word-break:break-word; text-shadow:0 6px 24px rgba(0,0,0,0.9); animation:riseIn .55s var(--ease) .32s both; }
+  .sr-body{ padding:20px 22px 22px; display:flex; flex-direction:column; gap:16px; }
+  .sr-meta{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; animation:riseIn .5s var(--ease) .44s both; }
+  .sr-diff{ display:inline-flex; align-items:center; gap:8px; background:var(--black2); border:1px solid var(--line2); border-radius:999px; padding:6px 14px 6px 8px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; }
+  .sr-diff img{ width:22px; height:22px; object-fit:contain; }
+  .sr-creator{ font-size:13px; color:var(--dim); }
+  .sr-creator b{ color:var(--white); }
+  .sr-stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(96px,1fr)); gap:8px; animation:riseIn .5s var(--ease) .54s both; }
+  .sr-stat{ background:var(--black2); border:1px solid var(--line); border-radius:10px; padding:10px 12px; }
+  .sr-stat-k{ font-family:'Space Mono',monospace; font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:var(--dim2); margin-bottom:4px; }
+  .sr-stat-v{ font-family:'Space Mono',monospace; font-size:13px; font-weight:700; color:var(--white); }
+  .sr-actions{ display:flex; gap:10px; flex-wrap:wrap; animation:riseIn .5s var(--ease) .64s both; }
+  .sr-actions .modal-btn{ width:auto; flex:1; min-width:140px; padding:14px 16px; font-size:11px; }
+  @media(max-width:640px){ .wheel-stage{ height:300px; } .spin-btn{ width:100%; } }
 
   /* ---------- DIFFICULTY NAVIGATOR (home ranking chips) ---------- */
   #diff-chips{ gap:8px; }
@@ -798,12 +870,12 @@
 
       <div id="home-dashboard">
 
-        <div class="discover-banner" id="discover-open" role="button" tabindex="0">
+        <div class="discover-banner" id="spin-open" role="button" tabindex="0">
           <div class="disc-banner-text">
-            <div class="disc-banner-title" data-i18n="discBannerTitle">Level Discovery</div>
-            <div class="disc-banner-sub" data-i18n="discBannerSub">Open the discovery studio — filter the archive and find your next level to play &amp; review</div>
+            <div class="disc-banner-title" data-i18n="spinBannerTitle">Random Level</div>
+            <div class="disc-banner-sub" data-i18n="spinBannerSub">Enter the spin room — a living wheel of levels picks your next one to play &amp; review</div>
           </div>
-          <div class="disc-banner-cta" data-i18n="discBannerCta">Open Discovery →</div>
+          <div class="disc-banner-cta" data-i18n="spinBannerCta">Enter →</div>
         </div>
 
         <div class="dash-diff-bar">
@@ -1013,6 +1085,54 @@
       <div id="admin-queue-content"></div>
     </section>
 
+    <section class="screen" id="screen-spin">
+      <button class="back-btn" id="spin-back">← <span data-i18n="backBtn">Back</span></button>
+      <div class="spin-head">
+        <div class="spin-eyebrow" data-i18n="spinEyebrow">Random Level</div>
+        <h2 class="spin-title" data-i18n="spinTitle">Spin the Wheel</h2>
+        <div class="spin-sub" id="spin-pool-status"></div>
+      </div>
+
+      <div class="wheel-stage" id="wheel-stage">
+        <div class="wheel-parallax" id="wheel-parallax"></div>
+        <div class="wheel-track" id="wheel-track"></div>
+        <div class="wheel-fade left"></div>
+        <div class="wheel-fade right"></div>
+        <div class="wheel-marker" id="wheel-marker"><span class="wheel-marker-tip top"></span><span class="wheel-marker-line"></span><span class="wheel-marker-tip bottom"></span></div>
+        <div class="wheel-empty" id="wheel-empty" hidden data-i18n="spinPoolEmpty">No levels match — loosen the filters</div>
+      </div>
+
+      <div class="spin-controls">
+        <button class="spin-btn" id="spin-btn">Spin</button>
+      </div>
+
+      <div class="spin-filters" id="spin-filters">
+        <div>
+          <div class="sf-label" data-i18n="spinFDiff">Difficulties</div>
+          <div class="sf-diff-grid" id="sf-diff-grid"></div>
+        </div>
+        <div class="sf-row">
+          <div><div class="sf-label" data-i18n="spinFCat">Category</div><div class="sf-seg" id="sf-cat"></div></div>
+          <div><div class="sf-label" data-i18n="spinFLen">Length</div><div class="sf-seg" id="sf-len"></div></div>
+        </div>
+        <div class="sf-row">
+          <div>
+            <div class="sf-label" data-i18n="spinFMinDl">Minimum downloads</div>
+            <div class="sf-slider-row"><input type="range" class="sf-range" id="sf-dl" min="0" max="6" step="1" value="0"><span class="sf-slider-val" id="sf-dl-val">Any</span></div>
+          </div>
+          <div>
+            <div class="sf-label" data-i18n="spinFExtra">Extras</div>
+            <div class="sf-toggle-row"><span class="sf-toggle-name" data-i18n="spinFStarred">Starred levels only</span><button class="sf-switch" id="sf-starred" role="switch" aria-checked="false"><span class="sf-knob"></span></button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="spin-result" id="spin-result" hidden>
+        <div class="sr-backdrop" id="sr-backdrop"></div>
+        <div class="sr-card" id="sr-card"></div>
+      </div>
+    </section>
+
     <footer>
       <div class="site-copyright">© <span id="footer-year"></span> GD Review — <span data-i18n="madeBy">made by</span> <strong>Crxz</strong></div>
     </footer>
@@ -1123,35 +1243,10 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="discover-modal">
-  <div class="modal-box discover-box">
-    <button class="modal-close" id="disc-close" aria-label="Close">&times;</button>
-    <div class="disc-eyebrow" data-i18n="discEyebrow">Discovery</div>
-    <div class="disc-title" data-i18n="discTitle">Find Your Next Level</div>
-
-    <div class="disc-layout">
-      <aside class="disc-panel">
-        <div class="disc-filter"><label data-i18n="discFDiff">Difficulty</label><div class="disc-diff-grid" id="disc-diff-grid"></div></div>
-        <div class="disc-filter"><label data-i18n="discFCat">Category</label><div class="disc-cat-chips" id="disc-cat"></div></div>
-        <div class="disc-filter"><label for="disc-pop" data-i18n="discFPop">Popularity</label><select id="disc-pop" class="archive-sort"></select></div>
-        <div class="disc-filter"><label for="disc-len" data-i18n="discFLen">Length</label><select id="disc-len" class="archive-sort"></select></div>
-        <div class="disc-filter"><label for="disc-rate" data-i18n="discFRate">Rating</label><select id="disc-rate" class="archive-sort"></select></div>
-        <button class="disc-go" id="disc-scan-btn" data-i18n="discScan">Discover</button>
-      </aside>
-
-      <div class="disc-stage" id="disc-stage">
-        <div class="disc-idle" id="disc-idle">
-          <div class="disc-idle-mark"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm4.9-12.9-2.6 6.2-6.2 2.6 2.6-6.2 6.2-2.6zM12 13a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg></div>
-          <div class="disc-idle-text" data-i18n="discIdle">Dial in your filters and discover a level picked just for you.</div>
-        </div>
-        <div class="disc-searching" id="disc-searching" hidden>
-          <div class="disc-search-viz"><span></span><span></span><span></span><div class="disc-search-core"></div></div>
-          <div class="disc-search-status" id="disc-search-status"></div>
-        </div>
-        <div class="disc-found" id="disc-found" hidden></div>
-      </div>
-    </div>
-  </div>
+<div id="page-transition" aria-hidden="true">
+  <div class="pt-panel pt-a"></div>
+  <div class="pt-panel pt-b"></div>
+  <div class="pt-mark">RANDOM<span>/</span>LEVEL</div>
 </div>
 <script>
 'use strict';
@@ -1182,10 +1277,10 @@ const i18n = {
     dashLbTitle:'Top Reviewers', dashLbSub:'Top 10 by total likes received', lbEmpty:'No reviewers yet',
     dashRankTitle:'Level Rankings', diffAll:'All Difficulties', diffNA:'NA', rankEmpty:'No levels here yet', rankReviews:'reviews',
     secPopularAll:'Most Popular Levels — All Time', secTopToday:'Top Rated Popular Levels — Today', secPopularWeek:'Popular Levels — This Week', secDiscussed:'Most Discussed Levels', secCommunity:'Global Statistics & Top Reviewers', secLatest:'Latest Reviews',
-    discBannerTitle:'Level Discovery', discBannerSub:'Open the discovery studio — filter the archive and find your next level to play & review', discBannerCta:'Open Discovery →',
-    discEyebrow:'Discovery', discTitle:'Find Your Next Level', discFDiff:'Difficulty', discFPop:'Popularity', discFLen:'Length', discFCat:'Category', discFRate:'Rating',
-    discIdle:'Dial in your filters and discover a level picked just for you.', discSearch1:'Reading your filters…', discSearch2:'Searching the archive…', discSearch3:'Curating your match…', discNoSignal:'No level matched — try loosening the filters', discScan:'Discover', discAgain:'Discover Again', discOpen:'Open Level', discReview:'Review It',
-    discStatLen:'Length', discStatDownloads:'Downloads', discStatLikes:'Likes', discStatStars:'Stars', discStatScore:'Community Score', discNoReviews:'No reviews yet', discReviewsCount:'{n} reviews',
+    spinBannerTitle:'Random Level', spinBannerSub:'Enter the spin room — a living wheel of levels picks your next one to play & review', spinBannerCta:'Enter →',
+    spinEyebrow:'Random Level', spinTitle:'Spin the Wheel', spinBtn:'Spin', spinBtnBusy:'Spinning…', spinFDiff:'Difficulties', spinFCat:'Category', spinFLen:'Length', spinFMinDl:'Minimum downloads', spinFExtra:'Extras', spinFStarred:'Starred levels only', spinDlAny:'Any',
+    spinPoolCount:'{n} levels in the wheel', spinPoolEmpty:'No levels match — loosen the filters', spinLoading:'Filling the wheel…', spinDiffLocked:'Keep at least one difficulty on', spinResultEyebrow:'Your level', spinOpen:'Open Level', spinReview:'Write Review', spinAgain:'Spin Again',
+    spinStatLen:'Length', spinStatDownloads:'Downloads', spinStatLikes:'Likes', spinStatStars:'Stars', spinStatScore:'Community Score', spinNoReviews:'No reviews yet', spinReviewsCount:'{n} reviews',
     popRated:'Rated', popFeatured:'Featured', popMagic:'Magic', popTrending:'Trending', popDefault:'By category', popDownloads:'Most Downloaded', popLiked:'Most Liked', popRecent:'Recent', lenAny:'Any length',
     rateAny:'Any rating', rateLow:'★ 1–3', rateMid:'★ 4–6', rateHigh:'★ 7–9', rateDemon:'★ 10 (Demon)',
     chipRecent:'Recent', chipPopular:'Popular', chipToday:'Top Today', chipWeek:'Top Week', chipAllTime:'All Time', chipDiscussed:'Most Discussed', chipBeautiful:'Most Beautiful', chipEasiest:'Easiest', chipHardest:'Hardest', diffAny:'Any difficulty',
@@ -1249,10 +1344,10 @@ const i18n = {
     dashLbTitle:'Топ рецензентов', dashLbSub:'Топ-10 по полученным лайкам', lbEmpty:'Пока нет рецензентов',
     dashRankTitle:'Рейтинги уровней', diffAll:'Все сложности', diffNA:'NA', rankEmpty:'Здесь пока пусто', rankReviews:'рец.',
     secPopularAll:'Самые популярные уровни — за всё время', secTopToday:'Лучшие среди популярных — сегодня', secPopularWeek:'Популярные уровни — за неделю', secDiscussed:'Самые обсуждаемые уровни', secCommunity:'Статистика и топ рецензентов', secLatest:'Последние рецензии',
-    discBannerTitle:'Подбор уровня', discBannerSub:'Откройте студию подбора — настройте фильтры и найдите следующий уровень для игры и рецензии', discBannerCta:'Открыть подбор →',
-    discEyebrow:'Подбор', discTitle:'Найдите свой уровень', discFDiff:'Сложность', discFPop:'Популярность', discFLen:'Длина', discFCat:'Категория', discFRate:'Рейтинг',
-    discIdle:'Настройте фильтры и найдите уровень, подобранный специально для вас.', discSearch1:'Читаем фильтры…', discSearch2:'Ищем в архиве…', discSearch3:'Подбираем совпадение…', discNoSignal:'Ничего не найдено — ослабьте фильтры', discScan:'Найти уровень', discAgain:'Найти ещё', discOpen:'Открыть уровень', discReview:'Написать рецензию',
-    discStatLen:'Длина', discStatDownloads:'Скачивания', discStatLikes:'Лайки', discStatStars:'Звёзды', discStatScore:'Оценка сообщества', discNoReviews:'Пока нет рецензий', discReviewsCount:'{n} рец.',
+    spinBannerTitle:'Случайный уровень', spinBannerSub:'Войдите в спин-зал — живое колесо уровней выберет, что играть и оценивать дальше', spinBannerCta:'Войти →',
+    spinEyebrow:'Случайный уровень', spinTitle:'Крутите колесо', spinBtn:'Крутить', spinBtnBusy:'Крутится…', spinFDiff:'Сложности', spinFCat:'Категория', spinFLen:'Длина', spinFMinDl:'Минимум скачиваний', spinFExtra:'Дополнительно', spinFStarred:'Только со звёздами', spinDlAny:'Любое',
+    spinPoolCount:'Уровней в колесе: {n}', spinPoolEmpty:'Ничего не подходит — ослабьте фильтры', spinLoading:'Заполняем колесо…', spinDiffLocked:'Оставьте хотя бы одну сложность', spinResultEyebrow:'Ваш уровень', spinOpen:'Открыть уровень', spinReview:'Написать рецензию', spinAgain:'Крутить ещё',
+    spinStatLen:'Длина', spinStatDownloads:'Скачивания', spinStatLikes:'Лайки', spinStatStars:'Звёзды', spinStatScore:'Оценка сообщества', spinNoReviews:'Пока нет рецензий', spinReviewsCount:'{n} рец.',
     popRated:'Оценённые', popFeatured:'Featured', popMagic:'Magic', popTrending:'В тренде', popDefault:'По категории', popDownloads:'Самые скачиваемые', popLiked:'Самые залайканные', popRecent:'Новые', lenAny:'Любая длина',
     rateAny:'Любой рейтинг', rateLow:'★ 1–3', rateMid:'★ 4–6', rateHigh:'★ 7–9', rateDemon:'★ 10 (демон)',
     chipRecent:'Недавние', chipPopular:'Популярные', chipToday:'Лучшие за день', chipWeek:'Лучшие за неделю', chipAllTime:'За всё время', chipDiscussed:'Обсуждаемые', chipBeautiful:'Самые красивые', chipEasiest:'Лёгкие', chipHardest:'Сложные', diffAny:'Любая сложность',
@@ -1382,7 +1477,7 @@ function injectEyes(){
   let mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my;
   window.addEventListener('mousemove', function(e){ mx=e.clientX; my=e.clientY; dot.style.left=mx+'px'; dot.style.top=my+'px'; if(glow) glow.style.background = 'radial-gradient(600px circle at '+mx+'px '+my+'px, rgba(255,255,255,0.06), transparent 70%)'; });
   (function animateRing(){ rx += (mx-rx)*0.18; ry += (my-ry)*0.18; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animateRing); })();
-  const hoverSel = 'button, input, textarea, select, a, .tab-btn, .delete-btn, .seg, .review-bar, .modal-close, .audio-waveform, .eye-btn, .chip, .like-btn, .feed-card, .level-card, .lang-opt, .back-btn, .fc-level, .fc-user, .fc-ava, .img-edit-overlay, .frame-option';
+  const hoverSel = 'button, input, textarea, select, a, .tab-btn, .delete-btn, .seg, .review-bar, .modal-close, .audio-waveform, .eye-btn, .chip, .like-btn, .feed-card, .level-card, .lang-opt, .back-btn, .fc-level, .fc-user, .fc-ava, .img-edit-overlay, .frame-option, .discover-banner, .sf-diff-opt, .sf-seg-opt, .sf-switch, .spin-btn';
   document.addEventListener('mouseover', function(e){ if(e.target.closest(hoverSel)) document.body.classList.add('cursor-hover'); });
   document.addEventListener('mouseout', function(e){ if(e.target.closest(hoverSel)) document.body.classList.remove('cursor-hover'); });
 })();
@@ -1418,13 +1513,70 @@ function mapReview(r){
     username: r.username || '', avatar: r.avatar || '', frame: r.frame || 'frame-default', likes: r.likes || 0, liked: !!r.liked_by_me };
 }
 
-/* ================= ROUTER / HEADER ================= */
-const SCREENS = ['home','level','create','profile','settings','admin'];
-function showScreen(name){
+/* ================= ROUTER / HISTORY ================= */
+/* SPA navigation with real browser-history support: every major navigation
+   pushes a hash-based history entry, Back always returns to the previous
+   in-site state, and the site is only left when there is genuinely no
+   previous entry. */
+const SCREENS = ['home','level','create','profile','settings','admin','spin'];
+let currentScreen = 'home', navDepth = 0, transitionBusy = false;
+function applyScreen(name){
+  const wasSpin = currentScreen === 'spin';
+  currentScreen = name;
   SCREENS.forEach(function(s){ $('screen-'+s).classList.toggle('active', s===name); });
   qsa('nav.tabs .tab-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===name); });
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  if(name === 'spin') startSpinPage();
+  else if(wasSpin) stopSpinPage();
 }
+function showScreen(name){
+  if(name === currentScreen){ applyScreen(name); return; }
+  /* Entering or leaving the Random Level page plays a full page transition. */
+  if((name === 'spin' || currentScreen === 'spin') && !matchMedia('(prefers-reduced-motion: reduce)').matches){
+    runPageTransition(function(){ applyScreen(name); });
+  } else applyScreen(name);
+}
+function runPageTransition(swap){
+  const ov = $('page-transition');
+  if(transitionBusy){ swap(); return; }
+  transitionBusy = true;
+  ov.classList.remove('reveal'); ov.classList.add('cover');
+  setTimeout(function(){ swap(); ov.classList.remove('cover'); ov.classList.add('reveal'); }, 540);
+  setTimeout(function(){ ov.classList.remove('reveal'); transitionBusy = false; }, 1300);
+}
+function stateToHash(st){
+  if(st.screen === 'level' && st.id) return '#/level/' + encodeURIComponent(st.id);
+  if(st.screen === 'user' && st.user) return '#/user/' + encodeURIComponent(st.user);
+  return st.screen === 'home' ? '#/' : '#/' + st.screen;
+}
+function parseHash(){
+  const h = location.hash || '';
+  let m = h.match(/^#\/level\/([^\/?#]+)/); if(m) return { screen:'level', id: decodeURIComponent(m[1]) };
+  m = h.match(/^#\/user\/([^\/?#]+)/); if(m) return { screen:'user', user: decodeURIComponent(m[1]) };
+  m = h.match(/^#\/([a-z]+)/); if(m && SCREENS.indexOf(m[1]) !== -1) return { screen: m[1] };
+  return { screen:'home' };
+}
+function pushNav(st){ navDepth++; history.pushState(Object.assign({ d: navDepth }, st), '', stateToHash(st)); }
+function renderRoute(st){
+  st = st || { screen:'home' };
+  switch(st.screen){
+    case 'level': if(st.id){ openLevelPage(st.id, false); return; } break;
+    case 'user': if(st.user){ openUserProfile(st.user, false); return; } break;
+    case 'profile': if(me){ openOwnProfile(false); return; } break;
+    case 'create': showScreen('create'); return;
+    case 'settings': showScreen('settings'); fillSettings(); return;
+    case 'admin': showScreen('admin'); loadAdminQueue(); return;
+    case 'spin': showScreen('spin'); return;
+  }
+  showScreen('home'); ensureDashboard();
+}
+function navigateTo(st){ pushNav(st); renderRoute(st); }
+function goBack(){ if(navDepth > 0 || (history.state && history.state.d > 0)) history.back(); else navigateTo({ screen:'home' }); }
+window.addEventListener('popstate', function(e){
+  const st = e.state || parseHash();
+  navDepth = (st && st.d) || 0;
+  renderRoute(st);
+});
 function renderHeader(){ $('nav-avatar').src = (me && me.avatar) ? me.avatar : DEFAULT_AVATAR; $('tab-admin').hidden = !(me && me.is_admin); $('tab-login').hidden = !!me; $('tab-profile').hidden = !me; }
 qsa('nav.tabs .tab-btn').forEach(function(btn){
   btn.addEventListener('click', function(){
@@ -1432,10 +1584,8 @@ qsa('nav.tabs .tab-btn').forEach(function(btn){
     const tab = btn.dataset.tab;
     if(!tab) return;
     if(tab === 'profile'){ if(!requireAuth()) return; openOwnProfile(); return; }
-    showScreen(tab);
-    if(tab === 'home') ensureDashboard();
-    if(tab === 'settings') fillSettings();
-    if(tab === 'admin') loadAdminQueue();
+    if(tab === currentScreen && tab !== 'home') return;
+    navigateTo({ screen: tab });
   });
 });
 
@@ -1567,7 +1717,7 @@ async function loadMe(withReviews){
 }
 function enterApp(){
   renderHeader(); applyI18n(); fillSettings();
-  showScreen('home'); loadDashboard();
+  renderRoute(history.state || parseHash());
 }
 /* ================= HOME DASHBOARD ================= */
 function emptyState(title, sub){ return '<div class="empty-state"><div class="em-title">'+escapeHTML(title)+'</div><div class="em-sub">'+escapeHTML(sub||'')+'</div></div>'; }
@@ -1705,7 +1855,8 @@ $('home-search-btn').addEventListener('click', doHomeSearch);
 $('home-search-input').addEventListener('keydown', function(e){ if(e.key==='Enter') doHomeSearch(); });
 
 /* ================= LEVEL PAGE ================= */
-async function openLevelPage(id){
+async function openLevelPage(id, push){
+  if(push !== false) pushNav({ screen:'level', id:String(id) });
   showScreen('level');
   levelPage = { id: String(id), reviews: [], info: null };
   $('lvl-hero').innerHTML = '<div class="feed-loading">'+t('loading')+'</div>';
@@ -1761,8 +1912,8 @@ function renderLevelReviews(){
   $('lvl-reviews').innerHTML = rs.length ? '<div class="feed-list">'+rs.map(function(r,i){ return renderReviewCard(r, i, { hideLevel:true }); }).join('')+'</div>' : emptyState(t('lvlNoReviewsTitle'), t('lvlNoReviewsSub'));
 }
 $('lvl-sort').addEventListener('change', renderLevelReviews);
-$('level-back').addEventListener('click', function(){ showScreen('home'); ensureDashboard(); });
-$('lvl-write-btn').addEventListener('click', function(){ if(!levelPage.id) return; $('level-id-input').value = levelPage.id; showScreen('create'); searchLevel(); });
+$('level-back').addEventListener('click', goBack);
+$('lvl-write-btn').addEventListener('click', function(){ if(!levelPage.id) return; $('level-id-input').value = levelPage.id; navigateTo({ screen:'create' }); searchLevel(); });
 
 /* ================= WALKTHROUGH PLAYER ================= */
 const wtPlayerModal = $('wt-player-modal');
@@ -2059,10 +2210,11 @@ function buildSocialFields(){
 }
 
 /* ================= PROFILE ================= */
-function openOwnProfile(){ profileView = { own:true, user:me, reviews:myReviews }; showScreen('profile'); renderProfile(); }
-async function openUserProfile(username){
+function openOwnProfile(push){ if(push !== false) pushNav({ screen:'profile' }); profileView = { own:true, user:me, reviews:myReviews }; showScreen('profile'); renderProfile(); }
+async function openUserProfile(username, push){
   if(!username) return;
-  if(me && username.toLowerCase() === me.username.toLowerCase()) return openOwnProfile();
+  if(me && username.toLowerCase() === me.username.toLowerCase()) return openOwnProfile(push);
+  if(push !== false) pushNav({ screen:'user', user:String(username) });
   showScreen('profile');
   $('stats-content').innerHTML = '<div class="feed-loading">'+t('loading')+'</div>'; $('archive-content').innerHTML = '';
   const r = await api('/users/'+encodeURIComponent(username));
@@ -2090,7 +2242,7 @@ function renderProfile(){
   renderStatsFor(revs, u);
   renderArchive();
 }
-$('profile-back').addEventListener('click', function(){ showScreen('home'); ensureDashboard(); });
+$('profile-back').addEventListener('click', goBack);
 
 /* ---- Charts (radar / histogram / trend) ---- */
 function buildRadarChart(categoryAverages){ const size=280, cx=size/2, cy=size/2-6, maxR=92, n=categoryAverages.length; const angleFor=function(i){ return (i/n)*Math.PI*2 - Math.PI/2; }; const pointAt=function(i,r){ return [cx + r*Math.cos(angleFor(i)), cy + r*Math.sin(angleFor(i))]; }; const rings=[0.25,0.5,0.75,1].map(function(f){ return '<polygon class="radar-grid" points="'+categoryAverages.map(function(_,i){ return pointAt(i, maxR*f).join(','); }).join(' ')+'"/>'; }).join(''); const axes=categoryAverages.map(function(_,i){ const p=pointAt(i,maxR); return '<line class="radar-axis" x1="'+cx+'" y1="'+cy+'" x2="'+p[0]+'" y2="'+p[1]+'"/>'; }).join(''); const dataPts=categoryAverages.map(function(c,i){ return pointAt(i, maxR*(c.avg/10)); }); const dots=dataPts.map(function(p,i){ return '<circle class="radar-dot" cx="'+p[0]+'" cy="'+p[1]+'" r="4" style="animation-delay:'+(1.1+i*0.06)+'s"><title>'+categoryAverages[i].label+': '+categoryAverages[i].avg.toFixed(1)+'</title></circle>'; }).join(''); const labels=categoryAverages.map(function(c,i){ const p=pointAt(i, maxR+26); const anchor=Math.abs(p[0]-cx)<4?'middle':(p[0]>cx?'start':'end'); return '<text class="radar-label" x="'+p[0]+'" y="'+(p[1]-4)+'" text-anchor="'+anchor+'">'+c.label+'</text><text class="radar-value" x="'+p[0]+'" y="'+(p[1]+9)+'" text-anchor="'+anchor+'">'+c.avg.toFixed(1)+'</text>'; }).join(''); return '<svg viewBox="0 0 '+size+' '+(size-24)+'">'+rings+axes+'<polygon class="radar-fill" pathLength="1" points="'+dataPts.map(function(p){ return p.join(','); }).join(' ')+'"/>'+dots+labels+'</svg>'; }
@@ -2303,146 +2455,364 @@ $('btn-delete-account').addEventListener('click', async function(){
   else toast(ERR(r.data.error), 'error');
 });
 
-/* ================= LEVEL DISCOVERY ================= */
-/* A curated discovery studio: dial in filters on the left panel, hit Discover,
-   and a featured level materializes on the stage with a staggered reveal
-   (hero image wipe-in, flash, cascading meta). Deliberately NOT a wheel /
-   roulette / case-opening mechanic. */
-const discModal = $('discover-modal');
-const DISC_CATS = [ ['awarded','popRated'], ['featured','popFeatured'], ['magic','popMagic'], ['trending','popTrending'] ];
-const DISC_POP = [ ['','popDefault'], ['mostdownloaded','popDownloads'], ['mostliked','popLiked'], ['recent','popRecent'] ];
-const DISC_LEN = [ ['', 'lenAny'], ['0','Tiny'], ['1','Short'], ['2','Medium'], ['3','Long'], ['4','XL'] ];
-const DISC_RATE = [ ['', 'rateAny'], ['low','rateLow'], ['mid','rateMid'], ['high','rateHigh'], ['demon','rateDemon'] ];
-const DISC_PAGES = { awarded: 40, featured: 30, magic: 15, trending: 6, mostdownloaded: 40, mostliked: 40, recent: 10 };
-let discBusy = false, discDiff = '', discCat = 'awarded';
+/* ================= RANDOM LEVEL — WHEELSPIN ================= */
+/* A dedicated page with a horizontal reward wheel. Inspired by the *feeling*
+   of Forza Horizon's Wheelspin — anticipation, pacing, a satisfying reveal —
+   but with an original monochrome presentation. The wheel idles on its own,
+   accelerates dramatically on Spin, decelerates along a long physical curve
+   and settles back with a small overshoot before the reveal. */
 
-function buildDiscFilters(){
-  $('disc-diff-grid').innerHTML = DIFF_OPTIONS.map(function(o){
-    const icon = o.face ? '<img src="https://gdbrowser.com/assets/difficulties/'+o.face+'.png" alt="" loading="lazy">' : '<span class="ddo-any">✦</span>';
-    return '<button type="button" class="disc-diff-opt'+(discDiff===o.v?' active':'')+'" data-ddiff="'+escapeHTML(o.v)+'" title="'+escapeHTML(diffOptionLabel(o))+'">'+icon+'<span class="ddo-label">'+escapeHTML(diffOptionLabel(o))+'</span></button>';
-  }).join('');
-  $('disc-cat').innerHTML = DISC_CATS.map(function(c){ return '<button type="button" class="chip'+(discCat===c[0]?' active':'')+'" data-dcat="'+c[0]+'">'+escapeHTML(t(c[1]))+'</button>'; }).join('');
-  $('disc-pop').innerHTML = DISC_POP.map(function(p){ return '<option value="'+p[0]+'">'+escapeHTML(t(p[1]))+'</option>'; }).join('');
-  $('disc-len').innerHTML = DISC_LEN.map(function(p){ return '<option value="'+p[0]+'">'+escapeHTML(p[1] === 'lenAny' ? t('lenAny') : p[1])+'</option>'; }).join('');
-  $('disc-rate').innerHTML = DISC_RATE.map(function(p){ return '<option value="'+p[0]+'">'+escapeHTML(t(p[1]))+'</option>'; }).join('');
-}
-$('disc-diff-grid').addEventListener('click', function(e){ const b = e.target.closest('.disc-diff-opt'); if(!b) return; discDiff = b.dataset.ddiff; qsa('#disc-diff-grid .disc-diff-opt').forEach(function(x){ x.classList.toggle('active', x.dataset.ddiff === discDiff); }); });
-$('disc-cat').addEventListener('click', function(e){ const b = e.target.closest('.chip'); if(!b) return; discCat = b.dataset.dcat; qsa('#disc-cat .chip').forEach(function(x){ x.classList.toggle('active', x.dataset.dcat === discCat); }); });
+/* Sound-ready hooks: every key beat of the spin is routed through these
+   no-ops, so real audio can be added later without touching animation code. */
+const SFX = { tick:function(){}, spinStart:function(){}, slowdown:function(){}, reveal:function(){} };
 
-/* An explicit popularity sort overrides the category; otherwise the category
-   chip (Rated / Featured / Magic / Trending) drives the archive query. */
-function discType(){ return $('disc-pop').value || discCat || 'awarded'; }
-function discQuery(page){
-  const params = new URLSearchParams(); params.set('count','10'); params.set('page', String(page));
-  params.set('type', discType());
-  const d = discDiff;
-  if(d === 'auto') params.set('diff','-3');
-  else if(d === 'na') params.set('diff','-1');
-  else if(d.indexOf('demon') !== -1){ params.set('diff','-2'); params.set('demonFilter', String({'easy demon':1,'medium demon':2,'hard demon':3,'insane demon':4,'extreme demon':5}[d] || 3)); }
-  else if(d) params.set('diff', String({easy:1,normal:2,hard:3,harder:4,insane:5}[d]));
-  const len = $('disc-len').value; if(len !== '') params.set('length', len);
-  return 'https://gdbrowser.com/api/search/*?' + params.toString();
-}
-function discRateMatch(lv){
-  const mode = $('disc-rate').value; if(!mode) return true;
-  const s = Number(lv.stars || 0);
-  if(mode === 'low') return s >= 1 && s <= 3;
-  if(mode === 'mid') return s >= 4 && s <= 6;
-  if(mode === 'high') return s >= 7 && s <= 9;
-  if(mode === 'demon') return s >= 10;
+const WHEEL_STEP = 248; /* card width 232px + 16px gap — keep in sync with CSS */
+const SPIN_CATS = [ ['awarded','popRated'], ['featured','popFeatured'], ['magic','popMagic'], ['trending','popTrending'] ];
+const SPIN_LEN = [ ['','lenAny'], ['0','Tiny'], ['1','Short'], ['2','Medium'], ['3','Long'], ['4','XL'] ];
+const SPIN_PAGES = { awarded:40, featured:30, magic:15, trending:6 };
+const DL_STEPS = [ 0, 1000, 10000, 50000, 100000, 500000, 1000000 ];
+const GD_LENGTH_NAMES = ['Tiny','Short','Medium','Long','XL'];
+function levelLengthLabel(lv){ if(lv == null) return '—'; const raw = lv.length; if(typeof raw === 'string' && raw) return raw; const n = Number(raw); return GD_LENGTH_NAMES[n] || '—'; }
+function fmtNum(n){ n = Number(n || 0); if(n >= 1e6) return (n/1e6).toFixed(1).replace(/\.0$/,'')+'M'; if(n >= 1e3) return (n/1e3).toFixed(1).replace(/\.0$/,'')+'K'; return String(n); }
+
+const spinFilters = {
+  diffs: new Set(DIFF_OPTIONS.filter(function(o){ return o.v; }).map(function(o){ return o.v; })),
+  cat: 'awarded', len: '', minDl: 0, starred: false
+};
+const wheel = { raw:[], rawMap:new Map(), pool:[], seq:0, base:0, offset:0, vel:0, idleVel:26, raf:0, lastTs:0, lastTick:-1, spinning:false, anim:null, loading:false, fetchToken:0, active:false, result:null };
+
+function normDiff(lv){ const d = String(lv.difficulty || '').toLowerCase().trim(); if(!d || d === 'n/a' || d === 'unrated') return 'na'; return d; }
+function spinEligible(lv){
+  if(!spinFilters.diffs.has(normDiff(lv))) return false;
+  if(spinFilters.minDl > 0 && Number(lv.downloads || 0) < spinFilters.minDl) return false;
+  if(spinFilters.starred && Number(lv.stars || 0) <= 0) return false;
   return true;
 }
-/* Random page first for variety, then narrower pages as fallback so tight
-   filter combinations still find something. */
-async function discFetchCandidates(){
-  const type = discType();
-  const maxPage = DISC_PAGES[type] || 10;
-  const pages = [ Math.floor(Math.random()*maxPage), Math.floor(Math.random()*Math.min(4,maxPage)), 0 ];
-  for(let i=0;i<pages.length;i++){
-    try{
-      const res = await fetch(discQuery(pages[i]));
-      const d = res.ok ? await res.json() : null;
-      if(d && d !== '-1' && Array.isArray(d) && d.length){
-        const filtered = d.filter(discRateMatch);
-        if(filtered.length) return filtered;
-      }
-    }catch(e){}
+function wheelAccent(lv){
+  if(lv.epic) return 'rgba(255,209,85,0.85)';
+  if(lv.featured) return 'rgba(160,215,255,0.8)';
+  if(normDiff(lv).indexOf('demon') !== -1) return 'rgba(255,110,110,0.7)';
+  return '';
+}
+
+/* ---- Wheel strip: a recycled flex row driven by a single translate ---- */
+function buildWheelCard(lv){
+  const el = document.createElement('div');
+  el.className = 'wheel-card';
+  el.dataset.id = String(lv.id);
+  const acc = wheelAccent(lv);
+  if(acc) el.style.setProperty('--wc-acc', acc);
+  const faceUrl = lv.difficultyFace ? 'https://gdbrowser.com/assets/difficulties/'+encodeURIComponent(lv.difficultyFace)+'.png' : '';
+  el.innerHTML = '<div class="wheel-card-inner">'
+    + '<div class="wc-thumb"><img class="wc-thumb-img" src="https://levelthumbs.prevter.me/thumbnail/'+encodeURIComponent(lv.id)+'/small" alt="" loading="lazy" onerror="this.remove()">'
+    + (faceUrl ? '<img class="wc-face" src="'+faceUrl+'" alt="" loading="lazy">' : '')
+    + '<div class="wc-rarity"></div></div>'
+    + '<div class="wc-body"><div class="wc-name">'+escapeHTML(lv.name || ('#'+lv.id))+'</div>'
+    + '<div class="wc-creator">by '+escapeHTML(lv.author || '—')+'</div>'
+    + '<div class="wc-diff">'+(faceUrl ? '<img src="'+faceUrl+'" alt="">' : '')+'<span>'+escapeHTML(lv.difficulty || '—')+'</span></div>'
+    + '<div class="wc-stats"><span>★ '+(lv.stars || 0)+'</span><span>⬇ '+fmtNum(lv.downloads)+'</span><span>♥ '+fmtNum(lv.likes)+'</span></div>'
+    + '</div></div>';
+  return el;
+}
+function wheelApplyTransform(){ $('wheel-track').style.transform = 'translate3d('+(-(wheel.offset - wheel.base)).toFixed(2)+'px,-50%,0)'; }
+function appendWheelCard(){ if(!wheel.pool.length) return; const lv = wheel.pool[wheel.seq % wheel.pool.length]; const el = buildWheelCard(lv); el.dataset.seq = String(wheel.seq); wheel.seq++; $('wheel-track').appendChild(el); }
+function wheelStripSize(){ return Math.ceil(($('wheel-stage').clientWidth || 1040) / WHEEL_STEP) + 7; }
+function liveWheelCards(){ return qsa('#wheel-track .wheel-card').filter(function(c){ return !c.dataset.dying; }); }
+function ensureWheelFilled(){ if(!wheel.pool.length) return; const need = wheelStripSize() - liveWheelCards().length; for(let i = 0; i < need; i++) appendWheelCard(); }
+function wheelRecycle(){
+  const track = $('wheel-track');
+  let guard = 0;
+  while(guard++ < 60){
+    const first = track.firstElementChild;
+    if(!first) break;
+    const w = first.dataset.dying ? first.offsetWidth : WHEEL_STEP;
+    if(wheel.offset - wheel.base > w + WHEEL_STEP * 1.5){ wheel.base += w; first.remove(); appendWheelCard(); }
+    else break;
   }
-  return null;
 }
-function discShow(state){
-  $('disc-idle').hidden = state !== 'idle';
-  $('disc-searching').hidden = state !== 'searching';
-  $('disc-found').hidden = state !== 'found';
+function initWheelStrip(){
+  const track = $('wheel-track');
+  track.innerHTML = '';
+  wheel.base = 0; wheel.offset = 0; wheel.seq = 0; wheel.vel = 0; wheel.lastTick = -1;
+  $('wheel-empty').hidden = !!wheel.pool.length || wheel.loading;
+  if(!wheel.pool.length){ wheelApplyTransform(); updateSpinButton(); return; }
+  const n = wheelStripSize();
+  for(let i = 0; i < n; i++) appendWheelCard();
+  wheelApplyTransform(); updateSpinButton();
 }
-function discReset(){
-  discShow('idle'); $('disc-found').innerHTML = '';
-  const st = $('disc-search-status'); st.classList.remove('disc-noresult'); st.textContent = '';
-  const b = $('disc-scan-btn'); b.textContent = t('discScan'); b.disabled = false;
-}
-function openDiscovery(){ buildDiscFilters(); discReset(); openModalOverlay(discModal); }
-$('discover-open').addEventListener('click', openDiscovery);
-$('discover-open').addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openDiscovery(); } });
-$('disc-close').addEventListener('click', function(){ closeModalOverlay(discModal); });
-discModal.addEventListener('click', function(e){ if(e.target === discModal && !discBusy) closeModalOverlay(discModal); });
-document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && discModal.classList.contains('show') && !discBusy) closeModalOverlay(discModal); });
 
-const GD_LENGTH_NAMES = ['Tiny','Short','Medium','Long','XL'];
-function discLengthLabel(lv){ if(lv == null) return '—'; const raw = lv.length; if(typeof raw === 'string' && raw) return raw; const n = Number(raw); return GD_LENGTH_NAMES[n] || '—'; }
-
-async function runDiscovery(){
-  if(discBusy) return;
-  discBusy = true;
-  const btn = $('disc-scan-btn'); btn.disabled = true;
-  discShow('searching');
-  const st = $('disc-search-status'); st.classList.remove('disc-noresult');
-  const phases = ['discSearch1','discSearch2','discSearch3']; let phase = 0;
-  st.textContent = t(phases[0]);
-  const phaseTimer = setInterval(function(){ phase = Math.min(phases.length-1, phase+1); st.textContent = t(phases[phase]); }, 650);
-  const started = performance.now();
-  const candidates = await discFetchCandidates();
-  /* Let the search animation breathe for at least ~1.6s so the reveal lands. */
-  const waitLeft = Math.max(0, 1600 - (performance.now() - started));
-  await new Promise(function(r){ setTimeout(r, waitLeft); });
-  clearInterval(phaseTimer);
-  if(!candidates){ st.classList.add('disc-noresult'); st.textContent = t('discNoSignal'); btn.disabled = false; discBusy = false; return; }
-  renderDiscResult(candidates[Math.floor(Math.random()*candidates.length)]);
-  btn.textContent = t('discAgain'); btn.disabled = false;
-  discBusy = false;
+/* ---- Motion: idle drift, spin tween, blur, parallax, marker ticks ---- */
+function spinEase(p){
+  /* Short dramatic windup (~18% of time, ~8.5% of distance), then a long
+     believable deceleration with a heavy tail. */
+  const a = 0.18, b = 0.085;
+  if(p <= 0) return 0;
+  if(p >= 1) return 1;
+  if(p < a){ const q = p / a; return b * q * q * q; }
+  const q = (p - a) / (1 - a);
+  return b + (1 - b) * (1 - Math.pow(1 - q, 3.6));
 }
-function renderDiscResult(lv){
-  const id = String(lv.id);
-  const thumb = 'https://levelthumbs.prevter.me/thumbnail/'+encodeURIComponent(id)+'/small';
-  const face = lv.difficultyFace ? 'https://gdbrowser.com/assets/difficulties/'+encodeURIComponent(lv.difficultyFace)+'.png' : '';
-  const box = $('disc-found');
-  discShow('found');
-  box.innerHTML = '<div class="disc-hero"><img src="'+thumb+'" alt="" onerror="this.remove()"><div class="disc-hero-flash"></div><div class="disc-hero-name">'+escapeHTML(lv.name || ('#'+id))+'</div></div>'
-    + '<div class="disc-found-body">'
-    + '<div class="disc-meta-row">'
-    + '<span class="disc-diff-badge">'+(face ? '<img src="'+face+'" alt="">' : '')+escapeHTML(lv.difficulty || '—')+'</span>'
-    + '<span class="disc-creator">#'+escapeHTML(id)+' · by <b>'+escapeHTML(lv.author || '—')+'</b></span>'
-    + '</div>'
-    + '<div class="disc-stat-grid">'
-    + '<div class="disc-stat"><div class="disc-stat-k">'+escapeHTML(t('discStatLen'))+'</div><div class="disc-stat-v">'+escapeHTML(discLengthLabel(lv))+'</div></div>'
-    + '<div class="disc-stat"><div class="disc-stat-k">'+escapeHTML(t('discStatDownloads'))+'</div><div class="disc-stat-v">⬇ '+(lv.downloads != null ? Number(lv.downloads).toLocaleString() : '—')+'</div></div>'
-    + '<div class="disc-stat"><div class="disc-stat-k">'+escapeHTML(t('discStatLikes'))+'</div><div class="disc-stat-v">♥ '+(lv.likes != null ? Number(lv.likes).toLocaleString() : '—')+'</div></div>'
-    + '<div class="disc-stat"><div class="disc-stat-k">'+escapeHTML(t('discStatStars'))+'</div><div class="disc-stat-v">★ '+(lv.stars || 0)+'</div></div>'
-    + '<div class="disc-stat"><div class="disc-stat-k">'+escapeHTML(t('discStatScore'))+'</div><div class="disc-stat-v" id="disc-our-score">…</div></div>'
-    + '</div>'
-    + '<div class="disc-actions"><button class="modal-btn solid" id="disc-open-level">'+escapeHTML(t('discOpen'))+'</button><button class="modal-btn ghost" id="disc-review-level">'+escapeHTML(t('discReview'))+'</button></div>'
-    + '</div>';
-  /* Community rating from our own archive, loaded asynchronously. */
-  api('/levels/'+encodeURIComponent(id)).then(function(r){
-    const el = $('disc-our-score'); if(!el) return;
-    const revs = (r.ok && Array.isArray(r.data.reviews)) ? r.data.reviews : [];
-    if(!revs.length){ el.textContent = t('discNoReviews'); el.style.fontSize = '10.5px'; return; }
-    const avg = revs.reduce(function(a,x){ return a + parseFloat(x.final_score || 0); }, 0) / revs.length;
-    el.textContent = avg.toFixed(1)+'/10 · '+t('discReviewsCount').replace('{n}', revs.length);
+function wheelFrame(ts){
+  if(!wheel.active) return;
+  wheel.raf = requestAnimationFrame(wheelFrame);
+  const dt = Math.min(0.05, Math.max(0.001, (ts - (wheel.lastTs || ts)) / 1000));
+  wheel.lastTs = ts;
+  const prev = wheel.offset;
+  if(wheel.anim){
+    const a = wheel.anim;
+    if(a.phase === 'main'){
+      const p = Math.min(1, (ts - a.start) / a.dur);
+      wheel.offset = a.from + a.dist * spinEase(p);
+      if(p >= 1){ a.phase = 'settle'; a.start = ts; SFX.slowdown(); }
+    } else {
+      const p = Math.min(1, (ts - a.start) / 460);
+      wheel.offset = a.from + a.dist - a.settle * (1 - Math.pow(1 - p, 3));
+      if(p >= 1){ wheel.anim = null; finishSpin(); }
+    }
+    wheel.vel = (wheel.offset - prev) / dt;
+  } else if(!wheel.spinning && wheel.pool.length){
+    /* Gentle idle motion — the wheel is alive before the user even spins. */
+    wheel.vel += (wheel.idleVel - wheel.vel) * Math.min(1, dt * 2.2);
+    wheel.offset += wheel.vel * dt;
+  }
+  wheelRecycle();
+  wheelApplyTransform();
+  wheelMotionFx();
+  wheelTickCheck();
+}
+function wheelMotionFx(){
+  const speed = Math.abs(wheel.vel);
+  $('wheel-track').classList.toggle('blur', speed > 1500);
+  $('wheel-stage').classList.toggle('wheel-live', wheel.spinning);
+  /* Subtle parallax: the stage backdrop drifts against the wheel motion. */
+  $('wheel-parallax').style.transform = 'translate3d('+(Math.sin(wheel.offset / 900) * 26).toFixed(2)+'px,0,0)';
+}
+function wheelTickCheck(){
+  const idx = Math.floor(wheel.offset / WHEEL_STEP);
+  if(idx === wheel.lastTick) return;
+  wheel.lastTick = idx;
+  SFX.tick();
+  const m = $('wheel-marker');
+  m.classList.remove('tick'); void m.offsetWidth; m.classList.add('tick');
+}
+
+/* ---- Spin: pick a far-ahead landing card and tween the exact distance ---- */
+function updateSpinButton(){
+  const btn = $('spin-btn');
+  btn.disabled = wheel.spinning || wheel.loading || wheel.pool.length < 2;
+  btn.textContent = wheel.spinning ? t('spinBtnBusy') : t('spinBtn');
+}
+function updatePoolStatus(){
+  const el = $('spin-pool-status');
+  if(wheel.loading){ el.textContent = t('spinLoading'); return; }
+  el.textContent = wheel.pool.length ? t('spinPoolCount').replace('{n}', wheel.pool.length) : t('spinPoolEmpty');
+}
+function startSpin(){
+  if(wheel.spinning || wheel.loading || wheel.pool.length < 2 || wheel.anim) return;
+  const cards = liveWheelCards();
+  const ref = cards[cards.length - 1];
+  if(!ref) return;
+  wheel.spinning = true;
+  $('spin-filters').classList.add('locked');
+  updateSpinButton();
+  SFX.spinStart();
+  const rect = $('wheel-stage').getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const refRect = ref.getBoundingClientRect();
+  const refCenter = refRect.left + refRect.width / 2;
+  /* Travel far enough that the winning card is always freshly appended from
+     the current pool: ~26–38 card lengths past the visible strip. */
+  const desired = (26 + Math.random() * 12) * WHEEL_STEP;
+  const k = Math.max(8, Math.round((desired + centerX - refCenter) / WHEEL_STEP));
+  const dist = refCenter + k * WHEEL_STEP - centerX;
+  wheel.anim = { phase:'main', start: performance.now(), dur: 6200 + Math.random() * 600, from: wheel.offset, dist: dist + 16, settle: 16 };
+}
+function finishSpin(){
+  const rect = $('wheel-stage').getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  let best = null, bestD = Infinity;
+  liveWheelCards().forEach(function(c){
+    const r = c.getBoundingClientRect();
+    const d = Math.abs(r.left + r.width / 2 - centerX);
+    if(d < bestD){ bestD = d; best = c; }
   });
-  $('disc-open-level').addEventListener('click', function(){ closeModalOverlay(discModal); openLevelPage(id); });
-  $('disc-review-level').addEventListener('click', function(){ closeModalOverlay(discModal); $('level-id-input').value = id; showScreen('create'); searchLevel(); });
+  const lv = best ? wheel.rawMap.get(best.dataset.id) : null;
+  if(!lv){ wheel.spinning = false; $('spin-filters').classList.remove('locked'); updateSpinButton(); return; }
+  wheel.result = lv;
+  best.classList.add('wheel-win');
+  SFX.reveal();
+  setTimeout(function(){
+    if(wheel.active) showSpinResult(lv);
+    setTimeout(function(){ best.classList.remove('wheel-win'); }, 800);
+  }, 700);
 }
-$('disc-scan-btn').addEventListener('click', runDiscovery);
+
+/* ---- Result reveal ---- */
+function showSpinResult(lv){
+  const id = String(lv.id);
+  const faceUrl = lv.difficultyFace ? 'https://gdbrowser.com/assets/difficulties/'+encodeURIComponent(lv.difficultyFace)+'.png' : '';
+  $('sr-card').innerHTML = '<div class="sr-hero"><div class="sr-rays"></div>'
+    + '<img src="https://levelthumbs.prevter.me/thumbnail/'+encodeURIComponent(id)+'/small" alt="" onerror="this.remove()">'
+    + '<div class="sr-eyebrow">'+escapeHTML(t('spinResultEyebrow'))+'</div>'
+    + '<div class="sr-name">'+escapeHTML(lv.name || ('#'+id))+'</div></div>'
+    + '<div class="sr-body">'
+    + '<div class="sr-meta"><span class="sr-diff">'+(faceUrl ? '<img src="'+faceUrl+'" alt="">' : '')+escapeHTML(lv.difficulty || '—')+'</span>'
+    + '<span class="sr-creator">#'+escapeHTML(id)+' · by <b>'+escapeHTML(lv.author || '—')+'</b></span></div>'
+    + '<div class="sr-stats">'
+    + '<div class="sr-stat"><div class="sr-stat-k">'+escapeHTML(t('spinStatDownloads'))+'</div><div class="sr-stat-v">⬇ '+(lv.downloads != null ? Number(lv.downloads).toLocaleString() : '—')+'</div></div>'
+    + '<div class="sr-stat"><div class="sr-stat-k">'+escapeHTML(t('spinStatLikes'))+'</div><div class="sr-stat-v">♥ '+(lv.likes != null ? Number(lv.likes).toLocaleString() : '—')+'</div></div>'
+    + '<div class="sr-stat"><div class="sr-stat-k">'+escapeHTML(t('spinStatStars'))+'</div><div class="sr-stat-v">★ '+(lv.stars || 0)+'</div></div>'
+    + '<div class="sr-stat"><div class="sr-stat-k">'+escapeHTML(t('spinStatLen'))+'</div><div class="sr-stat-v">'+escapeHTML(levelLengthLabel(lv))+'</div></div>'
+    + '<div class="sr-stat"><div class="sr-stat-k">'+escapeHTML(t('spinStatScore'))+'</div><div class="sr-stat-v" id="sr-our-score">…</div></div>'
+    + '</div>'
+    + '<div class="sr-actions">'
+    + '<button class="modal-btn solid" id="sr-open">'+escapeHTML(t('spinOpen'))+'</button>'
+    + '<button class="modal-btn ghost" id="sr-review">'+escapeHTML(t('spinReview'))+'</button>'
+    + '<button class="modal-btn ghost" id="sr-again">'+escapeHTML(t('spinAgain'))+'</button>'
+    + '</div></div>';
+  $('spin-result').hidden = false;
+  /* Community rating from our own review archive, loaded asynchronously. */
+  api('/levels/'+encodeURIComponent(id)).then(function(r){
+    const el = $('sr-our-score'); if(!el) return;
+    const revs = (r.ok && Array.isArray(r.data.reviews)) ? r.data.reviews : [];
+    if(!revs.length){ el.textContent = t('spinNoReviews'); el.style.fontSize = '10.5px'; return; }
+    const avg = revs.reduce(function(acc, x){ return acc + parseFloat(x.final_score || 0); }, 0) / revs.length;
+    el.textContent = avg.toFixed(1)+'/10 · '+t('spinReviewsCount').replace('{n}', revs.length);
+  });
+  $('sr-open').addEventListener('click', function(){ hideSpinResult(); openLevelPage(id); });
+  $('sr-review').addEventListener('click', function(){ hideSpinResult(); $('level-id-input').value = id; navigateTo({ screen:'create' }); searchLevel(); });
+  $('sr-again').addEventListener('click', function(){ hideSpinResult(); startSpin(); });
+}
+function hideSpinResult(){
+  $('spin-result').hidden = true;
+  $('sr-card').innerHTML = '';
+  wheel.spinning = false;
+  $('spin-filters').classList.remove('locked');
+  updateSpinButton();
+}
+$('sr-backdrop').addEventListener('click', hideSpinResult);
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !$('spin-result').hidden) hideSpinResult(); });
+
+/* ---- Pool: fetch random archive pages, filter client-side ---- */
+function spinQuery(page){
+  const params = new URLSearchParams();
+  params.set('count','10'); params.set('page', String(page)); params.set('type', spinFilters.cat);
+  if(spinFilters.len !== '') params.set('length', spinFilters.len);
+  return 'https://gdbrowser.com/api/search/*?' + params.toString();
+}
+async function loadSpinPool(){
+  const token = ++wheel.fetchToken;
+  wheel.loading = true; updatePoolStatus(); updateSpinButton();
+  $('wheel-empty').hidden = true;
+  const maxPage = SPIN_PAGES[spinFilters.cat] || 10;
+  const pages = []; const seen = {};
+  while(pages.length < Math.min(4, maxPage)){ const p = Math.floor(Math.random() * maxPage); if(!seen[p]){ seen[p] = 1; pages.push(p); } }
+  const results = await Promise.all(pages.map(function(p){
+    return fetch(spinQuery(p)).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; });
+  }));
+  if(token !== wheel.fetchToken) return; /* superseded by a newer request */
+  const map = new Map();
+  results.forEach(function(d){ if(d && d !== '-1' && Array.isArray(d)) d.forEach(function(lv){ if(lv && lv.id != null) map.set(String(lv.id), lv); }); });
+  wheel.raw = Array.from(map.values());
+  /* Shuffle once so the wheel order feels random but stays stable in a spin. */
+  for(let i = wheel.raw.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const tmp = wheel.raw[i]; wheel.raw[i] = wheel.raw[j]; wheel.raw[j] = tmp; }
+  wheel.rawMap = map;
+  wheel.loading = false;
+  wheel.pool = wheel.raw.filter(spinEligible);
+  updatePoolStatus();
+  initWheelStrip();
+}
+
+/* ---- Animated live filtering: ineligible cards physically leave the wheel,
+   the remaining cards slide together, and the pool updates in real time ---- */
+function applySpinEligibility(){
+  wheel.pool = wheel.raw.filter(spinEligible);
+  updatePoolStatus(); updateSpinButton();
+  qsa('#wheel-track .wheel-card').forEach(function(el){
+    if(el.dataset.dying) return;
+    const lv = wheel.rawMap.get(el.dataset.id);
+    if(lv && !spinEligible(lv)){
+      el.dataset.dying = '1';
+      el.classList.add('wheel-card-out');
+      setTimeout(function(){ el.remove(); }, 500);
+    }
+  });
+  if(!wheel.pool.length){ $('wheel-empty').hidden = false; return; }
+  $('wheel-empty').hidden = true;
+  if(!liveWheelCards().length) initWheelStrip(); else ensureWheelFilled();
+}
+
+/* ---- Filter panel ---- */
+function updateDlSlider(){
+  const inp = $('sf-dl');
+  const idx = Number(inp.value);
+  inp.style.setProperty('--fill', (idx / (DL_STEPS.length - 1) * 100) + '%');
+  $('sf-dl-val').textContent = idx === 0 ? t('spinDlAny') : fmtNum(DL_STEPS[idx]) + '+';
+}
+function buildSpinFilters(){
+  $('sf-diff-grid').innerHTML = DIFF_OPTIONS.filter(function(o){ return o.v; }).map(function(o){
+    const on = spinFilters.diffs.has(o.v);
+    return '<button type="button" class="sf-diff-opt'+(on ? ' on' : '')+'" data-sdiff="'+escapeHTML(o.v)+'" title="'+escapeHTML(diffOptionLabel(o))+'">'+diffOptionIcon(o)+'<span>'+escapeHTML(diffOptionLabel(o))+'</span></button>';
+  }).join('');
+  $('sf-cat').innerHTML = SPIN_CATS.map(function(c){ return '<button type="button" class="sf-seg-opt'+(spinFilters.cat === c[0] ? ' on' : '')+'" data-scat="'+c[0]+'">'+escapeHTML(t(c[1]))+'</button>'; }).join('');
+  $('sf-len').innerHTML = SPIN_LEN.map(function(l){ return '<button type="button" class="sf-seg-opt'+(spinFilters.len === l[0] ? ' on' : '')+'" data-slen="'+l[0]+'">'+escapeHTML(l[1] === 'lenAny' ? t('lenAny') : l[1])+'</button>'; }).join('');
+  updateDlSlider();
+}
+$('sf-diff-grid').addEventListener('click', function(e){
+  const b = e.target.closest('.sf-diff-opt'); if(!b || wheel.spinning) return;
+  const v = b.dataset.sdiff;
+  if(spinFilters.diffs.has(v)){
+    if(spinFilters.diffs.size <= 1){ toast(t('spinDiffLocked'), 'error'); return; }
+    spinFilters.diffs.delete(v); b.classList.remove('on');
+  } else { spinFilters.diffs.add(v); b.classList.add('on'); }
+  b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
+  applySpinEligibility();
+});
+$('sf-cat').addEventListener('click', function(e){
+  const b = e.target.closest('.sf-seg-opt'); if(!b || wheel.spinning || b.dataset.scat === spinFilters.cat) return;
+  spinFilters.cat = b.dataset.scat;
+  qsa('#sf-cat .sf-seg-opt').forEach(function(x){ x.classList.toggle('on', x.dataset.scat === spinFilters.cat); });
+  loadSpinPool(); /* category changes the source archive — refill the wheel */
+});
+$('sf-len').addEventListener('click', function(e){
+  const b = e.target.closest('.sf-seg-opt'); if(!b || wheel.spinning || b.dataset.slen == null || b.dataset.slen === spinFilters.len) return;
+  spinFilters.len = b.dataset.slen;
+  qsa('#sf-len .sf-seg-opt').forEach(function(x){ x.classList.toggle('on', x.dataset.slen === spinFilters.len); });
+  loadSpinPool();
+});
+$('sf-dl').addEventListener('input', function(){
+  spinFilters.minDl = DL_STEPS[Number(this.value)] || 0;
+  updateDlSlider();
+  if(!wheel.spinning) applySpinEligibility();
+});
+$('sf-starred').addEventListener('click', function(){
+  if(wheel.spinning) return;
+  spinFilters.starred = !spinFilters.starred;
+  this.classList.toggle('on', spinFilters.starred);
+  this.setAttribute('aria-checked', String(spinFilters.starred));
+  applySpinEligibility();
+});
+$('spin-btn').addEventListener('click', startSpin);
+$('spin-back').addEventListener('click', goBack);
+$('spin-open').addEventListener('click', function(){ navigateTo({ screen:'spin' }); });
+$('spin-open').addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); navigateTo({ screen:'spin' }); } });
+
+/* ---- Page lifecycle — called by the router when entering / leaving ---- */
+let spinBuilt = false;
+function startSpinPage(){
+  if(!spinBuilt){ spinBuilt = true; buildSpinFilters(); }
+  wheel.active = true; wheel.lastTs = 0;
+  if(!wheel.raw.length && !wheel.loading) loadSpinPool();
+  else { updatePoolStatus(); updateSpinButton(); }
+  cancelAnimationFrame(wheel.raf);
+  wheel.raf = requestAnimationFrame(wheelFrame);
+}
+function stopSpinPage(){
+  wheel.active = false;
+  cancelAnimationFrame(wheel.raf);
+  if(!$('spin-result').hidden) hideSpinResult();
+  if(wheel.anim || wheel.spinning){ wheel.anim = null; wheel.spinning = false; $('spin-filters').classList.remove('locked'); updateSpinButton(); }
+}
 
 /* ================= CAROUSEL DRAG-TO-SCROLL ================= */
 /* Hold & drag with the mouse on the level rows (touch already scrolls
@@ -2491,6 +2861,10 @@ window.addEventListener('load', async function(){
     if(ok) localStorage.setItem('gd_username', me.username || '');
     else { localStorage.removeItem('gd_token'); localStorage.removeItem('gd_username'); }
   }
+  /* Seed the history stack so the Back button always has an in-site state to
+     return to; restore the depth counter after reloads on a deep link. */
+  if(history.state && history.state.screen){ navDepth = history.state.d || 0; }
+  else { const initial = Object.assign({ d:0 }, parseHash()); history.replaceState(initial, '', stateToHash(initial)); }
   /* The homepage is the default landing page — guests browse freely and only
      see the auth overlay when they try an action that needs an account. */
   enterApp();
