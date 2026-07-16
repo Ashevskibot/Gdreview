@@ -61,9 +61,22 @@
   .tab-btn.active{ background:var(--white); color:#0a0a0a; box-shadow:0 0 18px rgba(255,255,255,0.25); }
   .tab-btn:not(.active):hover{color:var(--white);background:rgba(255,255,255,0.04);transform:translateY(-1px);}
   .tab-btn:active{transform:scale(0.94);}
-  .nav-avatar{width:22px;height:22px;border-radius:50%;object-fit:cover;background:#222;border:1px solid var(--line2);}
-  .tab-btn.active .nav-avatar{border-color:rgba(0,0,0,0.3);}
   .tab-icon svg{width:15px;height:15px;fill:currentColor;display:block;}
+  .nav-area{ display:flex; align-items:center; gap:14px; }
+  .user-menu{ position:relative; }
+  #user-menu[hidden]{ display:none; }
+  .user-menu-btn{ width:44px; height:44px; padding:0; background:var(--panel); border:1px solid var(--line); border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:border-color .22s var(--ease), transform .18s var(--spring), box-shadow .25s var(--ease); }
+  .user-menu-btn:hover{ border-color:var(--line2); transform:translateY(-1px); box-shadow:0 6px 18px rgba(255,255,255,0.08); }
+  .user-menu-btn:active{ transform:scale(0.94); }
+  .user-menu.open .user-menu-btn{ border-color:var(--white); box-shadow:0 0 0 3px rgba(255,255,255,0.1); }
+  .nav-avatar{ width:34px; height:34px; border-radius:50%; object-fit:cover; background:#222; display:block; pointer-events:none; }
+  .user-dropdown{ position:absolute; top:calc(100% + 10px); right:0; min-width:210px; background:var(--panel2); border:1px solid var(--line2); border-radius:12px; padding:6px; z-index:100010; box-shadow:0 24px 60px -16px rgba(0,0,0,0.8), 0 0 30px rgba(255,255,255,0.04); opacity:0; transform:translateY(-6px) scale(0.97); transform-origin:top right; pointer-events:none; transition:opacity .22s var(--ease), transform .26s var(--spring); }
+  .user-menu.open .user-dropdown{ opacity:1; transform:none; pointer-events:auto; }
+  .user-dd-item{ display:flex; align-items:center; gap:10px; width:100%; background:transparent; border:none; border-radius:8px; color:var(--dim); font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; text-align:left; padding:12px 14px; cursor:pointer; transition:background .18s var(--ease), color .18s var(--ease), transform .18s var(--ease); }
+  .user-dd-item svg{ width:16px; height:16px; fill:currentColor; flex-shrink:0; }
+  .user-dd-item:hover, .user-dd-item:focus-visible{ background:rgba(255,255,255,0.06); color:var(--white); outline:none; transform:translateX(2px); }
+  .user-dd-item.danger:hover, .user-dd-item.danger:focus-visible{ color:#f0b9b9; background:rgba(224,85,85,0.1); }
+  .user-dd-sep{ height:1px; background:var(--line); margin:6px 8px; }
   .screen{display:none;animation:screenIn .45s var(--ease);}
   .screen.active{display:block;}
   @keyframes screenIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
@@ -190,11 +203,6 @@
   .profile-avatar-wrap { position: relative; width: 120px; height: 120px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
   .profile-avatar { width: 100%; height: 100%; object-fit: cover; background: var(--black2); transition: all 0.3s ease; border-radius: 16px; }
   .profile-frame-overlay { position: absolute; inset: -4px; pointer-events: none; z-index: 3; transition: all 0.3s ease; border: 2px solid transparent; }
-  .img-edit-overlay{ position:absolute; inset:0; z-index:5; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; background:rgba(5,5,5,0.6); backdrop-filter:blur(2px); color:#fff; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; opacity:0; cursor:pointer; transition:opacity .25s var(--ease); text-align:center; border-radius:14px; }
-  .img-edit-overlay svg{width:18px;height:18px;fill:#fff;}
-  .profile-banner .img-edit-overlay{border-radius:12px 12px 0 0;font-size:11px;}
-  .profile-banner:hover .img-edit-overlay:not([hidden]), .profile-avatar-wrap:hover .img-edit-overlay:not([hidden]){opacity:1;}
-  .img-edit-overlay[hidden]{display:none;}
 
   .frame-default .profile-avatar { border-radius: 16px; } .frame-default .profile-frame-overlay { border-radius: 20px; }
   .frame-circle .profile-avatar { border-radius: 50%; } .frame-circle .profile-frame-overlay { border-radius: 50%; border-color: var(--white); }
@@ -221,27 +229,19 @@
   .frame-legend .profile-avatar { border-radius: 0; clip-path: polygon(50% 0%, 61% 10%, 78% 4%, 82% 22%, 100% 28%, 94% 45%, 100% 62%, 84% 70%, 80% 88%, 62% 84%, 50% 100%, 38% 84%, 20% 88%, 16% 70%, 0% 62%, 6% 45%, 0% 28%, 18% 22%, 22% 4%, 39% 10%); }
   .frame-legend .profile-frame-overlay { border-radius: 0; border: none; padding: 3px; clip-path: polygon(50% 0%, 61% 10%, 78% 4%, 82% 22%, 100% 28%, 94% 45%, 100% 62%, 84% 70%, 80% 88%, 62% 84%, 50% 100%, 38% 84%, 20% 88%, 16% 70%, 0% 62%, 6% 45%, 0% 28%, 18% 22%, 22% 4%, 39% 10%); background: conic-gradient(from var(--leg2-angle,0deg), #fff3b0, #ffd155, #ff8a3d, #fff, #ffd155, #fff3b0); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: leg2Spin 2s linear infinite; filter: drop-shadow(0 0 14px rgba(255,209,85,0.7)); }
   @keyframes leg2Spin { to { --leg2-angle: 360deg; } } @property --leg2-angle { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
-  .frame-option.locked { opacity: 0.35; cursor: not-allowed; } .frame-option.locked:hover { opacity: 0.45; transform: none; }
-  .frame-option { border: 1px solid transparent; border-radius: 10px; padding: 4px; } .frame-option.active { border-color: var(--rarity-color, var(--line2)); }
-  .frame-lock-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; background: rgba(0,0,0,0.55); border-radius: 8px; }
+  .frame-option { border: 1px solid transparent; border-radius: 10px; padding: 4px; } .frame-option.active { border-color: var(--line2); }
   .frame-selector-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 12px; }
   .frame-option { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s ease, transform 0.2s var(--spring); }
   .frame-option:hover { opacity: 0.8; transform: translateY(-2px); } .frame-option.active { opacity: 1; }
   .frame-preview-box { width: 48px; height: 48px; position: relative; display: flex; align-items: center; justify-content: center; background: var(--line); border-radius:8px; }
   .frame-option-label { font-size: 10px; font-family: 'Space Mono', monospace; text-transform: uppercase; color: var(--white); }
 
-  .profile-details { flex: 1; min-width: 250px; }
-  .profile-name { font-family: 'Archivo Black', sans-serif; font-size: 32px; color: var(--white); letter-spacing: -0.02em; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-  .profile-name-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
-  .profile-name-socials { display: flex; align-items: center; gap: 6px; } .profile-name-socials a { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; opacity: 0.9; transition: transform 0.2s var(--spring), opacity 0.2s ease; }
+  .profile-details { flex: 1 1 250px; min-width: 0; }
+  .profile-name { font-family: 'Archivo Black', sans-serif; font-size: clamp(24px, 4.5vw, 32px); color: var(--white); letter-spacing: -0.02em; text-shadow: 0 4px 10px rgba(0,0,0,0.5); word-break: break-word; overflow-wrap: anywhere; min-width: 0; }
+  .profile-name-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; min-width: 0; }
+  .profile-name-socials { display: flex; align-items: center; gap: 6px; flex-shrink: 0; } .profile-name-socials a { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; opacity: 0.9; transition: transform 0.2s var(--spring), opacity 0.2s ease; }
   .profile-name-socials a:hover { opacity: 1; transform: translateY(-2px) scale(1.12); } .profile-name-socials svg { width: 100%; height: 100%; display: block; }
-  .profile-badges-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
-  .profile-badge-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px 4px 7px; border-radius: 999px; font-size: 10px; font-family: 'Space Mono', monospace; letter-spacing: 0.04em; text-transform: uppercase; font-weight: 700; border: 1px solid var(--badge-color, var(--dim)); color: var(--badge-color, var(--white)); background: rgba(255,255,255,0.04); }
-  .profile-badge-chip .badge-icon { font-size: 11px; line-height: 1; }
-  .profile-desc { font-size: 14px; color: var(--dim); max-width: 600px; line-height: 1.6; }
-  .profile-edit-btn { background: rgba(255,255,255,0.1); backdrop-filter: blur(4px); color: var(--white); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 12px 24px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all .22s var(--spring); align-self: center; margin-top: auto; }
-  .profile-edit-btn:hover { background: var(--white); color: var(--black); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,255,255,0.15); }
-  .profile-edit-btn[hidden]{display:none;}
+  .profile-desc { font-size: 14px; color: var(--dim); max-width: 600px; line-height: 1.6; word-break: break-word; overflow-wrap: anywhere; white-space: pre-line; }
   .profile-section-divider { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); margin: 48px 0 24px; display: flex; align-items: center; gap: 16px; }
   .profile-section-divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 
@@ -309,7 +309,7 @@
   .stat-label{ font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--dim); margin-bottom:14px; }
   .stat-number{ font-family:'Archivo Black',sans-serif; font-size:clamp(38px,6vw,58px); line-height:0.95; letter-spacing:-0.02em; color:var(--white); }
   .stat-number small{ font-size:0.34em; color:var(--dim); font-family:'Space Mono',monospace; margin-left:4px; }
-  .stat-number.stat-date{font-size:clamp(20px,3vw,30px);padding-top:12px;text-transform:uppercase;}
+  .stat-number.stat-date{font-size:clamp(16px,2.4vw,24px);line-height:1.3;padding-top:12px;text-transform:uppercase;word-break:break-word;}
   .stats-hero{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px; }
   @media(max-width:780px){.stats-hero{grid-template-columns:repeat(2,1fr);}}
   .charts-grid{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
@@ -330,11 +330,21 @@
   .hist-bar:hover{opacity:1;} .hist-track{fill:var(--black2);}
   .hist-count{ font-family:'Space Mono',monospace; font-size:11px; font-weight:700; fill:var(--white); opacity:0; animation:fadeInSlow .4s ease forwards .5s; }
   .hist-label{ font-family:'Space Mono',monospace; font-size:10px; fill:var(--dim); text-transform:uppercase; } .hist-axis{stroke:var(--line);stroke-width:1;}
-  .trend-area{ fill:url(#trendGrad); opacity:0; animation:fadeInSlow .8s var(--ease) forwards .3s; }
-  .trend-line{ fill:none; stroke:var(--white); stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1; stroke-dashoffset:1; animation:dashReveal 1.3s var(--ease) forwards .1s; }
-  .trend-dot{ fill:var(--black); stroke:var(--white); stroke-width:2; opacity:0; animation:popDot .3s var(--ease) forwards; transition:r .15s var(--ease), fill .15s var(--ease); }
-  .trend-dot:hover{fill:var(--white);r:5;}
-  .trend-grid{stroke:var(--line);stroke-width:1;}
+  .ach-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:12px; }
+  .ach-card{ position:relative; display:flex; flex-direction:column; gap:8px; background:var(--black2); border:1px solid var(--line); border-radius:12px; padding:16px; opacity:0; transform:translateY(10px); animation:barIn .5s var(--ease) forwards; transition:transform .22s var(--ease), border-color .22s var(--ease), box-shadow .25s var(--ease); }
+  .ach-card:hover{ transform:translateY(-3px); border-color:var(--line2); }
+  .ach-card.unlocked{ border-color:var(--ach-color, var(--line2)); box-shadow:0 0 18px -6px var(--ach-color, transparent); }
+  .ach-head{ display:flex; align-items:center; gap:10px; min-width:0; }
+  .ach-icon{ width:34px; height:34px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:15px; border-radius:10px; background:rgba(255,255,255,0.05); border:1px solid var(--line); color:var(--dim); }
+  .ach-card.unlocked .ach-icon{ color:var(--ach-color, var(--white)); border-color:var(--ach-color, var(--line2)); background:transparent; }
+  .ach-name{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--dim); word-break:break-word; }
+  .ach-card.unlocked .ach-name{ color:var(--white); }
+  .ach-desc{ font-size:11.5px; color:var(--dim2); line-height:1.5; }
+  .ach-progress{ margin-top:auto; display:flex; align-items:center; gap:10px; }
+  .ach-bar{ flex:1; height:5px; background:var(--black); border:1px solid var(--line); border-radius:999px; overflow:hidden; }
+  .ach-fill{ height:100%; background:var(--ach-color, var(--white)); border-radius:999px; }
+  .ach-count{ font-family:'Space Mono',monospace; font-size:10px; color:var(--dim); white-space:nowrap; }
+  .ach-card.unlocked .ach-count{ color:var(--ach-color, var(--white)); }
 
   footer{ margin-top:50px; padding-top:24px; border-top:1px solid var(--line); font-family:'Space Mono',monospace; font-size:11px; color:var(--dim2); letter-spacing:0.05em; text-transform:uppercase; min-height:1px; text-align:center; }
   .site-copyright strong{ color:var(--dim); font-weight:700; }
@@ -402,7 +412,7 @@
   .google-btn:active{ transform:scale(0.98); }
   .google-btn svg{ width:16px; height:16px; flex-shrink:0; }
   #google-auth-area[hidden]{ display:none; }
-  #tab-login[hidden], #tab-profile[hidden]{ display:none; }
+  #tab-login[hidden], #tab-settings[hidden]{ display:none; }
   .settings-card[hidden]{ display:none; }
 
   /* ---------- HOME DASHBOARD ---------- */
@@ -781,7 +791,10 @@
   .settings-card.danger{ border-color:rgba(224,85,85,0.4); }
   .social-field { margin-bottom: 14px; }
   .social-field-label { display: flex; align-items: center; gap: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--dim); margin-bottom: 6px; }
-  .social-field-badge { display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:5px; background:var(--line); color:var(--white); font-size:9px; font-family:'Space Mono',monospace; font-weight:700; flex-shrink:0; }
+  .social-field-badge { display:inline-flex; align-items:center; justify-content:center; min-width:20px; width:auto; padding:0 5px; height:20px; border-radius:5px; background:var(--line); color:var(--white); font-size:9px; font-family:'Space Mono',monospace; font-weight:700; flex-shrink:0; }
+  .set-profile-preview{ display:flex; align-items:center; gap:18px; margin-bottom:20px; flex-wrap:wrap; }
+  .set-media-btns{ display:flex; flex-direction:column; gap:8px; }
+  .set-media-btns .modal-btn{ width:auto; padding:11px 18px; font-size:11px; }
   .social-field input.modal-input { margin-bottom: 4px; } .social-field input.modal-input.invalid { border-color: var(--red); box-shadow: 0 0 0 3px rgba(224,85,85,0.12); }
   .social-field-error { display: none; font-size: 10.5px; color: var(--red); font-family: 'Space Mono', monospace; letter-spacing: 0.02em; margin-bottom: 8px; }
   .social-field.has-error .social-field-error { display: block; }
@@ -815,7 +828,7 @@
   .fx-particle{ position:fixed; border-radius:50%; z-index:99998; pointer-events:none; animation:fxParticleBurst cubic-bezier(.16,.84,.44,1) forwards; } @keyframes fxParticleBurst{ 0%{transform:translate(0,0) scale(1);opacity:1;} 100%{transform:translate(var(--p-x,0),var(--p-y,0)) scale(0);opacity:0;} }
   .fx-score-pulse{animation:fxScorePulse 1s var(--ease);} @keyframes fxScorePulse{ 0%{text-shadow:none;transform:scale(1);} 30%{text-shadow:0 0 20px #fff, 0 0 44px #fff, 0 0 70px rgba(255,214,120,0.85);transform:scale(1.35);} 100%{text-shadow:none;transform:scale(1);} }
 
-  @media(max-width:760px){ header.top{justify-content:center;} nav.tabs{flex-wrap:wrap;justify-content:center;} .profile-info-bar{padding:0 20px 24px;} .home-search button{padding:14px 18px;} }
+  @media(max-width:760px){ header.top{justify-content:center;} .nav-area{flex-wrap:wrap;justify-content:center;} nav.tabs{flex-wrap:wrap;justify-content:center;} .profile-info-bar{padding:0 20px 24px;} .home-search button{padding:14px 18px;} }
 </style>
 </head>
 <body>
@@ -904,14 +917,26 @@
       <div class="brand-area">
         <div class="brand">GD<span>/</span>REVIEW</div>
       </div>
-      <nav class="tabs">
-        <button class="tab-btn active" data-tab="home" data-i18n="navHome">Home</button>
-        <button class="tab-btn" data-tab="create" data-i18n="navCreate">Create</button>
-        <button class="tab-btn" data-tab="profile" id="tab-profile"><img id="nav-avatar" class="nav-avatar" src="" alt=""><span data-i18n="navProfile">Profile</span></button>
-        <button class="tab-btn" id="tab-login" hidden data-i18n="navLogin">Log In</button>
-        <button class="tab-btn" data-tab="admin" id="tab-admin" hidden data-i18n="navAdmin">Admin</button>
-        <button class="tab-btn tab-icon" data-tab="settings" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></button>
-      </nav>
+      <div class="nav-area">
+        <nav class="tabs">
+          <button class="tab-btn active" data-tab="home" data-i18n="navHome">Home</button>
+          <button class="tab-btn" data-tab="create" data-i18n="navCreate">Create</button>
+          <button class="tab-btn" id="tab-login" hidden data-i18n="navLogin">Log In</button>
+          <button class="tab-btn" data-tab="admin" id="tab-admin" hidden data-i18n="navAdmin">Admin</button>
+          <button class="tab-btn tab-icon" data-tab="settings" id="tab-settings" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></button>
+        </nav>
+        <div class="user-menu" id="user-menu" hidden>
+          <button class="user-menu-btn" id="user-menu-btn" aria-haspopup="menu" aria-expanded="false" aria-label="Account menu">
+            <img id="nav-avatar" class="nav-avatar" src="" alt="">
+          </button>
+          <div class="user-dropdown" id="user-dropdown" role="menu">
+            <button class="user-dd-item" role="menuitem" id="dd-profile"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span data-i18n="ddProfile">My Profile</span></button>
+            <button class="user-dd-item" role="menuitem" id="dd-settings"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg><span data-i18n="navSettings">Settings</span></button>
+            <div class="user-dd-sep"></div>
+            <button class="user-dd-item danger" role="menuitem" id="dd-logout"><svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span data-i18n="btnLogout">Log Out</span></button>
+          </div>
+        </div>
+      </div>
     </header>
 
     <section class="screen active" id="screen-home">
@@ -1046,34 +1071,21 @@
     <section class="screen" id="screen-profile">
       <button class="back-btn" id="profile-back" hidden>← <span data-i18n="backBtn">Back</span></button>
       <div class="profile-header-card">
-        <div class="profile-banner" id="prof-banner">
-          <div class="img-edit-overlay" id="banner-edit" hidden>
-            <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-            <span data-i18n="changeBanner">Change banner</span>
-          </div>
-        </div>
+        <div class="profile-banner" id="prof-banner"></div>
         <div class="profile-info-bar">
           <div class="profile-avatar-wrap frame-default" id="prof-frame-wrap">
             <div class="profile-frame-overlay"></div>
             <img class="profile-avatar" id="prof-avatar" src="" alt="Avatar">
-            <div class="img-edit-overlay" id="avatar-edit" hidden>
-              <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-              <span data-i18n="changeAvatar">Change</span>
-            </div>
           </div>
           <div class="profile-details">
             <div class="profile-name-row">
               <div class="profile-name" id="prof-name">Player</div>
               <div class="profile-name-socials" id="prof-name-socials"></div>
             </div>
-            <div class="profile-badges-row" id="prof-badges"></div>
             <div class="profile-desc" id="prof-desc"></div>
           </div>
-          <button class="profile-edit-btn" id="btn-edit-profile" data-i18n="btnEditProf">Edit Profile</button>
         </div>
       </div>
-      <input type="file" id="inp-file-avatar" accept="image/*" hidden>
-      <input type="file" id="inp-file-banner" accept="image/*" hidden>
 
       <div class="profile-section-divider" data-i18n="statsTitle">Statistics</div>
       <div id="stats-content"></div>
@@ -1103,6 +1115,29 @@
           </div>
         </div>
         <div class="settings-card">
+          <div class="set-title" data-i18n="setProfile">Profile</div>
+          <div class="set-sub" data-i18n="setProfileSub">Your public identity — avatar, banner, username, description and avatar frame.</div>
+          <div class="set-profile-preview">
+            <div class="profile-avatar-wrap frame-default" id="set-frame-preview" style="width:72px;height:72px;">
+              <div class="profile-frame-overlay"></div>
+              <img class="profile-avatar" id="set-avatar-preview" src="" alt="">
+            </div>
+            <div class="set-media-btns">
+              <button class="modal-btn ghost" id="btn-set-avatar" data-i18n="changeAvatar">Change Avatar</button>
+              <button class="modal-btn ghost" id="btn-set-banner" data-i18n="changeBanner">Change Banner</button>
+            </div>
+          </div>
+          <input type="file" id="inp-file-avatar" accept="image/*" hidden>
+          <input type="file" id="inp-file-banner" accept="image/*" hidden>
+          <label class="modal-input-label" data-i18n="usernameLabel">Username</label>
+          <div class="field"><input type="text" id="inp-set-username" class="modal-input" maxlength="20" autocomplete="username"><div class="field-err"></div></div>
+          <label class="modal-input-label" data-i18n="descLabel">Description</label>
+          <input type="text" id="inp-set-desc" class="modal-input" maxlength="300">
+          <label class="modal-input-label" data-i18n="frameLabel">Avatar Frame</label>
+          <div class="frame-selector-grid" id="frame-selector"></div>
+          <button class="modal-btn ghost" id="btn-save-profile" data-i18n="btnSaveProfile">Save Profile</button>
+        </div>
+        <div class="settings-card">
           <div class="set-title" data-i18n="setLinks">Social Links</div>
           <div class="set-sub" data-i18n="setLinksSub">Links shown next to your name. Leave blank to hide.</div>
           <div id="socials-fields"></div>
@@ -1122,11 +1157,6 @@
           <div class="field"><div class="pass-wrap"><input type="password" id="inp-new-pass" class="modal-input" data-i18n-ph="newPass" autocomplete="new-password"></div><div class="field-err"></div></div>
           <div class="field"><div class="pass-wrap"><input type="password" id="inp-new-pass2" class="modal-input" data-i18n-ph="phPassConfirm" autocomplete="new-password"></div><div class="field-err"></div></div>
           <button class="modal-btn ghost" id="btn-change-pass" data-i18n="btnUpdatePass">Update Password</button>
-        </div>
-        <div class="settings-card">
-          <div class="set-title" data-i18n="setSession">Session</div>
-          <div class="set-sub" data-i18n="setSessionSub">Sign out of your account on this device.</div>
-          <button class="modal-btn ghost" id="btn-logout" data-i18n="btnLogout">Log Out</button>
         </div>
         <div class="settings-card danger">
           <div class="set-title" style="color:#e05555;" data-i18n="setDanger">Danger Zone</div>
@@ -1217,35 +1247,6 @@
 <div id="cursor-dot"></div>
 <div id="cursor-ring"></div>
 <div id="toasts"></div>
-
-<div class="modal-overlay" id="edit-profile-modal">
-  <div class="modal-box modal-box-tall" style="max-width:520px;">
-    <div class="modal-title" data-i18n="modalEditTitle">Customize Profile</div>
-    <div class="modal-scroll-body">
-      <label class="modal-input-label" data-i18n="descLabel">Description</label>
-      <input type="text" id="inp-prof-desc" class="modal-input" maxlength="300">
-      <label class="modal-input-label" data-i18n="frameLabel">Avatar Frame</label>
-      <div class="frame-selector-grid" id="frame-selector">
-        <div class="frame-option active" data-frame="frame-default">
-          <div class="frame-preview-box"><div class="profile-avatar-wrap frame-default" style="width:32px;height:32px;"><div class="profile-frame-overlay"></div><div class="profile-avatar" style="background:#fff;"></div></div></div><span class="frame-option-label">Default</span>
-        </div>
-        <div class="frame-option" data-frame="frame-circle">
-          <div class="frame-preview-box"><div class="profile-avatar-wrap frame-circle" style="width:32px;height:32px;"><div class="profile-frame-overlay"></div><div class="profile-avatar" style="background:#fff;"></div></div></div><span class="frame-option-label">Circle</span>
-        </div>
-        <div class="frame-option" data-frame="frame-hex">
-          <div class="frame-preview-box"><div class="profile-avatar-wrap frame-hex" style="width:32px;height:32px;"><div class="profile-frame-overlay"></div><div class="profile-avatar" style="background:#fff;"></div></div></div><span class="frame-option-label">Hex</span>
-        </div>
-        <div class="frame-option" data-frame="frame-tech">
-          <div class="frame-preview-box"><div class="profile-avatar-wrap frame-tech" style="width:32px;height:32px;"><div class="profile-frame-overlay"></div><div class="profile-avatar" style="background:#fff;"></div></div></div><span class="frame-option-label">Tech</span>
-        </div>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn solid" id="modal-save-prof-btn" data-i18n="saveBtn">Save</button>
-      <button class="modal-btn ghost" id="modal-close-prof-btn" data-i18n="cancel">Cancel</button>
-    </div>
-  </div>
-</div>
 
 <div class="modal-overlay" id="crop-modal">
   <div class="modal-box" style="max-width:440px;">
@@ -1339,7 +1340,7 @@ function scoreColors(score){ if(score >= 8.5) return {color:'#ffffff', glow:'rgb
 /* ================= I18N ================= */
 const i18n = {
   en: {
-    navHome:'Home', navCreate:'Create', navProfile:'Profile', navSettings:'Settings', navLogin:'Log In',
+    navHome:'Home', navCreate:'Create', ddProfile:'My Profile', navSettings:'Settings', navLogin:'Log In',
     authTagline:'Rate. Review. Share.', authLogin:'Log In', authRegister:'Sign Up', authOr:'or', authContinueGoogle:'Continue with Google',
     phEmail:'Email', phPassword:'Password', phUsername:'Username', phPassConfirm:'Repeat password', phNewPass:'New password',
     btnLoginTxt:'Log In', btnRegisterTxt:'Create Account', authForgot:'Forgot password?',
@@ -1383,19 +1384,25 @@ const i18n = {
     wtWatch:'Watch Walkthrough', wtSubmit:'Submit Walkthrough', wtModalTitle:'Submit Walkthrough', wtModalText:'Share a YouTube video showing how to beat this level. An admin will review it before it appears on the level page.', wtUrlLabel:'YouTube link', wtSubmitBtn:'Submit for Review', wtSubmitted:'Submitted! It will appear after admin approval.', wtUrlRequired:'Paste a YouTube link first',
     err_invalid_youtube_url:'That does not look like a valid YouTube link', err_walkthrough_exists:'This video was already submitted for this level', err_admin_only:'Admin access required',
     enterQuery:'Enter level name or ID', levelNotFoundCreate:'Level not found. Check the spelling or ID.',
-    btnEditProf:'Edit Profile', changeAvatar:'Change', changeBanner:'Change banner',
+    changeAvatar:'Change Avatar', changeBanner:'Change Banner',
     statsTitle:'Statistics', statReviews:'Reviews', statAvg:'Average Score', statLikes:'Likes Received', statSince:'Member Since',
-    chartCat:'Category Profile', chartCatSub:'Average score for each rating axis', chartDist:'Score Distribution', chartDistSub:'Number of reviews in each score range', chartTrend:'Rating Trends', chartTrendSub:'Final scores over time',
+    chartCat:'Category Profile', chartCatSub:'Average score for each rating axis', chartDist:'Score Distribution', chartDistSub:'Number of reviews in each score range',
+    achBoardTitle:'Achievements Board', achBoardSub:'Milestones earned across GD Review', achDone:'Unlocked',
+    achRev1:'First Critique', achRev1D:'Publish your first review', achRev10:'Seasoned Critic', achRev10D:'Publish 10 reviews', achRev50:'Archive Builder', achRev50D:'Publish 50 reviews',
+    achLikes10:'Appreciated', achLikes10D:'Receive 10 likes in total', achLikes50:'Community Favorite', achLikes50D:'Receive 50 likes in total',
+    achHelpful:'Helpful Review', achHelpfulD:'Collect 10 likes on a single review', achFeatured:'Featured Review', achFeaturedD:'Collect 25 likes on a single review',
+    achVariety:'Explorer', achVarietyD:'Review levels of 5 different difficulties', achMonth:'Regular', achMonthD:'Be a member for 30 days', achYear:'Veteran', achYearD:'Be a member for a full year',
     archiveTitle:'My Reviews', archiveTheirTitle:'Reviews by {user}', archiveSearch:'Search by level name, title or ID…',
     emptyArchiveTitle:'No reviews yet', emptyArchiveSub:'Find a level in the Create tab and publish your first review.', emptyTheirArchive:'This user has no reviews yet.',
     emptyStatsTitle:'Nothing to analyze', emptyStatsSub:'Publish at least one review to see statistics.',
     deleteBtn:'Delete', deleteConfirm:'Delete this review? This cannot be undone.', deletedToast:'Review deleted',
-    modalEditTitle:'Customize Profile', descLabel:'Description', frameLabel:'Avatar Frame', cancel:'Cancel', saveBtn:'Save', savedProfile:'Profile saved', defaultDesc:'No description yet.', unlockAt:'Unlocks at {n} reviews',
+    descLabel:'Description', frameLabel:'Avatar Frame', cancel:'Cancel', saveBtn:'Save', savedProfile:'Profile saved', defaultDesc:'No description yet.',
+    setProfile:'Profile', setProfileSub:'Your public identity — avatar, banner, username, description and avatar frame.', usernameLabel:'Username', btnSaveProfile:'Save Profile', usernameChanged:'Username updated',
     setLang:'Language', setLangSub:'Interface language.',
     setLinks:'Social Links', setLinksSub:'Links shown next to your name. Leave blank to hide.', btnSaveLinks:'Save Links', invalidLink:'That does not look like a {platform} link',
     setEmail:'Email', currentEmail:'Current email:', currPass:'Current password', newEmail:'New email', btnUpdateEmail:'Update Email', emailChanged:'Email updated',
     setPass:'Password', setPassSub:'At least 8 characters.', newPass:'New password', btnUpdatePass:'Update Password', passChanged:'Password updated',
-    setSession:'Session', setSessionSub:'Sign out of your account on this device.', btnLogout:'Log Out', logoutTitle:'Log out?', logoutText:'You will need to sign in again.',
+    btnLogout:'Log Out', logoutTitle:'Log out?', logoutText:'You will need to sign in again.',
     setDanger:'Danger Zone', setDangerSub:'Deleting your account removes all your reviews permanently.', btnDeleteAcc:'Delete Account', deleteTitle:'Delete account?', deleteText:'This action is permanent. All your reviews will be removed. Enter your password to confirm.', accDeleted:'Account deleted',
     detailSummary:'Review', detailNoSummary:'No written summary provided.', madeBy:'made by', ok:'OK',
     reviewRules:'Review rules: no abusive insults, no advertising, no external links. Every submission is checked automatically before it is published.',
@@ -1408,7 +1415,7 @@ const i18n = {
     err_google_auth_failed:'Google sign-in failed. Try again.', err_google_email_unverified:'Your Google email address is not verified', err_use_google_signin:'This account uses Google Sign-In — use the Google button below', err_password_not_set:'No password set for this account — create one via “Forgot password?” first', err_google_not_configured:'Google sign-in is not available right now'
   },
   ru: {
-    navHome:'Главная', navCreate:'Создать', navProfile:'Профиль', navSettings:'Настройки', navLogin:'Войти',
+    navHome:'Главная', navCreate:'Создать', ddProfile:'Мой профиль', navSettings:'Настройки', navLogin:'Войти',
     authTagline:'Оценивай. Пиши. Делись.', authLogin:'Вход', authRegister:'Регистрация', authOr:'или', authContinueGoogle:'Продолжить с Google',
     phEmail:'Email', phPassword:'Пароль', phUsername:'Никнейм', phPassConfirm:'Повторите пароль', phNewPass:'Новый пароль',
     btnLoginTxt:'Войти', btnRegisterTxt:'Создать аккаунт', authForgot:'Забыли пароль?',
@@ -1452,19 +1459,25 @@ const i18n = {
     wtWatch:'Смотреть прохождение', wtSubmit:'Предложить прохождение', wtModalTitle:'Предложить прохождение', wtModalText:'Поделитесь YouTube-видео с прохождением уровня. Админ проверит его перед публикацией на странице уровня.', wtUrlLabel:'Ссылка на YouTube', wtSubmitBtn:'Отправить на проверку', wtSubmitted:'Отправлено! Появится после одобрения админом.', wtUrlRequired:'Сначала вставьте ссылку на YouTube',
     err_invalid_youtube_url:'Это не похоже на корректную ссылку YouTube', err_walkthrough_exists:'Это видео уже предложено для этого уровня', err_admin_only:'Требуются права администратора',
     enterQuery:'Введите название или ID', levelNotFoundCreate:'Уровень не найден. Проверьте название или ID.',
-    btnEditProf:'Редактировать', changeAvatar:'Заменить', changeBanner:'Заменить баннер',
+    changeAvatar:'Сменить аватар', changeBanner:'Сменить баннер',
     statsTitle:'Статистика', statReviews:'Рецензий', statAvg:'Средний балл', statLikes:'Получено лайков', statSince:'На сайте с',
-    chartCat:'Профиль по категориям', chartCatSub:'Средний балл по каждой оси оценки', chartDist:'Распределение оценок', chartDistSub:'Сколько рецензий в каждом диапазоне', chartTrend:'Динамика оценок', chartTrendSub:'Итоговые баллы со временем',
+    chartCat:'Профиль по категориям', chartCatSub:'Средний балл по каждой оси оценки', chartDist:'Распределение оценок', chartDistSub:'Сколько рецензий в каждом диапазоне',
+    achBoardTitle:'Доска достижений', achBoardSub:'Ваши вехи на GD Review', achDone:'Получено',
+    achRev1:'Первая рецензия', achRev1D:'Опубликуйте первую рецензию', achRev10:'Опытный критик', achRev10D:'Опубликуйте 10 рецензий', achRev50:'Строитель архива', achRev50D:'Опубликуйте 50 рецензий',
+    achLikes10:'Признание', achLikes10D:'Получите 10 лайков суммарно', achLikes50:'Любимец сообщества', achLikes50D:'Получите 50 лайков суммарно',
+    achHelpful:'Полезная рецензия', achHelpfulD:'Соберите 10 лайков на одной рецензии', achFeatured:'Звёздная рецензия', achFeaturedD:'Соберите 25 лайков на одной рецензии',
+    achVariety:'Исследователь', achVarietyD:'Оцените уровни 5 разных сложностей', achMonth:'Постоянный участник', achMonthD:'30 дней на сайте', achYear:'Ветеран', achYearD:'Целый год на сайте',
     archiveTitle:'Мои рецензии', archiveTheirTitle:'Рецензии {user}', archiveSearch:'Поиск по названию, заголовку или ID…',
     emptyArchiveTitle:'Пока нет рецензий', emptyArchiveSub:'Найдите уровень во вкладке «Создать» и опубликуйте первую.', emptyTheirArchive:'У этого пользователя пока нет рецензий.',
     emptyStatsTitle:'Нечего анализировать', emptyStatsSub:'Опубликуйте хотя бы одну рецензию, чтобы увидеть статистику.',
     deleteBtn:'Удалить', deleteConfirm:'Удалить эту рецензию? Это нельзя отменить.', deletedToast:'Рецензия удалена',
-    modalEditTitle:'Настройка профиля', descLabel:'Описание', frameLabel:'Рамка аватара', cancel:'Отмена', saveBtn:'Сохранить', savedProfile:'Профиль сохранён', defaultDesc:'Описания пока нет.', unlockAt:'Откроется после {n} рецензий',
+    descLabel:'Описание', frameLabel:'Рамка аватара', cancel:'Отмена', saveBtn:'Сохранить', savedProfile:'Профиль сохранён', defaultDesc:'Описания пока нет.',
+    setProfile:'Профиль', setProfileSub:'Ваша публичная страница — аватар, баннер, никнейм, описание и рамка аватара.', usernameLabel:'Никнейм', btnSaveProfile:'Сохранить профиль', usernameChanged:'Никнейм обновлён',
     setLang:'Язык', setLangSub:'Язык интерфейса.',
     setLinks:'Соцсети', setLinksSub:'Ссылки рядом с вашим именем. Оставьте пустым, чтобы скрыть.', btnSaveLinks:'Сохранить ссылки', invalidLink:'Это не похоже на ссылку {platform}',
     setEmail:'Почта', currentEmail:'Текущая почта:', currPass:'Текущий пароль', newEmail:'Новый email', btnUpdateEmail:'Обновить почту', emailChanged:'Почта обновлена',
     setPass:'Пароль', setPassSub:'Минимум 8 символов.', newPass:'Новый пароль', btnUpdatePass:'Обновить пароль', passChanged:'Пароль обновлён',
-    setSession:'Сессия', setSessionSub:'Выйти из аккаунта на этом устройстве.', btnLogout:'Выйти', logoutTitle:'Выйти из аккаунта?', logoutText:'Для возврата понадобится снова войти.',
+    btnLogout:'Выйти', logoutTitle:'Выйти из аккаунта?', logoutText:'Для возврата понадобится снова войти.',
     setDanger:'Опасная зона', setDangerSub:'Удаление аккаунта навсегда сотрёт все ваши рецензии.', btnDeleteAcc:'Удалить аккаунт', deleteTitle:'Удалить аккаунт?', deleteText:'Действие необратимо. Все рецензии будут удалены. Введите пароль для подтверждения.', accDeleted:'Аккаунт удалён',
     detailSummary:'Рецензия', detailNoSummary:'Без текстового описания.', madeBy:'сделано', ok:'ОК',
     reviewRules:'Правила рецензий: без оскорблений, без рекламы, без внешних ссылок. Каждая публикация автоматически проверяется перед размещением.',
@@ -1556,7 +1569,7 @@ function injectEyes(){
   let mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my;
   window.addEventListener('mousemove', function(e){ mx=e.clientX; my=e.clientY; dot.style.left=mx+'px'; dot.style.top=my+'px'; if(glow) glow.style.background = 'radial-gradient(600px circle at '+mx+'px '+my+'px, rgba(255,255,255,0.06), transparent 70%)'; });
   (function animateRing(){ rx += (mx-rx)*0.18; ry += (my-ry)*0.18; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animateRing); })();
-  const hoverSel = 'button, input, textarea, select, a, .tab-btn, .delete-btn, .seg, .review-bar, .modal-close, .audio-waveform, .eye-btn, .chip, .like-btn, .feed-card, .level-card, .lang-opt, .back-btn, .fc-level, .fc-user, .fc-ava, .img-edit-overlay, .frame-option, .discover-banner, .sf-diff-opt, .sf-seg-opt, .sf-switch, .spin-btn, .spin-mode-opt, .cw-item, .cw-result';
+  const hoverSel = 'button, input, textarea, select, a, .tab-btn, .delete-btn, .seg, .review-bar, .modal-close, .audio-waveform, .eye-btn, .chip, .like-btn, .feed-card, .level-card, .lang-opt, .back-btn, .fc-level, .fc-user, .fc-ava, .user-menu-btn, .user-dd-item, .frame-option, .discover-banner, .sf-diff-opt, .sf-seg-opt, .sf-switch, .spin-btn, .spin-mode-opt, .cw-item, .cw-result';
   document.addEventListener('mouseover', function(e){ if(e.target.closest(hoverSel)) document.body.classList.add('cursor-hover'); });
   document.addEventListener('mouseout', function(e){ if(e.target.closest(hoverSel)) document.body.classList.remove('cursor-hover'); });
 })();
@@ -1656,16 +1669,57 @@ window.addEventListener('popstate', function(e){
   navDepth = (st && st.d) || 0;
   renderRoute(st);
 });
-function renderHeader(){ $('nav-avatar').src = (me && me.avatar) ? me.avatar : DEFAULT_AVATAR; $('tab-admin').hidden = !(me && me.is_admin); $('tab-login').hidden = !!me; $('tab-profile').hidden = !me; }
+function renderHeader(){
+  $('nav-avatar').src = (me && me.avatar) ? me.avatar : DEFAULT_AVATAR;
+  $('tab-admin').hidden = !(me && me.is_admin);
+  $('tab-login').hidden = !!me;
+  /* Guests reach Settings (language) through the gear; members use the avatar menu. */
+  $('tab-settings').hidden = !!me;
+  $('user-menu').hidden = !me;
+  closeUserMenu();
+}
 qsa('nav.tabs .tab-btn').forEach(function(btn){
   btn.addEventListener('click', function(){
     if(btn.id === 'tab-login'){ openAuthOverlay('login'); return; }
     const tab = btn.dataset.tab;
     if(!tab) return;
-    if(tab === 'profile'){ if(!requireAuth()) return; openOwnProfile(); return; }
     if(tab === currentScreen && tab !== 'home') return;
     navigateTo({ screen: tab });
   });
+});
+
+/* ---- User dropdown menu (avatar, top-right) ---- */
+const userMenuEl = $('user-menu'), userMenuBtn = $('user-menu-btn');
+function userMenuOpen(){ return userMenuEl.classList.contains('open'); }
+function openUserMenu(){ userMenuEl.classList.add('open'); userMenuBtn.setAttribute('aria-expanded','true'); }
+function closeUserMenu(){ userMenuEl.classList.remove('open'); userMenuBtn.setAttribute('aria-expanded','false'); }
+userMenuBtn.addEventListener('click', function(e){ e.stopPropagation(); if(userMenuOpen()) closeUserMenu(); else openUserMenu(); });
+document.addEventListener('click', function(e){ if(userMenuOpen() && !e.target.closest('#user-menu')) closeUserMenu(); });
+document.addEventListener('keydown', function(e){
+  if(!userMenuOpen()) return;
+  if(e.key === 'Escape'){ closeUserMenu(); userMenuBtn.focus(); return; }
+  if(e.key === 'ArrowDown' || e.key === 'ArrowUp'){
+    e.preventDefault();
+    const items = qsa('#user-dropdown .user-dd-item');
+    const idx = items.indexOf(document.activeElement);
+    let next;
+    if(idx === -1) next = e.key === 'ArrowDown' ? 0 : items.length - 1;
+    else next = e.key === 'ArrowDown' ? (idx + 1) % items.length : (idx - 1 + items.length) % items.length;
+    items[next].focus();
+  } else if(e.key === 'Tab'){ closeUserMenu(); }
+});
+userMenuBtn.addEventListener('keydown', function(e){
+  if(e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' '){
+    e.preventDefault(); openUserMenu();
+    const first = document.querySelector('#user-dropdown .user-dd-item'); if(first) first.focus();
+  }
+});
+$('dd-profile').addEventListener('click', function(){ closeUserMenu(); openOwnProfile(); });
+$('dd-settings').addEventListener('click', function(){ closeUserMenu(); if(currentScreen !== 'settings') navigateTo({ screen:'settings' }); });
+$('dd-logout').addEventListener('click', async function(){
+  closeUserMenu();
+  const ok = await confirmDialog({ title: t('logoutTitle'), text: t('logoutText'), okLabel: t('btnLogout') });
+  if(ok) forceLogout();
 });
 
 /* ================= AUTH ================= */
@@ -2269,19 +2323,31 @@ function playTierMid(){ const shell = document.querySelector('.shell'); shell.cl
 function playTierHigh(){ const flash = spawnFx('fx-flash fx-flash-high'); setTimeout(function(){ flash.remove(); }, 600); const rays = spawnFx('fx-rays'); setTimeout(function(){ rays.remove(); }, 2300); for(let i=0;i<22;i++){ const isDiamond = Math.random() > 0.5; const size = 12 + Math.random()*14; const angle = Math.random()*Math.PI*2, dist = 200 + Math.random()*260; const shape = spawnFx('fx-shape', { width:size+'px', height:size+'px', left:'50vw', top:'42vh', borderRadius:isDiamond?'3px':'50%', animationDelay:(Math.random()*0.15)+'s' }); shape.style.setProperty('--sh-x', (Math.cos(angle)*dist)+'px'); shape.style.setProperty('--sh-y', (Math.sin(angle)*dist)+'px'); shape.style.setProperty('--sh-rot', (Math.random()*360)+'deg'); setTimeout(function(){ shape.remove(); }, 1400); } }
 function playTierMax(){ const flash = spawnFx('fx-flash fx-flash-max'); setTimeout(function(){ flash.remove(); }, 1200); const ring = spawnFx('fx-ring'); setTimeout(function(){ ring.remove(); }, 1050); const goldColors = ['#ffd76a','#ffe9a8','#ffffff','#fff4d0']; for(let i=0;i<60;i++){ const size = 3 + Math.random()*6; const angle = Math.random()*Math.PI*2, dist = 160 + Math.random()*420; const p = spawnFx('fx-particle', { width:size+'px', height:size+'px', left:'50vw', top:'46vh', background:goldColors[Math.floor(Math.random()*goldColors.length)], boxShadow:'0 0 8px rgba(255,220,140,0.8)', animationDelay:(Math.random()*0.2)+'s', animationDuration:(0.8+Math.random()*0.6)+'s' }); p.style.setProperty('--p-x', (Math.cos(angle)*dist)+'px'); p.style.setProperty('--p-y', (Math.sin(angle)*dist)+'px'); setTimeout(function(){ p.remove(); }, 1800); } const el = $('final-score'); el.classList.remove('fx-score-pulse'); void el.offsetWidth; el.classList.add('fx-score-pulse'); setTimeout(function(){ el.classList.remove('fx-score-pulse'); }, 1050); }
 function playSaveAnimation(score){ if(score < 2) playTierFail(); else if(score < 4) playTierLow(); else if(score < 6) playTierMeh(); else if(score < 8) playTierMid(); else if(score < 9.5) playTierHigh(); else playTierMax(); }
-/* ================= REWARDS ================= */
-const REWARD_TIERS = [ { threshold:1, rarity:'common', frame:null, badge:{ icon:'★', label:'Newcomer' } }, { threshold:5, rarity:'common', frame:'frame-bronze', badge:null }, { threshold:10, rarity:'uncommon', frame:'frame-silver', badge:null }, { threshold:20, rarity:'uncommon', frame:null, badge:{ icon:'◆', label:'Dedicated' } }, { threshold:35, rarity:'rare', frame:'frame-gold', badge:null }, { threshold:50, rarity:'rare', frame:'frame-platinum', badge:{ icon:'✦', label:'Trusted Critic' } }, { threshold:75, rarity:'epic', frame:'frame-diamond', badge:null }, { threshold:100, rarity:'legendary', frame:'frame-master', badge:null }, { threshold:150, rarity:'mythic', frame:'frame-legend', badge:{ icon:'♛', label:'Legend' } } ];
+/* ================= FRAMES ================= */
+/* Every frame is freely selectable — the old review-count unlock system is gone. */
+const FRAMES = ['frame-default','frame-circle','frame-hex','frame-tech','frame-bronze','frame-silver','frame-gold','frame-platinum','frame-diamond','frame-master','frame-legend'];
 const FRAME_LABEL = { 'frame-default':'Default', 'frame-circle':'Circle', 'frame-hex':'Hex', 'frame-tech':'Tech', 'frame-bronze':'Bronze', 'frame-silver':'Silver', 'frame-gold':'Gold', 'frame-platinum':'Platinum', 'frame-diamond':'Diamond', 'frame-master':'Master', 'frame-legend':'Legend' };
-const BASE_FRAMES = ['frame-default','frame-circle','frame-hex','frame-tech'];
-function rarityColor(rarity){ return { common:'#9a9a9a', uncommon:'#3ddc84', rare:'#4ea1ff', epic:'#c061ff', legendary:'#b083ff', mythic:'#ffcf4d' }[rarity] || '#9a9a9a'; }
-function unlockedFrames(){ return BASE_FRAMES.concat(REWARD_TIERS.filter(function(x){ return x.frame && myReviews.length >= x.threshold; }).map(function(x){ return x.frame; })); }
-function badgesFor(count){ return REWARD_TIERS.filter(function(x){ return x.badge && count >= x.threshold; }); }
+
+/* ================= ACHIEVEMENTS ================= */
+const ACHIEVEMENTS = [
+  { metric:'reviews', goal:1,   icon:'✎', color:'#9a9a9a', nameKey:'achRev1',     descKey:'achRev1D' },
+  { metric:'reviews', goal:10,  icon:'✒', color:'#3ddc84', nameKey:'achRev10',    descKey:'achRev10D' },
+  { metric:'reviews', goal:50,  icon:'✦', color:'#c061ff', nameKey:'achRev50',    descKey:'achRev50D' },
+  { metric:'likes',   goal:10,  icon:'♥', color:'#3ddc84', nameKey:'achLikes10',  descKey:'achLikes10D' },
+  { metric:'likes',   goal:50,  icon:'♥', color:'#4ea1ff', nameKey:'achLikes50',  descKey:'achLikes50D' },
+  { metric:'best',    goal:10,  icon:'◆', color:'#4ea1ff', nameKey:'achHelpful',  descKey:'achHelpfulD' },
+  { metric:'best',    goal:25,  icon:'★', color:'#ffcf4d', nameKey:'achFeatured', descKey:'achFeaturedD' },
+  { metric:'diffs',   goal:5,   icon:'⚑', color:'#4ea1ff', nameKey:'achVariety',  descKey:'achVarietyD' },
+  { metric:'days',    goal:30,  icon:'◔', color:'#9a9a9a', nameKey:'achMonth',    descKey:'achMonthD' },
+  { metric:'days',    goal:365, icon:'♛', color:'#ffcf4d', nameKey:'achYear',     descKey:'achYearD' }
+];
 
 /* ================= SOCIALS ================= */
-const SOCIAL_PLATFORMS = [ { key:'youtube', label:'YouTube', abbr:'YT', domains:['youtube.com','youtu.be'], placeholder:'https://youtube.com/@handle' }, { key:'tiktok', label:'TikTok', abbr:'TT', domains:['tiktok.com'], placeholder:'https://tiktok.com/@handle' }, { key:'twitch', label:'Twitch', abbr:'TC', domains:['twitch.tv'], placeholder:'https://twitch.tv/handle' }, { key:'instagram', label:'Instagram', abbr:'IG', domains:['instagram.com'], placeholder:'https://instagram.com/handle' }, { key:'discord', label:'Discord', abbr:'DC', domains:['discord.gg','discord.com'], placeholder:'https://discord.gg/invite' }, { key:'twitter', label:'X / Twitter', abbr:'X', domains:['twitter.com','x.com'], placeholder:'https://x.com/handle' } ];
-const SOCIAL_ICONS = { youtube:'<svg viewBox="0 0 24 24"><path fill="#FF0000" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><path fill="#fff" d="M9.6 15.6V8.4L15.8 12z"/></svg>', tiktok:'<svg viewBox="0 0 24 24"><path fill="#fff" d="M15.6 5.6c-.9-.9-1.4-2.2-1.4-3.5h-2.9v13.4a2.6 2.6 0 1 1-1.8-2.5v-2.5a5.5 5.5 0 1 0 4.7 5.4V9.4c1.1.8 2.4 1.3 3.8 1.3V7.8c-.8 0-1.6-.3-2.4-.7z"/></svg>', twitch:'<svg viewBox="0 0 24 24"><path fill="#9146FF" d="M4 2 2 6.4v13.2h5V22l3.6-2.4H14L20 14V2H4zm14.4 11.2-2.8 2.8h-3.2l-2.4 2.4v-2.4H6.4V3.6h12v9.6z"/><path fill="#9146FF" d="M15.6 6.8h1.6v4.8h-1.6zM11.2 6.8h1.6v4.8h-1.6z"/></svg>', instagram:'<svg viewBox="0 0 24 24"><defs><radialGradient id="igGrad" cx="30%" cy="107%" r="150%"><stop offset="0%" stop-color="#FFDD55"/><stop offset="50%" stop-color="#FF543E"/><stop offset="100%" stop-color="#C837AB"/></radialGradient></defs><rect width="24" height="24" rx="6" fill="url(#igGrad)"/><rect x="5" y="5" width="14" height="14" rx="4" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="12" r="3.6" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="17" cy="7" r="1" fill="#fff"/></svg>', discord:'<svg viewBox="0 0 24 24"><path fill="#5865F2" d="M20.3 5.4A19 19 0 0 0 15.6 4l-.3.5c1.7.5 2.6 1.1 3.6 1.9-1.5-.7-3-1.2-4.9-1.2s-3.4.5-4.9 1.2c1-.8 2-1.5 3.6-1.9L12.4 4a19 19 0 0 0-4.7 1.4C4.6 9.3 3.9 13 4.2 16.7a19 19 0 0 0 5.7 2.9l.9-1.4a11 11 0 0 1-1.8-.9l.4-.3a13.6 13.6 0 0 0 10.9 0l.4.3a11 11 0 0 1-1.8.9l.9 1.4a19 19 0 0 0 5.7-2.9c.4-4.2-.6-7.9-3.6-11.3zM9.7 14.5c-.9 0-1.6-.8-1.6-1.8s.7-1.8 1.6-1.8 1.6.8 1.6 1.8-.7 1.8-1.6 1.8zm4.7 0c-.9 0-1.6-.8-1.6-1.8s.7-1.8 1.6-1.8 1.6.8 1.6 1.8-.7 1.8-1.6 1.8z"/></svg>', twitter:'<svg viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#000"/><path fill="#fff" d="M6 6l5 6.6L6.2 18H7.7l4.2-4.8 3.4 4.8H18l-5.3-7L17.5 6H16l-3.9 4.4L9 6H6zm2.2 1.1h1.6l6.9 9.8h-1.6L8.2 7.1z"/></svg>' };
+/* Simplified to the essentials: a personal website and YouTube. `domains:null` means any valid http(s) URL is accepted. */
+const SOCIAL_PLATFORMS = [ { key:'website', label:'Website', abbr:'WEB', domains:null, placeholder:'https://your-site.com' }, { key:'youtube', label:'YouTube', abbr:'YT', domains:['youtube.com','youtu.be'], placeholder:'https://youtube.com/@handle' } ];
+const SOCIAL_ICONS = { website:'<svg viewBox="0 0 24 24"><path fill="#9fd0ff" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.9 6h-3a15.7 15.7 0 0 0-1.4-3.6A8 8 0 0 1 18.9 8zM12 4c.83 1.2 1.48 2.53 1.9 4h-3.8c.42-1.47 1.07-2.8 1.9-4zM4.26 14a8.2 8.2 0 0 1 0-4h3.38a16.6 16.6 0 0 0 0 4H4.26zm.85 2h3a15.7 15.7 0 0 0 1.4 3.6A8 8 0 0 1 5.11 16zm3-8h-3a8 8 0 0 1 4.4-3.6A15.7 15.7 0 0 0 8.11 8zM12 20c-.83-1.2-1.48-2.53-1.9-4h3.8c-.42 1.47-1.07 2.8-1.9 4zm2.34-6H9.66a14.6 14.6 0 0 1 0-4h4.68a14.6 14.6 0 0 1 0 4zm.25 5.6c.6-1.13 1.07-2.34 1.4-3.6h3a8 8 0 0 1-4.4 3.6zM16.36 14a16.6 16.6 0 0 0 0-4h3.38a8.2 8.2 0 0 1 0 4h-3.38z"/></svg>', youtube:'<svg viewBox="0 0 24 24"><path fill="#FF0000" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><path fill="#fff" d="M9.6 15.6V8.4L15.8 12z"/></svg>' };
 function normalizeUrl(raw){ let v = (raw||'').trim(); if(!v) return ''; if(!/^https?:\/\//i.test(v)) v = 'https://'+v; return v; }
-function isValidSocialUrl(platform, raw){ const v = (raw||'').trim(); if(!v) return true; let url; try{ url = new URL(normalizeUrl(v)); }catch(e){ return false; } const h = url.hostname.toLowerCase().replace(/^www\./,''); return platform.domains.some(function(d){ return h === d || h.endsWith('.'+d); }); }
+function isValidSocialUrl(platform, raw){ const v = (raw||'').trim(); if(!v) return true; let url; try{ url = new URL(normalizeUrl(v)); }catch(e){ return false; } if(!/^https?:$/.test(url.protocol)) return false; if(!platform.domains) return url.hostname.indexOf('.') !== -1; const h = url.hostname.toLowerCase().replace(/^www\./,''); return platform.domains.some(function(d){ return h === d || h.endsWith('.'+d); }); }
 function setSocialFieldError(platform, hasError){ const field = $('soc-field-'+platform.key), input = $('inp-soc-'+platform.key), errorEl = $('soc-error-'+platform.key); field.classList.toggle('has-error', hasError); input.classList.toggle('invalid', hasError); if(hasError) errorEl.textContent = t('invalidLink').replace('{platform}', platform.label); }
 function buildSocialFields(){
   $('socials-fields').innerHTML = SOCIAL_PLATFORMS.map(function(p){ return '<div class="social-field" id="soc-field-'+p.key+'"><label class="social-field-label" for="inp-soc-'+p.key+'"><span class="social-field-badge">'+p.abbr+'</span>'+p.label+'</label><input type="text" class="modal-input" id="inp-soc-'+p.key+'" placeholder="'+p.placeholder+'"><div class="social-field-error" id="soc-error-'+p.key+'"></div></div>'; }).join('');
@@ -2309,13 +2375,11 @@ function renderProfile(){
   const revs = own ? myReviews : profileView.reviews;
   profileView.reviews = revs;
   $('profile-back').hidden = own;
-  $('banner-edit').hidden = !own; $('avatar-edit').hidden = !own; $('btn-edit-profile').hidden = !own;
   $('prof-banner').style.backgroundImage = u.banner ? 'url(\''+u.banner+'\')' : '';
   $('prof-avatar').src = u.avatar || DEFAULT_AVATAR;
   $('prof-frame-wrap').className = 'profile-avatar-wrap ' + (u.frame || 'frame-default');
   $('prof-name').textContent = u.username || '';
   renderSocialIcons(u);
-  $('prof-badges').innerHTML = badgesFor(revs.length).map(function(x){ return '<span class="profile-badge-chip" style="--badge-color:'+rarityColor(x.rarity)+'"><span class="badge-icon">'+x.badge.icon+'</span>'+x.badge.label+'</span>'; }).join('');
   $('prof-desc').textContent = u.description || t('defaultDesc');
   $('archive-title').textContent = own ? t('archiveTitle') : t('archiveTheirTitle').replace('{user}', u.username || '');
   renderStatsFor(revs, u);
@@ -2323,28 +2387,50 @@ function renderProfile(){
 }
 $('profile-back').addEventListener('click', goBack);
 
-/* ---- Charts (radar / histogram / trend) ---- */
-function buildRadarChart(categoryAverages){ const size=280, cx=size/2, cy=size/2-6, maxR=92, n=categoryAverages.length; const angleFor=function(i){ return (i/n)*Math.PI*2 - Math.PI/2; }; const pointAt=function(i,r){ return [cx + r*Math.cos(angleFor(i)), cy + r*Math.sin(angleFor(i))]; }; const rings=[0.25,0.5,0.75,1].map(function(f){ return '<polygon class="radar-grid" points="'+categoryAverages.map(function(_,i){ return pointAt(i, maxR*f).join(','); }).join(' ')+'"/>'; }).join(''); const axes=categoryAverages.map(function(_,i){ const p=pointAt(i,maxR); return '<line class="radar-axis" x1="'+cx+'" y1="'+cy+'" x2="'+p[0]+'" y2="'+p[1]+'"/>'; }).join(''); const dataPts=categoryAverages.map(function(c,i){ return pointAt(i, maxR*(c.avg/10)); }); const dots=dataPts.map(function(p,i){ return '<circle class="radar-dot" cx="'+p[0]+'" cy="'+p[1]+'" r="4" style="animation-delay:'+(1.1+i*0.06)+'s"><title>'+categoryAverages[i].label+': '+categoryAverages[i].avg.toFixed(1)+'</title></circle>'; }).join(''); const labels=categoryAverages.map(function(c,i){ const p=pointAt(i, maxR+26); const anchor=Math.abs(p[0]-cx)<4?'middle':(p[0]>cx?'start':'end'); return '<text class="radar-label" x="'+p[0]+'" y="'+(p[1]-4)+'" text-anchor="'+anchor+'">'+c.label+'</text><text class="radar-value" x="'+p[0]+'" y="'+(p[1]+9)+'" text-anchor="'+anchor+'">'+c.avg.toFixed(1)+'</text>'; }).join(''); return '<svg viewBox="0 0 '+size+' '+(size-24)+'">'+rings+axes+'<polygon class="radar-fill" pathLength="1" points="'+dataPts.map(function(p){ return p.join(','); }).join(' ')+'"/>'+dots+labels+'</svg>'; }
+/* ---- Charts (radar / histogram) & achievements board ---- */
+/* Short axis labels keep the radar readable and inside its own card (fixes
+   the long "Synchronization / Rhythm"-style labels overflowing the chart). */
+function shortAxisLabel(s){ return String(s).split('/')[0].trim(); }
+function buildRadarChart(categoryAverages){ const w=380, h=252, cx=w/2, cy=118, maxR=88, n=categoryAverages.length; const angleFor=function(i){ return (i/n)*Math.PI*2 - Math.PI/2; }; const pointAt=function(i,r){ return [cx + r*Math.cos(angleFor(i)), cy + r*Math.sin(angleFor(i))]; }; const rings=[0.25,0.5,0.75,1].map(function(f){ return '<polygon class="radar-grid" points="'+categoryAverages.map(function(_,i){ return pointAt(i, maxR*f).join(','); }).join(' ')+'"/>'; }).join(''); const axes=categoryAverages.map(function(_,i){ const p=pointAt(i,maxR); return '<line class="radar-axis" x1="'+cx+'" y1="'+cy+'" x2="'+p[0]+'" y2="'+p[1]+'"/>'; }).join(''); const dataPts=categoryAverages.map(function(c,i){ return pointAt(i, maxR*(c.avg/10)); }); const dots=dataPts.map(function(p,i){ return '<circle class="radar-dot" cx="'+p[0]+'" cy="'+p[1]+'" r="4" style="animation-delay:'+(1.1+i*0.06)+'s"><title>'+escapeHTML(categoryAverages[i].label)+': '+categoryAverages[i].avg.toFixed(1)+'</title></circle>'; }).join(''); const labels=categoryAverages.map(function(c,i){ const p=pointAt(i, maxR+24); const anchor=Math.abs(p[0]-cx)<4?'middle':(p[0]>cx?'start':'end'); const lx=Math.max(4, Math.min(w-4, p[0])); return '<text class="radar-label" x="'+lx+'" y="'+(p[1]-4)+'" text-anchor="'+anchor+'">'+escapeHTML(shortAxisLabel(c.label))+'</text><text class="radar-value" x="'+lx+'" y="'+(p[1]+9)+'" text-anchor="'+anchor+'">'+c.avg.toFixed(1)+'</text>'; }).join(''); return '<svg viewBox="0 0 '+w+' '+h+'">'+rings+axes+'<polygon class="radar-fill" pathLength="1" points="'+dataPts.map(function(p){ return p.join(','); }).join(' ')+'"/>'+dots+labels+'</svg>'; }
 function buildHistogram(reviews){ const buckets=[{label:'0–2',min:0,max:2},{label:'2–4',min:2,max:4},{label:'4–6',min:4,max:6},{label:'6–8',min:6,max:8},{label:'8–10',min:8,max:10.001}].map(function(b){ b.count=0; return b; }); reviews.forEach(function(r){ const b=buckets.find(function(b){ return r.finalScore>=b.min && r.finalScore<b.max; }); if(b) b.count++; }); const w=320,h=200,padB=26,padT=14,gap=14; const barW=(w-gap*(buckets.length-1))/buckets.length; const maxCount=Math.max(1, Math.max.apply(null, buckets.map(function(b){ return b.count; }))); const usableH=h-padB-padT; const bars=buckets.map(function(b,i){ const x=i*(barW+gap); const barH=(b.count/maxCount)*usableH; const y=h-padB-barH; return '<rect class="hist-track" x="'+x+'" y="'+padT+'" width="'+barW+'" height="'+usableH+'" rx="4"/><rect class="hist-bar" x="'+x+'" y="'+y+'" width="'+barW+'" height="'+Math.max(barH,2)+'" rx="4" style="animation-delay:'+(0.2+i*0.08)+'s"></rect><text class="hist-count" x="'+(x+barW/2)+'" y="'+(y-8)+'" text-anchor="middle" style="animation-delay:'+(0.5+i*0.08)+'s">'+b.count+'</text><text class="hist-label" x="'+(x+barW/2)+'" y="'+(h-6)+'" text-anchor="middle">'+b.label+'</text>'; }).join(''); return '<svg viewBox="0 0 '+w+' '+h+'"><line class="hist-axis" x1="0" y1="'+(h-padB)+'" x2="'+w+'" y2="'+(h-padB)+'"/>'+bars+'</svg>'; }
-function buildTrendChart(chrono){ const w=640,h=190,padX=20,padT=16,padB=24,n=chrono.length; const usableW=w-padX*2, usableH=h-padT-padB; const xAt=function(i){ return n<=1 ? padX+usableW/2 : padX+(i/(n-1))*usableW; }; const yAt=function(score){ return padT+usableH-(score/10)*usableH; }; const gridLines=[0,2.5,5,7.5,10].map(function(v){ const y=yAt(v); return '<line class="trend-grid" x1="'+padX+'" y1="'+y+'" x2="'+(w-padX)+'" y2="'+y+'"/>'; }).join(''); const pts=chrono.map(function(r,i){ return [xAt(i), yAt(r.finalScore)]; }); const linePath=pts.map(function(p,i){ return (i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' '); const areaPath=linePath+' L'+pts[pts.length-1][0].toFixed(1)+','+(h-padB)+' L'+pts[0][0].toFixed(1)+','+(h-padB)+' Z'; const dots=pts.map(function(p,i){ return '<circle class="trend-dot" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3.5" style="animation-delay:'+(1.1+i*0.05)+'s"></circle>'; }).join(''); return '<svg viewBox="0 0 '+w+' '+h+'"><defs><linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.28"/><stop offset="100%" stop-color="#ffffff" stop-opacity="0"/></linearGradient></defs>'+gridLines+'<path class="trend-area" d="'+areaPath+'"/><path class="trend-line" pathLength="1" d="'+linePath+'"/>'+dots+'</svg>'; }
+/* Exact registration date — full "Day Month Year" format. */
+function memberSinceLabel(user){ if(!(user && user.created_at)) return '—'; return new Date(user.created_at).toLocaleDateString(lang==='ru'?'ru-RU':'en-US', { day:'numeric', month:'long', year:'numeric' }); }
+function buildAchievementsBoard(reviews, user){
+  const likes = (user && user.likes_received != null) ? user.likes_received : reviews.reduce(function(a,r){ return a + (r.likes||0); }, 0);
+  const vals = {
+    reviews: reviews.length,
+    likes: likes,
+    best: reviews.reduce(function(a,r){ return Math.max(a, r.likes||0); }, 0),
+    diffs: new Set(reviews.map(function(r){ return String(r.difficulty||'').toLowerCase(); }).filter(Boolean)).size,
+    days: (user && user.created_at) ? Math.max(0, Math.floor((Date.now() - new Date(user.created_at).getTime()) / 86400000)) : 0
+  };
+  return '<div class="ach-grid">'+ACHIEVEMENTS.map(function(a,i){
+    const v = Math.min(vals[a.metric]||0, a.goal);
+    const done = v >= a.goal;
+    return '<div class="ach-card'+(done?' unlocked':'')+'" style="--ach-color:'+a.color+';animation-delay:'+(Math.min(i,12)*0.05)+'s">'
+      + '<div class="ach-head"><div class="ach-icon">'+a.icon+'</div><div class="ach-name">'+escapeHTML(t(a.nameKey))+'</div></div>'
+      + '<div class="ach-desc">'+escapeHTML(t(a.descKey))+'</div>'
+      + '<div class="ach-progress"><div class="ach-bar"><div class="ach-fill" style="width:'+((v/a.goal)*100).toFixed(1)+'%"></div></div><span class="ach-count">'+(done ? '✓ '+escapeHTML(t('achDone')) : v+' / '+a.goal)+'</span></div>'
+      + '</div>';
+  }).join('')+'</div>';
+}
 function renderStatsFor(reviews, user){
   const content = $('stats-content');
-  if(!reviews.length){ content.innerHTML = emptyState(t('emptyStatsTitle'), t('emptyStatsSub')); return; }
+  const achCard = '<div class="chart-card wide" style="animation-delay:.22s"><div class="chart-title">'+t('achBoardTitle')+'</div><div class="chart-sub">'+t('achBoardSub')+'</div>'+buildAchievementsBoard(reviews, user)+'</div>';
+  if(!reviews.length){ content.innerHTML = emptyState(t('emptyStatsTitle'), t('emptyStatsSub')) + '<div class="charts-grid" style="margin-top:20px;">'+achCard+'</div>'; return; }
   const total = reviews.length;
   const avg = reviews.reduce(function(a,r){ return a + r.finalScore; }, 0) / total;
   const likes = (user && user.likes_received != null) ? user.likes_received : reviews.reduce(function(a,r){ return a + (r.likes||0); }, 0);
-  const since = (user && user.created_at) ? new Date(user.created_at).toLocaleDateString(lang==='ru'?'ru-RU':'en-US', { month:'short', year:'numeric' }) : '—';
   const categoryAverages = CATEGORIES.map(function(c){ return { label: t(c.i18nKey), avg: reviews.reduce(function(a,r){ return a + (r.ratings[c.key]||0); }, 0) / total }; });
-  const chrono = reviews.slice().sort(function(a,b){ return new Date(a.savedAt) - new Date(b.savedAt); });
   content.innerHTML = '<div class="stats-hero">'
     + '<div class="stat-card" style="animation-delay:.02s"><div class="stat-label">'+t('statReviews')+'</div><div class="stat-number">'+total+'</div></div>'
     + '<div class="stat-card" style="animation-delay:.06s"><div class="stat-label">'+t('statAvg')+'</div><div class="stat-number">'+avg.toFixed(1)+'<small>/10</small></div></div>'
     + '<div class="stat-card" style="animation-delay:.10s"><div class="stat-label">'+t('statLikes')+'</div><div class="stat-number">'+likes+'</div></div>'
-    + '<div class="stat-card" style="animation-delay:.14s"><div class="stat-label">'+t('statSince')+'</div><div class="stat-number stat-date">'+since+'</div></div>'
+    + '<div class="stat-card" style="animation-delay:.14s"><div class="stat-label">'+t('statSince')+'</div><div class="stat-number stat-date">'+escapeHTML(memberSinceLabel(user))+'</div></div>'
     + '</div><div class="charts-grid">'
     + '<div class="chart-card" style="animation-delay:.10s"><div class="chart-title">'+t('chartCat')+'</div><div class="chart-sub">'+t('chartCatSub')+'</div>'+buildRadarChart(categoryAverages)+'</div>'
     + '<div class="chart-card" style="animation-delay:.16s"><div class="chart-title">'+t('chartDist')+'</div><div class="chart-sub">'+t('chartDistSub')+'</div>'+buildHistogram(reviews)+'</div>'
-    + '<div class="chart-card wide" style="animation-delay:.22s"><div class="chart-title">'+t('chartTrend')+'</div><div class="chart-sub">'+t('chartTrendSub')+'</div>'+buildTrendChart(chrono)+'</div></div>';
+    + achCard + '</div>';
 }
 
 /* ---- Archive ---- */
@@ -2383,7 +2469,7 @@ async function deleteReview(uid){
   else toast(ERR(r.data.error), 'error');
 }
 
-/* ---- Save profile / edit modal ---- */
+/* ---- Save profile ---- */
 async function saveProfile(){
   const r = await api('/profile', { method:'POST', body:{ avatar: me.avatar, banner: me.banner, frame: me.frame, description: me.description, socials: JSON.stringify(me.socials || {}) } });
   if(r.ok){ toast(t('savedProfile'), 'ok'); await loadMe(false); renderHeader(); if($('screen-profile').classList.contains('active') && profileView.own){ profileView.user = me; renderProfile(); } return; }
@@ -2395,27 +2481,23 @@ async function saveProfile(){
   }
   else toast(ERR(r.data.error), 'error');
 }
-const editModal = $('edit-profile-modal');
-let tempSelectedFrame = 'frame-default';
-function renderFrameSelectorGrid(){
-  const grid = $('frame-selector');
-  const old = $('frame-selector-rewards'); if(old) old.remove();
-  const wrap = document.createElement('div'); wrap.id = 'frame-selector-rewards'; wrap.style.cssText = 'display:contents;';
-  wrap.innerHTML = REWARD_TIERS.filter(function(x){ return x.frame; }).map(function(tier){
-    const unlocked = unlockedFrames().includes(tier.frame);
-    const lock = unlocked ? '' : '<div class="frame-lock-overlay" title="'+t('unlockAt').replace('{n}', tier.threshold)+'">🔒</div>';
-    return '<div class="frame-option'+(unlocked?'':' locked')+'" data-frame="'+tier.frame+'" style="--rarity-color:'+rarityColor(tier.rarity)+'"><div class="frame-preview-box"><div class="profile-avatar-wrap '+tier.frame+'" style="width:32px;height:32px;"><div class="profile-frame-overlay"></div><div class="profile-avatar" style="background:#fff;"></div></div>'+lock+'</div><span class="frame-option-label">'+FRAME_LABEL[tier.frame]+'</span></div>';
+/* ---- Frame selector (Settings → Profile): every frame freely selectable ---- */
+let settingsFrame = 'frame-default';
+function renderSettingsFrames(){
+  $('frame-selector').innerHTML = FRAMES.map(function(f){
+    return '<div class="frame-option'+(f === settingsFrame ? ' active' : '')+'" data-frame="'+f+'"><div class="frame-preview-box"><div class="profile-avatar-wrap '+f+'" style="width:32px;height:32px;"><div class="profile-frame-overlay"></div><div class="profile-avatar" style="background:#fff;"></div></div></div><span class="frame-option-label">'+FRAME_LABEL[f]+'</span></div>';
   }).join('');
-  grid.appendChild(wrap);
-  qsa('.frame-option', grid).forEach(function(opt){
-    opt.classList.toggle('active', opt.dataset.frame === tempSelectedFrame);
-    if(!opt.dataset.bound){ opt.dataset.bound = '1'; opt.addEventListener('click', function(){ if(opt.classList.contains('locked')) return; qsa('.frame-option', grid).forEach(function(o){ o.classList.remove('active'); }); opt.classList.add('active'); tempSelectedFrame = opt.dataset.frame; }); }
-  });
 }
-$('btn-edit-profile').addEventListener('click', function(){ $('inp-prof-desc').value = me.description || ''; tempSelectedFrame = me.frame || 'frame-default'; renderFrameSelectorGrid(); openModalOverlay(editModal); });
-$('modal-close-prof-btn').addEventListener('click', function(){ closeModalOverlay(editModal); });
-editModal.addEventListener('click', function(e){ if(e.target === editModal) closeModalOverlay(editModal); });
-$('modal-save-prof-btn').addEventListener('click', async function(){ const btn = this; setBusy(btn, true); me.description = $('inp-prof-desc').value.trim(); me.frame = tempSelectedFrame; await saveProfile(); setBusy(btn, false); closeModalOverlay(editModal); });
+function updateSettingsPreview(){
+  $('set-frame-preview').className = 'profile-avatar-wrap ' + (settingsFrame || 'frame-default');
+  $('set-avatar-preview').src = (me && me.avatar) || DEFAULT_AVATAR;
+}
+$('frame-selector').addEventListener('click', function(e){
+  const opt = e.target.closest('.frame-option'); if(!opt) return;
+  settingsFrame = opt.dataset.frame;
+  qsa('#frame-selector .frame-option').forEach(function(o){ o.classList.toggle('active', o === opt); });
+  updateSettingsPreview();
+});
 
 /* ---- Cropper ---- */
 const cropModal = $('crop-modal'), cropArea = $('crop-area'), cropImg = $('crop-image'), cropGuide = $('crop-guide'), cropResizeHandle = $('crop-resize-handle');
@@ -2437,7 +2519,7 @@ function openCropper(file, type){
         cropperState.minScale = coverScale; cropperState.scale = coverScale;
         cropperState.x = (wrapperW - img.width*coverScale)/2; cropperState.y = (wrapperH - img.height*coverScale)/2;
         cropperState.aspectLocked = (type === 'avatar');
-        if(type === 'avatar'){ const size = Math.min(wrapperW, wrapperH)*0.62; cropperState.guideW = size; cropperState.guideH = size; cropperState.guideLeft = (wrapperW-size)/2; cropperState.guideTop = (wrapperH-size)/2; cropGuide.className = 'crop-overlay-guide' + ((me && me.frame === 'frame-circle') ? ' is-circle' : ''); }
+        if(type === 'avatar'){ const size = Math.min(wrapperW, wrapperH)*0.62; cropperState.guideW = size; cropperState.guideH = size; cropperState.guideLeft = (wrapperW-size)/2; cropperState.guideTop = (wrapperH-size)/2; cropGuide.className = 'crop-overlay-guide' + (((settingsFrame || (me && me.frame)) === 'frame-circle') ? ' is-circle' : ''); }
         else { cropperState.guideW = wrapperW*0.9; cropperState.guideH = wrapperH*0.5; cropperState.guideLeft = (wrapperW-cropperState.guideW)/2; cropperState.guideTop = (wrapperH-cropperState.guideH)/2; cropGuide.className = 'crop-overlay-guide'; }
         updateGuideVisual(); updateCropVisual();
       });
@@ -2468,23 +2550,62 @@ $('crop-save-btn').addEventListener('click', async function(){
   closeModalOverlay(cropModal);
   if(cropTarget === 'avatar') me.avatar = base64; else me.banner = base64;
   if(profileView.own) renderProfile();
-  renderHeader();
+  renderHeader(); updateSettingsPreview();
   await saveProfile();
 });
 $('crop-cancel-btn').addEventListener('click', function(){ closeModalOverlay(cropModal); });
 $('inp-file-avatar').addEventListener('change', function(e){ if(e.target.files && e.target.files[0]) openCropper(e.target.files[0], 'avatar'); e.target.value = ''; });
 $('inp-file-banner').addEventListener('change', function(e){ if(e.target.files && e.target.files[0]) openCropper(e.target.files[0], 'banner'); e.target.value = ''; });
-$('avatar-edit').addEventListener('click', function(){ $('inp-file-avatar').click(); });
-$('banner-edit').addEventListener('click', function(){ $('inp-file-banner').click(); });
+$('btn-set-avatar').addEventListener('click', function(){ $('inp-file-avatar').click(); });
+$('btn-set-banner').addEventListener('click', function(){ $('inp-file-banner').click(); });
 
 /* ================= SETTINGS ================= */
 function fillSettings(){
   /* Guests only see the language card — the account cards need a session. */
   qsa('.settings-grid .settings-card').forEach(function(c, i){ c.hidden = (i > 0) && !me; });
-  if(me){ $('set-cur-email').textContent = me.email || '—'; SOCIAL_PLATFORMS.forEach(function(p){ const inp = $('inp-soc-'+p.key); if(inp){ inp.value = (me.socials && me.socials[p.key]) || ''; setSocialFieldError(p, false); } }); }
+  if(me){
+    $('set-cur-email').textContent = me.email || '—';
+    $('inp-set-username').value = me.username || '';
+    markField($('inp-set-username'), '');
+    $('inp-set-desc').value = me.description || '';
+    settingsFrame = me.frame || 'frame-default';
+    renderSettingsFrames(); updateSettingsPreview();
+    SOCIAL_PLATFORMS.forEach(function(p){ const inp = $('inp-soc-'+p.key); if(inp){ inp.value = (me.socials && me.socials[p.key]) || ''; setSocialFieldError(p, false); } });
+  }
   $('set-lang-en').classList.toggle('active', lang === 'en');
   $('set-lang-ru').classList.toggle('active', lang === 'ru');
 }
+/* ---- Profile settings: username, description and frame in one save ---- */
+$('btn-save-profile').addEventListener('click', async function(){
+  const btn = this; if(btn.disabled || !me) return;
+  const uInp = $('inp-set-username');
+  const newName = uInp.value.trim();
+  if(!/^[a-zA-Z0-9\u0430-\u044f\u0410-\u042f\u0451\u0401_\-. ]{3,20}$/.test(newName)){ markField(uInp, t('vUserLen')); uInp.focus(); return; }
+  markField(uInp, '');
+  setBusy(btn, true);
+  try{
+    if(newName !== me.username){
+      const r = await api('/change-username', { method:'POST', body:{ username: newName } });
+      if(!r.ok){
+        if(isModerationError(r.data.error)) toast(moderationMessage(r.data) + ' ' + t('modRetryHint'), 'error');
+        else { markField(uInp, ERR(r.data.error)); uInp.focus(); }
+        return;
+      }
+      const oldName = me.username;
+      me.username = r.data.username || newName;
+      localStorage.setItem('gd_username', me.username);
+      /* Immediately propagate the new name across every cached view. */
+      myReviews.forEach(function(x){ x.username = me.username; });
+      feedMap.forEach(function(x){ if(x.username === oldName) x.username = me.username; });
+      (levelPage.reviews || []).forEach(function(x){ if(x.username === oldName) x.username = me.username; });
+      toast(t('usernameChanged'), 'ok');
+    }
+    me.description = $('inp-set-desc').value.trim();
+    me.frame = settingsFrame;
+    await saveProfile();
+    fillSettings();
+  } finally { setBusy(btn, false); }
+});
 function setLang(l){
   lang = l; localStorage.setItem('gd_lang', l); applyI18n(); fillSettings();
   CATEGORIES.forEach(function(cat){ const lbl = $('label-text-'+cat.key); if(lbl) lbl.textContent = axisLabel(cat.key, currentLevel ? currentLevel.difficulty : ''); });
@@ -2522,10 +2643,6 @@ $('btn-change-pass').addEventListener('click', async function(){
   setBusy(this, false);
   if(r.ok){ toast(t('passChanged'), 'ok'); $('inp-old-pass').value=''; $('inp-new-pass').value=''; $('inp-new-pass2').value=''; }
   else toast(ERR(r.data.error), 'error');
-});
-$('btn-logout').addEventListener('click', async function(){
-  const ok = await confirmDialog({ title: t('logoutTitle'), text: t('logoutText'), okLabel: t('btnLogout') });
-  if(ok) forceLogout();
 });
 $('btn-delete-account').addEventListener('click', async function(){
   const pass = await confirmDialog({ title: t('deleteTitle'), text: t('deleteText'), okLabel: t('btnDeleteAcc'), danger:true, input:true, inputType:'password', inputPlaceholder: t('currPass') });
