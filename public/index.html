@@ -320,6 +320,62 @@
   .ach-count{ font-family:'Space Mono',monospace; font-size:10px; color:var(--dim); white-space:nowrap; }
   .ach-card.unlocked .ach-count{ color:var(--ach-color, var(--white)); }
 
+  /* ---------- ACHIEVEMENT SHOWCASE (public trophy board) ---------- */
+  .showcase-board{ position:relative; border:1px solid var(--line2); border-radius:14px; padding:22px 22px 24px; overflow:hidden;
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.016) 0 2px, transparent 2px 9px),
+      radial-gradient(120% 90% at 50% -10%, rgba(255,255,255,0.06), transparent 55%),
+      linear-gradient(180deg, #171717, #0d0d0d);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.07), inset 0 0 60px rgba(0,0,0,0.55), 0 18px 44px -20px rgba(0,0,0,0.8); }
+  .showcase-board::after{ content:''; position:absolute; inset:6px; border:1px dashed rgba(255,255,255,0.07); border-radius:10px; pointer-events:none; }
+  .showcase-head{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
+  .showcase-title{ font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:15px; letter-spacing:0.04em; color:var(--white); }
+  .showcase-sub{ font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--dim2); }
+  .trophy-row{ display:grid; grid-template-columns:repeat(auto-fill, minmax(108px, 1fr)); gap:14px; }
+  .trophy{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px; padding:14px 8px 12px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0.004)); border:1px solid var(--line); opacity:0; transform:translateY(12px) scale(.92); animation:trophyIn .55s var(--spring) forwards; transition:transform .25s var(--spring), border-color .25s ease, box-shadow .3s ease; }
+  .trophy:hover{ transform:translateY(-3px); border-color:var(--line2); box-shadow:0 12px 26px -12px rgba(255,255,255,0.18); }
+  @keyframes trophyIn{ to{ opacity:1; transform:none; } }
+  .trophy-medal{ position:relative; width:52px; height:52px; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .trophy-glyph{ position:relative; z-index:2; font-size:19px; line-height:1; color:var(--white); }
+  .trophy-easy .trophy-medal{ border-radius:50%; background:#1c1c1c; border:1px solid var(--line2); }
+  .trophy-easy .trophy-glyph{ color:#c9c9c9; }
+  .trophy-medium .trophy-medal{ clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); background:linear-gradient(160deg, #2b2b2b, #131313); box-shadow:inset 0 0 0 2px rgba(255,255,255,0.22), inset 0 0 14px rgba(0,0,0,0.7); }
+  .trophy-medium .trophy-medal::before{ content:''; position:absolute; inset:7px; clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); border:1px solid rgba(255,255,255,0.28); background:rgba(255,255,255,0.03); }
+  .trophy-hard .trophy-medal{ clip-path:polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); background:linear-gradient(160deg, #3a3a3a, #161616); box-shadow:inset 0 0 0 2px rgba(255,255,255,0.4); filter:drop-shadow(0 0 10px rgba(255,255,255,0.28)); }
+  .trophy-hard .trophy-glyph{ text-shadow:0 0 10px rgba(255,255,255,0.7); }
+  .trophy-shine{ position:absolute; inset:0; z-index:3; background:linear-gradient(115deg, transparent 32%, rgba(255,255,255,0.5) 50%, transparent 68%); transform:translateX(-120%); animation:trophyShine 3.2s var(--ease) infinite; pointer-events:none; }
+  @keyframes trophyShine{ 0%{transform:translateX(-120%);} 45%{transform:translateX(120%);} 100%{transform:translateX(120%);} }
+  .trophy-name{ font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--white); line-height:1.35; word-break:break-word; }
+  .trophy-tier{ font-family:'Space Mono',monospace; font-size:8.5px; letter-spacing:0.18em; text-transform:uppercase; color:var(--dim2); border:1px solid var(--line); border-radius:999px; padding:2px 8px; }
+  .trophy-hard .trophy-tier{ color:var(--white); border-color:rgba(255,255,255,0.4); }
+  .showcase-empty{ padding:26px 12px; text-align:center; font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--dim2); }
+  /* ---------- OWNER BOARD: expand / cinematic reveal ---------- */
+  .ach-board-head{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
+  .ach-expand-btn{ background:transparent; border:1px solid var(--line2); border-radius:999px; color:var(--white); font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; padding:11px 22px; cursor:pointer; transition:all .22s var(--spring); }
+  .ach-expand-btn:hover{ background:var(--white); color:#0a0a0a; border-color:var(--white); transform:translateY(-1px); box-shadow:0 6px 20px rgba(255,255,255,0.18); }
+  .ach-expand-btn:active{ transform:scale(0.95); }
+  .ach-expand-btn.open{ background:var(--white); color:#0a0a0a; border-color:var(--white); }
+  .ach-board-body{ margin-top:20px; }
+  .ach-board-body[hidden]{ display:none; }
+  .ach-board-body.board-open{ animation:boardUnfold .7s var(--ease) both; transform-origin:top center; }
+  @keyframes boardUnfold{ 0%{ opacity:0; transform:rotateX(-14deg) translateY(-14px) scale(.985); filter:blur(4px); } 60%{ opacity:1; filter:blur(0); } 100%{ opacity:1; transform:none; } }
+  .ach-board-body.board-close{ animation:boardFold .32s var(--ease) both; transform-origin:top center; }
+  @keyframes boardFold{ to{ opacity:0; transform:rotateX(-10deg) translateY(-10px) scale(.985); } }
+  .ach-sec-label{ font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--dim); margin-bottom:12px; display:flex; align-items:center; gap:12px; }
+  .ach-sec-label::after{ content:''; flex:1; height:1px; background:var(--line); }
+  /* ---------- PROFILE STAT ICONS & SCORE TREND ---------- */
+  .stat-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+  .stat-icon{ flex-shrink:0; width:26px; height:26px; display:flex; align-items:center; justify-content:center; border:1px solid var(--line); border-radius:8px; color:var(--dim); background:rgba(255,255,255,0.03); transition:color .22s ease, border-color .22s ease; }
+  .stat-icon svg{ width:14px; height:14px; fill:currentColor; display:block; }
+  .stat-card:hover .stat-icon{ color:var(--white); border-color:var(--line2); }
+  .stat-trend{ display:flex; align-items:center; gap:8px; margin-top:12px; }
+  .stat-trend svg{ flex:1; min-width:0; height:34px; display:block; overflow:visible; }
+  .trend-line{ fill:none; stroke:var(--white); stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; filter:drop-shadow(0 0 5px rgba(255,255,255,0.35)); }
+  .trend-area{ fill:rgba(255,255,255,0.08); stroke:none; }
+  .trend-dot{ fill:var(--white); filter:drop-shadow(0 0 4px rgba(255,255,255,0.7)); }
+  .stat-trend .trend-arrow{ font-family:'Space Mono',monospace; font-size:13px; font-weight:700; color:var(--white); flex-shrink:0; }
+  .stat-trend.down .trend-arrow{ color:var(--dim); }
+
   footer{ margin-top:50px; padding-top:24px; border-top:1px solid var(--line); font-family:'Space Mono',monospace; font-size:11px; color:var(--dim2); letter-spacing:0.05em; text-transform:uppercase; min-height:1px; text-align:center; }
   .site-copyright strong{ color:var(--dim); font-weight:700; }
 
@@ -767,15 +823,22 @@
   .lang-opt:active{ transform:scale(0.96); }
   .lang-opt.active{ background:var(--white); color:#0a0a0a; border-color:var(--white); box-shadow:0 0 16px rgba(255,255,255,0.18); }
   .lang-opt.active .lang-flag{ filter:grayscale(0); opacity:1; transform:scale(1.15); }
-  .shell.lang-fade-out{ opacity:0; transform:translateY(8px) scale(0.995); filter:blur(5px); transition:opacity .24s var(--ease), transform .24s var(--ease), filter .24s var(--ease); }
-  .shell.lang-fade-in{ animation:langFadeIn .5s var(--ease); }
-  @keyframes langFadeIn{ from{ opacity:0; transform:translateY(-8px) scale(0.995); filter:blur(5px); } to{ opacity:1; transform:none; filter:blur(0); } }
+  /* ---------- LANGUAGE WARP — liftoff-style hyperspace transition ---------- */
+  #lang-warp{ position:fixed; inset:0; z-index:999993; pointer-events:none; overflow:hidden; transition:opacity .45s ease; }
+  #lang-warp span{ position:fixed; top:-180px; width:2px; border-radius:2px; background:linear-gradient(rgba(255,255,255,0.95), transparent); animation:streakDown linear both; }
+  #lang-warp .lw-flash{ position:absolute; inset:0; background:radial-gradient(circle at 50% 60%, rgba(255,255,255,0.16), transparent 65%); opacity:0; animation:lwFlash .9s ease-out .15s both; }
+  @keyframes lwFlash{ 0%{opacity:0;} 30%{opacity:1;} 100%{opacity:0;} }
+  .shell.lang-lift{ animation:langLift .5s cubic-bezier(.55,-0.15,.75,1) forwards; }
+  @keyframes langLift{ 0%{transform:translateY(0) scale(1);opacity:1;filter:blur(0);} 25%{transform:translateY(10px) scale(.99);} 100%{transform:translateY(-72vh) scale(.93);opacity:0;filter:blur(4px);} }
+  .shell.lang-arrive{ animation:langArrive .85s cubic-bezier(.3,1.3,.5,1) both; }
+  @keyframes langArrive{ 0%{opacity:0;transform:translateY(90px) scale(.985);filter:blur(5px);} 60%{opacity:1;transform:translateY(-8px) scale(1.002);filter:blur(0);} 82%{transform:translateY(3px);} 100%{opacity:1;transform:none;} }
   .lang-opt.active .lang-flag{ animation:flagPop .55s var(--spring); }
   @keyframes flagPop{ 0%{ transform:scale(0.3) rotate(-18deg); } 65%{ transform:scale(1.3) rotate(4deg); } 100%{ transform:scale(1.15) rotate(0); } }
   .settings-card.danger{ border-color:rgba(224,85,85,0.4); }
   .social-field { margin-bottom: 14px; }
   .social-field-label { display: flex; align-items: center; gap: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--dim); margin-bottom: 6px; }
   .social-field-badge { display:inline-flex; align-items:center; justify-content:center; min-width:20px; width:auto; padding:0 5px; height:20px; border-radius:5px; background:var(--line); color:var(--white); font-size:9px; font-family:'Space Mono',monospace; font-weight:700; flex-shrink:0; }
+  .social-field-badge svg{ width:12px; height:12px; display:block; fill:currentColor; }
   .set-id-card{ position:relative; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--black2); margin-bottom:20px; transition:border-color .25s var(--ease); }
   .set-id-card:hover{ border-color:var(--line2); }
   .set-banner-preview{ position:relative; height:110px; background:linear-gradient(160deg,#161616,#0b0b0b); background-size:cover; background-position:center; border-bottom:1px solid var(--line); }
@@ -1377,6 +1440,7 @@ const i18n = {
     statsTitle:'Statistics', statReviews:'Reviews', statAvg:'Average Score', statLikes:'Likes Received', statSince:'Member Since',
     chartCat:'Category Profile', chartCatSub:'Average score for each rating axis', chartDist:'Score Distribution', chartDistSub:'Number of reviews in each score range',
     achBoardTitle:'Achievements Board', achBoardSub:'Milestones earned across GD Review', achDone:'Unlocked',
+    achShowcaseTitle:'Achievement Showcase', achShowcaseSub:'Trophies earned on GD Review', achShowcaseEmpty:'No trophies on display yet', achOpenBoard:'Open Board', achCloseBoard:'Close Board', achProgressTitle:'Full Progress', achPublicPreview:'Public showcase — exactly how others see it', achUnlockedCount:'{n} of {total} unlocked', achTierEasy:'Standard', achTierMed:'Engraved', achTierHard:'Rare',
     achRev1:'First Critique', achRev1D:'Publish your first review', achRev10:'Seasoned Critic', achRev10D:'Publish 10 reviews', achRev50:'Archive Builder', achRev50D:'Publish 50 reviews',
     achLikes10:'Appreciated', achLikes10D:'Receive 10 likes in total', achLikes50:'Community Favorite', achLikes50D:'Receive 50 likes in total',
     achHelpful:'Helpful Review', achHelpfulD:'Collect 10 likes on a single review', achFeatured:'Featured Review', achFeaturedD:'Collect 25 likes on a single review',
@@ -1451,6 +1515,7 @@ const i18n = {
     statsTitle:'Статистика', statReviews:'Рецензий', statAvg:'Средний балл', statLikes:'Получено лайков', statSince:'На сайте с',
     chartCat:'Профиль по категориям', chartCatSub:'Средний балл по каждой оси оценки', chartDist:'Распределение оценок', chartDistSub:'Сколько рецензий в каждом диапазоне',
     achBoardTitle:'Доска достижений', achBoardSub:'Ваши вехи на GD Review', achDone:'Получено',
+    achShowcaseTitle:'Витрина достижений', achShowcaseSub:'Трофеи, заработанные на GD Review', achShowcaseEmpty:'Пока нет трофеев на витрине', achOpenBoard:'Открыть доску', achCloseBoard:'Закрыть доску', achProgressTitle:'Полный прогресс', achPublicPreview:'Публичная витрина — именно так её видят другие', achUnlockedCount:'Получено: {n} из {total}', achTierEasy:'Стандарт', achTierMed:'Гравировка', achTierHard:'Редкий',
     achRev1:'Первая рецензия', achRev1D:'Опубликуйте первую рецензию', achRev10:'Опытный критик', achRev10D:'Опубликуйте 10 рецензий', achRev50:'Строитель архива', achRev50D:'Опубликуйте 50 рецензий',
     achLikes10:'Признание', achLikes10D:'Получите 10 лайков суммарно', achLikes50:'Любимец сообщества', achLikes50D:'Получите 50 лайков суммарно',
     achHelpful:'Полезная рецензия', achHelpfulD:'Соберите 10 лайков на одной рецензии', achFeatured:'Звёздная рецензия', achFeaturedD:'Соберите 25 лайков на одной рецензии',
@@ -1522,7 +1587,10 @@ function confirmDialog(opts){
   return new Promise(function(resolve){
     const m = $('confirm-modal');
     $('confirm-title').textContent = opts.title || '';
-    $('confirm-text').textContent = opts.text || '';
+    /* Modals without body text stay clean and minimal — the empty paragraph is hidden. */
+    const txtEl = $('confirm-text');
+    txtEl.textContent = opts.text || '';
+    txtEl.hidden = !opts.text;
     const inp = $('confirm-input');
     if(opts.input){ inp.hidden = false; inp.value = ''; inp.type = opts.inputType || 'text'; inp.placeholder = opts.inputPlaceholder || ''; } else { inp.hidden = true; }
     const ok = $('confirm-ok'); ok.textContent = opts.okLabel || t('ok');
@@ -1711,10 +1779,11 @@ userMenuBtn.addEventListener('keydown', function(e){
 });
 $('dd-profile').addEventListener('click', function(){ closeUserMenu(); openOwnProfile(); });
 $('dd-settings').addEventListener('click', function(){ closeUserMenu(); if(currentScreen !== 'settings') navigateTo({ screen:'settings' }); });
-/* Logging out asks for a simple confirmation — never a password prompt. */
+/* Logging out asks for a simple confirmation — never a password prompt.
+   The modal is minimal: confirmation message + Cancel + Log Out, nothing else. */
 $('dd-logout').addEventListener('click', async function(){
   closeUserMenu();
-  const ok = await confirmDialog({ title: t('logoutTitle'), text: t('logoutText'), okLabel: t('btnLogout'), danger:true });
+  const ok = await confirmDialog({ title: t('logoutTitle'), okLabel: t('btnLogout'), danger:true });
   if(ok) forceLogout();
 });
 
@@ -2325,28 +2394,36 @@ const FRAMES = ['frame-default','frame-circle','frame-hex','frame-tech'];
 const FRAME_LABEL = { 'frame-default':'Default', 'frame-circle':'Circle', 'frame-hex':'Hex', 'frame-tech':'Tech' };
 
 /* ================= ACHIEVEMENTS ================= */
+/* Each achievement carries a difficulty tier that drives its public reward
+   design: easy → simple disc, medium → engraved hex, hard → rare starburst. */
 const ACHIEVEMENTS = [
-  { metric:'reviews', goal:1,   icon:'✎', color:'#9a9a9a', nameKey:'achRev1',     descKey:'achRev1D' },
-  { metric:'reviews', goal:10,  icon:'✒', color:'#3ddc84', nameKey:'achRev10',    descKey:'achRev10D' },
-  { metric:'reviews', goal:50,  icon:'✦', color:'#c061ff', nameKey:'achRev50',    descKey:'achRev50D' },
-  { metric:'likes',   goal:10,  icon:'♥', color:'#3ddc84', nameKey:'achLikes10',  descKey:'achLikes10D' },
-  { metric:'likes',   goal:50,  icon:'♥', color:'#4ea1ff', nameKey:'achLikes50',  descKey:'achLikes50D' },
-  { metric:'best',    goal:10,  icon:'◆', color:'#4ea1ff', nameKey:'achHelpful',  descKey:'achHelpfulD' },
-  { metric:'best',    goal:25,  icon:'★', color:'#ffcf4d', nameKey:'achFeatured', descKey:'achFeaturedD' },
-  { metric:'diffs',   goal:5,   icon:'⚑', color:'#4ea1ff', nameKey:'achVariety',  descKey:'achVarietyD' },
-  { metric:'days',    goal:30,  icon:'◔', color:'#9a9a9a', nameKey:'achMonth',    descKey:'achMonthD' },
-  { metric:'days',    goal:365, icon:'♛', color:'#ffcf4d', nameKey:'achYear',     descKey:'achYearD' }
+  { metric:'reviews', goal:1,   tier:'easy',   icon:'✎', color:'#9a9a9a', nameKey:'achRev1',     descKey:'achRev1D' },
+  { metric:'reviews', goal:10,  tier:'medium', icon:'✒', color:'#3ddc84', nameKey:'achRev10',    descKey:'achRev10D' },
+  { metric:'reviews', goal:50,  tier:'hard',   icon:'✦', color:'#c061ff', nameKey:'achRev50',    descKey:'achRev50D' },
+  { metric:'likes',   goal:10,  tier:'easy',   icon:'♥', color:'#3ddc84', nameKey:'achLikes10',  descKey:'achLikes10D' },
+  { metric:'likes',   goal:50,  tier:'medium', icon:'♥', color:'#4ea1ff', nameKey:'achLikes50',  descKey:'achLikes50D' },
+  { metric:'best',    goal:10,  tier:'medium', icon:'◆', color:'#4ea1ff', nameKey:'achHelpful',  descKey:'achHelpfulD' },
+  { metric:'best',    goal:25,  tier:'hard',   icon:'★', color:'#ffcf4d', nameKey:'achFeatured', descKey:'achFeaturedD' },
+  { metric:'diffs',   goal:5,   tier:'medium', icon:'⚑', color:'#4ea1ff', nameKey:'achVariety',  descKey:'achVarietyD' },
+  { metric:'days',    goal:30,  tier:'easy',   icon:'◔', color:'#9a9a9a', nameKey:'achMonth',    descKey:'achMonthD' },
+  { metric:'days',    goal:365, tier:'hard',   icon:'♛', color:'#ffcf4d', nameKey:'achYear',     descKey:'achYearD' }
 ];
 
 /* ================= SOCIALS ================= */
 /* Simplified to the essentials: Twitch and YouTube. */
 const SOCIAL_PLATFORMS = [ { key:'twitch', label:'Twitch', abbr:'TTV', domains:['twitch.tv'], placeholder:'https://twitch.tv/handle' }, { key:'youtube', label:'YouTube', abbr:'YT', domains:['youtube.com','youtu.be'], placeholder:'https://youtube.com/@handle' } ];
 const SOCIAL_ICONS = { twitch:'<svg viewBox="0 0 24 24"><path fill="#9146FF" d="M4 2 2 6.4v13.2h5V22l3.6-2.4H14L20 14V2H4zm14.4 11.2-2.8 2.8h-3.2l-2.4 2.4v-2.4H6.4V3.6h12v9.6z"/><path fill="#9146FF" d="M15.6 6.8h1.6v4.8h-1.6zM11.2 6.8h1.6v4.8h-1.6z"/></svg>', youtube:'<svg viewBox="0 0 24 24"><path fill="#FF0000" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><path fill="#fff" d="M9.6 15.6V8.4L15.8 12z"/></svg>' };
+/* Monochrome platform glyphs for the Settings link fields — inherit currentColor
+   so they blend with the site's monochrome style. */
+const MONO_SOCIAL_ICONS = {
+  twitch:'<svg viewBox="0 0 24 24"><path fill="currentColor" d="M4 2 2 6.4v13.2h5V22l3.6-2.4H14L20 14V2H4zm14.4 11.2-2.8 2.8h-3.2l-2.4 2.4v-2.4H6.4V3.6h12v9.6zM15.6 6.8h1.6v4.8h-1.6zM11.2 6.8h1.6v4.8h-1.6z"/></svg>',
+  youtube:'<svg viewBox="0 0 24 24"><path fill="currentColor" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4L15.8 12z"/></svg>'
+};
 function normalizeUrl(raw){ let v = (raw||'').trim(); if(!v) return ''; if(!/^https?:\/\//i.test(v)) v = 'https://'+v; return v; }
 function isValidSocialUrl(platform, raw){ const v = (raw||'').trim(); if(!v) return true; let url; try{ url = new URL(normalizeUrl(v)); }catch(e){ return false; } if(!/^https?:$/.test(url.protocol)) return false; const h = url.hostname.toLowerCase().replace(/^www\./,''); return platform.domains.some(function(d){ return h === d || h.endsWith('.'+d); }); }
 function setSocialFieldError(platform, hasError){ const field = $('soc-field-'+platform.key), input = $('inp-soc-'+platform.key), errorEl = $('soc-error-'+platform.key); field.classList.toggle('has-error', hasError); input.classList.toggle('invalid', hasError); if(hasError) errorEl.textContent = t('invalidLink').replace('{platform}', platform.label); }
 function buildSocialFields(){
-  $('socials-fields').innerHTML = SOCIAL_PLATFORMS.map(function(p){ return '<div class="social-field" id="soc-field-'+p.key+'"><label class="social-field-label" for="inp-soc-'+p.key+'"><span class="social-field-badge">'+p.abbr+'</span>'+p.label+'</label><input type="text" class="modal-input" id="inp-soc-'+p.key+'" placeholder="'+p.placeholder+'"><div class="social-field-error" id="soc-error-'+p.key+'"></div></div>'; }).join('');
+  $('socials-fields').innerHTML = SOCIAL_PLATFORMS.map(function(p){ return '<div class="social-field" id="soc-field-'+p.key+'"><label class="social-field-label" for="inp-soc-'+p.key+'"><span class="social-field-badge" aria-hidden="true">'+(MONO_SOCIAL_ICONS[p.key] || p.abbr)+'</span>'+p.label+'</label><input type="text" class="modal-input" id="inp-soc-'+p.key+'" placeholder="'+p.placeholder+'"><div class="social-field-error" id="soc-error-'+p.key+'"></div></div>'; }).join('');
   SOCIAL_PLATFORMS.forEach(function(p){ const input = $('inp-soc-'+p.key); input.addEventListener('input', function(){ if(isValidSocialUrl(p, input.value)) setSocialFieldError(p, false); }); input.addEventListener('blur', function(){ if(!isValidSocialUrl(p, input.value)) setSocialFieldError(p, true); }); });
 }
 
@@ -2414,15 +2491,18 @@ function buildCategoryRadar(categoryAverages){
 function buildHistogram(reviews){ const buckets=[{label:'0–2',min:0,max:2},{label:'2–4',min:2,max:4},{label:'4–6',min:4,max:6},{label:'6–8',min:6,max:8},{label:'8–10',min:8,max:10.001}].map(function(b){ b.count=0; return b; }); reviews.forEach(function(r){ const b=buckets.find(function(b){ return r.finalScore>=b.min && r.finalScore<b.max; }); if(b) b.count++; }); const w=320,h=200,padB=26,padT=14,gap=14; const barW=(w-gap*(buckets.length-1))/buckets.length; const maxCount=Math.max(1, Math.max.apply(null, buckets.map(function(b){ return b.count; }))); const usableH=h-padB-padT; const bars=buckets.map(function(b,i){ const x=i*(barW+gap); const barH=(b.count/maxCount)*usableH; const y=h-padB-barH; return '<rect class="hist-track" x="'+x+'" y="'+padT+'" width="'+barW+'" height="'+usableH+'" rx="4"/><rect class="hist-bar" x="'+x+'" y="'+y+'" width="'+barW+'" height="'+Math.max(barH,2)+'" rx="4" style="animation-delay:'+(0.2+i*0.08)+'s"></rect><text class="hist-count" x="'+(x+barW/2)+'" y="'+(y-8)+'" text-anchor="middle" style="animation-delay:'+(0.5+i*0.08)+'s">'+b.count+'</text><text class="hist-label" x="'+(x+barW/2)+'" y="'+(h-6)+'" text-anchor="middle">'+b.label+'</text>'; }).join(''); return '<svg viewBox="0 0 '+w+' '+h+'"><line class="hist-axis" x1="0" y1="'+(h-padB)+'" x2="'+w+'" y2="'+(h-padB)+'"/>'+bars+'</svg>'; }
 /* Exact registration date — full "Day Month Year" format. */
 function memberSinceLabel(user){ if(!(user && user.created_at)) return '—'; return new Date(user.created_at).toLocaleDateString(lang==='ru'?'ru-RU':'en-US', { day:'numeric', month:'long', year:'numeric' }); }
-function buildAchievementsBoard(reviews, user){
+function achievementValues(reviews, user){
   const likes = (user && user.likes_received != null) ? user.likes_received : reviews.reduce(function(a,r){ return a + (r.likes||0); }, 0);
-  const vals = {
+  return {
     reviews: reviews.length,
     likes: likes,
     best: reviews.reduce(function(a,r){ return Math.max(a, r.likes||0); }, 0),
     diffs: new Set(reviews.map(function(r){ return String(r.difficulty||'').toLowerCase(); }).filter(Boolean)).size,
     days: (user && user.created_at) ? Math.max(0, Math.floor((Date.now() - new Date(user.created_at).getTime()) / 86400000)) : 0
   };
+}
+function buildAchievementsBoard(reviews, user){
+  const vals = achievementValues(reviews, user);
   return '<div class="ach-grid">'+ACHIEVEMENTS.map(function(a,i){
     const v = Math.min(vals[a.metric]||0, a.goal);
     const done = v >= a.goal;
@@ -2433,23 +2513,99 @@ function buildAchievementsBoard(reviews, user){
       + '</div>';
   }).join('')+'</div>';
 }
+function achTierLabel(tier){ return t(tier === 'easy' ? 'achTierEasy' : (tier === 'medium' ? 'achTierMed' : 'achTierHard')); }
+/* Public trophy showcase: a collectible display board that shows only the
+   *earned* rewards — no goals, counters or locked achievements leak out. */
+function buildShowcaseBoard(reviews, user){
+  const vals = achievementValues(reviews, user);
+  const earned = ACHIEVEMENTS.filter(function(a){ return (vals[a.metric]||0) >= a.goal; });
+  const inner = earned.length
+    ? '<div class="trophy-row">'+earned.map(function(a,i){
+        return '<div class="trophy trophy-'+a.tier+'" style="animation-delay:'+(Math.min(i,12)*0.07)+'s" title="'+escapeHTML(t(a.descKey))+'">'
+          + '<div class="trophy-medal"><span class="trophy-glyph">'+a.icon+'</span>'+(a.tier === 'hard' ? '<span class="trophy-shine"></span>' : '')+'</div>'
+          + '<div class="trophy-name">'+escapeHTML(t(a.nameKey))+'</div>'
+          + '<div class="trophy-tier">'+escapeHTML(achTierLabel(a.tier))+'</div>'
+          + '</div>';
+      }).join('')+'</div>'
+    : '<div class="showcase-empty">'+escapeHTML(t('achShowcaseEmpty'))+'</div>';
+  return '<div class="showcase-board"><div class="showcase-head"><span class="showcase-title">'+escapeHTML(t('achShowcaseTitle'))+'</span><span class="showcase-sub">'+escapeHTML(t('achShowcaseSub'))+'</span></div>'+inner+'</div>';
+}
+/* Owner-only board expander with a premium unfold reveal. */
+function bindAchBoard(){
+  const btn = $('ach-expand-btn'); if(!btn) return;
+  btn.addEventListener('click', function(){
+    const body = $('ach-board-body'); if(!body) return;
+    if(body.hidden){
+      body.hidden = false;
+      body.classList.remove('board-close');
+      body.classList.remove('board-open'); void body.offsetWidth; body.classList.add('board-open');
+      btn.textContent = t('achCloseBoard'); btn.classList.add('open'); btn.setAttribute('aria-expanded','true');
+    } else {
+      body.classList.remove('board-open'); body.classList.add('board-close');
+      btn.textContent = t('achOpenBoard'); btn.classList.remove('open'); btn.setAttribute('aria-expanded','false');
+      setTimeout(function(){ body.hidden = true; body.classList.remove('board-close'); }, 320);
+    }
+  });
+}
+/* Monochrome stat icons — inherit currentColor. */
+const STAT_ICONS = {
+  reviews:'<svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>',
+  likes:'<svg viewBox="0 0 24 24"><path d="M12 21s-7.6-4.7-10.1-9.3C.3 8.6 2.3 5 5.7 5c2 0 3.4 1.1 4.3 2.6h4C14.9 6.1 16.3 5 18.3 5c3.4 0 5.4 3.6 3.8 6.7C19.6 16.3 12 21 12 21z"/></svg>',
+  score:'<svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6h-6z"/></svg>',
+  since:'<svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>'
+};
+/* Score trend sparkline: the running average over time — the line rises when
+   the reviewer's average improves and falls when it drops. */
+function buildScoreTrend(reviews){
+  if(reviews.length < 2) return '';
+  const chron = reviews.slice().sort(function(a,b){ return new Date(a.savedAt) - new Date(b.savedAt); });
+  let sum = 0;
+  let running = chron.map(function(r,i){ sum += r.finalScore; return sum / (i+1); });
+  if(running.length > 24) running = running.slice(running.length - 24);
+  const w = 120, h = 34, pad = 3;
+  const min = Math.min.apply(null, running), max = Math.max.apply(null, running);
+  const span = Math.max(0.4, max - min);
+  const step = (w - pad*2) / (running.length - 1);
+  const coords = running.map(function(v,i){ return [pad + i*step, h - pad - ((v - min)/span)*(h - pad*2)]; });
+  const line = coords.map(function(p,i){ return (i ? 'L' : 'M')+p[0].toFixed(1)+' '+p[1].toFixed(1); }).join(' ');
+  const area = line + ' L'+coords[coords.length-1][0].toFixed(1)+' '+(h-1)+' L'+coords[0][0].toFixed(1)+' '+(h-1)+' Z';
+  const up = running[running.length-1] >= running[0];
+  const last = coords[coords.length-1];
+  return '<div class="stat-trend'+(up ? ' up' : ' down')+'"><svg viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" aria-hidden="true">'
+    + '<path class="trend-area" d="'+area+'"/><path class="trend-line" d="'+line+'"/>'
+    + '<circle class="trend-dot" cx="'+last[0].toFixed(1)+'" cy="'+last[1].toFixed(1)+'" r="2.4"/></svg>'
+    + '<span class="trend-arrow">'+(up ? '↗' : '↘')+'</span></div>';
+}
 function renderStatsFor(reviews, user){
   const content = $('stats-content');
-  const achCard = '<div class="chart-card wide" style="animation-delay:.22s"><div class="chart-title">'+t('achBoardTitle')+'</div><div class="chart-sub">'+t('achBoardSub')+'</div>'+buildAchievementsBoard(reviews, user)+'</div>';
-  if(!reviews.length){ content.innerHTML = emptyState(t('emptyStatsTitle'), t('emptyStatsSub')) + '<div class="charts-grid" style="margin-top:20px;">'+achCard+'</div>'; return; }
+  const own = profileView.own;
+  const vals = achievementValues(reviews, user);
+  const unlockedCount = ACHIEVEMENTS.filter(function(a){ return (vals[a.metric]||0) >= a.goal; }).length;
+  /* Privacy: visitors only ever see the public trophy showcase. The personal
+     progress board (locked items, counters, goals) is owner-only and opens on
+     demand with a cinematic unfold — including a preview of the public view. */
+  const achCard = own
+    ? '<div class="chart-card wide" style="animation-delay:.22s"><div class="ach-board-head"><div><div class="chart-title">'+t('achBoardTitle')+'</div><div class="chart-sub" style="margin-bottom:0;">'+escapeHTML(t('achUnlockedCount').replace('{n}', unlockedCount).replace('{total}', ACHIEVEMENTS.length))+'</div></div><button class="ach-expand-btn" id="ach-expand-btn" aria-expanded="false">'+escapeHTML(t('achOpenBoard'))+'</button></div>'
+      + '<div class="ach-board-body" id="ach-board-body" hidden>'
+      + '<div class="ach-sec-label">'+escapeHTML(t('achProgressTitle'))+'</div>'+buildAchievementsBoard(reviews, user)
+      + '<div class="ach-sec-label" style="margin-top:24px;">'+escapeHTML(t('achPublicPreview'))+'</div>'+buildShowcaseBoard(reviews, user)
+      + '</div></div>'
+    : '<div class="chart-card wide" style="animation-delay:.22s">'+buildShowcaseBoard(reviews, user)+'</div>';
+  if(!reviews.length){ content.innerHTML = emptyState(t('emptyStatsTitle'), t('emptyStatsSub')) + '<div class="charts-grid" style="margin-top:20px;">'+achCard+'</div>'; bindAchBoard(); return; }
   const total = reviews.length;
   const avg = reviews.reduce(function(a,r){ return a + r.finalScore; }, 0) / total;
   const likes = (user && user.likes_received != null) ? user.likes_received : reviews.reduce(function(a,r){ return a + (r.likes||0); }, 0);
   const categoryAverages = CATEGORIES.map(function(c){ return { label: t(c.i18nKey), avg: reviews.reduce(function(a,r){ return a + (r.ratings[c.key]||0); }, 0) / total }; });
   content.innerHTML = '<div class="stats-hero">'
-    + '<div class="stat-card" style="animation-delay:.02s"><div class="stat-label">'+t('statReviews')+'</div><div class="stat-number">'+total+'</div></div>'
-    + '<div class="stat-card" style="animation-delay:.06s"><div class="stat-label">'+t('statAvg')+'</div><div class="stat-number">'+avg.toFixed(1)+'<small>/10</small></div></div>'
-    + '<div class="stat-card" style="animation-delay:.10s"><div class="stat-label">'+t('statLikes')+'</div><div class="stat-number">'+likes+'</div></div>'
-    + '<div class="stat-card" style="animation-delay:.14s"><div class="stat-label">'+t('statSince')+'</div><div class="stat-number stat-date">'+escapeHTML(memberSinceLabel(user))+'</div></div>'
+    + '<div class="stat-card" style="animation-delay:.02s"><div class="stat-head"><div class="stat-label">'+t('statReviews')+'</div><span class="stat-icon">'+STAT_ICONS.reviews+'</span></div><div class="stat-number">'+total+'</div></div>'
+    + '<div class="stat-card" style="animation-delay:.06s"><div class="stat-head"><div class="stat-label">'+t('statAvg')+'</div><span class="stat-icon">'+STAT_ICONS.score+'</span></div><div class="stat-number">'+avg.toFixed(1)+'<small>/10</small></div>'+buildScoreTrend(reviews)+'</div>'
+    + '<div class="stat-card" style="animation-delay:.10s"><div class="stat-head"><div class="stat-label">'+t('statLikes')+'</div><span class="stat-icon">'+STAT_ICONS.likes+'</span></div><div class="stat-number">'+likes+'</div></div>'
+    + '<div class="stat-card" style="animation-delay:.14s"><div class="stat-head"><div class="stat-label">'+t('statSince')+'</div><span class="stat-icon">'+STAT_ICONS.since+'</span></div><div class="stat-number stat-date">'+escapeHTML(memberSinceLabel(user))+'</div></div>'
     + '</div><div class="charts-grid">'
     + '<div class="chart-card" style="animation-delay:.10s"><div class="chart-title">'+t('chartCat')+'</div><div class="chart-sub">'+t('chartCatSub')+'</div>'+buildCategoryRadar(categoryAverages)+'</div>'
     + '<div class="chart-card" style="animation-delay:.16s"><div class="chart-title">'+t('chartDist')+'</div><div class="chart-sub">'+t('chartDistSub')+'</div>'+buildHistogram(reviews)+'</div>'
     + achCard + '</div>';
+  bindAchBoard();
 }
 
 /* ---- Archive ---- */
@@ -2654,16 +2810,31 @@ function setLang(l){
   if(l === lang || langSwapBusy) return;
   const sh = document.querySelector('.shell');
   if(!sh || matchMedia('(prefers-reduced-motion: reduce)').matches){ applyLang(l); return; }
-  /* Polished two-phase transition: the page softly blurs out, the language
-     swaps while hidden, then the new content settles back in. */
+  /* Immersive warp: the page lifts off into a stream of light streaks — the
+     same "flying up into space" feeling as the post-registration liftoff —
+     the language swaps mid-flight, then the new interface settles back in. */
   langSwapBusy = true;
-  sh.classList.add('lang-fade-out');
+  const warp = document.createElement('div'); warp.id = 'lang-warp';
+  for(let i=0;i<56;i++){
+    const s = document.createElement('span');
+    s.style.left = (Math.random()*100)+'vw';
+    s.style.height = (50+Math.random()*110)+'px';
+    s.style.opacity = (0.25+Math.random()*0.7).toFixed(2);
+    s.style.animationDuration = (0.55+Math.random()*0.7)+'s';
+    s.style.animationDelay = (Math.random()*0.35)+'s';
+    warp.appendChild(s);
+  }
+  const flash = document.createElement('div'); flash.className = 'lw-flash'; warp.appendChild(flash);
+  document.body.appendChild(warp);
+  sh.classList.add('lang-lift');
   setTimeout(function(){
     applyLang(l);
-    sh.classList.remove('lang-fade-out');
-    sh.classList.add('lang-fade-in');
-    setTimeout(function(){ sh.classList.remove('lang-fade-in'); langSwapBusy = false; }, 500);
-  }, 240);
+    window.scrollTo(0, 0);
+    sh.classList.remove('lang-lift');
+    sh.classList.add('lang-arrive');
+    setTimeout(function(){ sh.classList.remove('lang-arrive'); langSwapBusy = false; }, 900);
+  }, 480);
+  setTimeout(function(){ warp.style.opacity = '0'; setTimeout(function(){ warp.remove(); }, 500); }, 1150);
 }
 $('set-lang-en').addEventListener('click', function(){ setLang('en'); });
 $('set-lang-ru').addEventListener('click', function(){ setLang('ru'); });
