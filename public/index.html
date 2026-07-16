@@ -215,9 +215,6 @@
   .profile-name-socials { display: flex; align-items: center; gap: 6px; flex-shrink: 0; } .profile-name-socials a { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; opacity: 0.9; transition: transform 0.2s var(--spring), opacity 0.2s ease; }
   .profile-name-socials a:hover { opacity: 1; transform: translateY(-2px) scale(1.12); } .profile-name-socials svg { width: 100%; height: 100%; display: block; }
   .profile-desc { font-size: 14px; color: var(--dim); max-width: 600px; line-height: 1.6; word-break: break-word; overflow-wrap: anywhere; white-space: pre-line; }
-  .profile-edit-btn { background: rgba(255,255,255,0.1); backdrop-filter: blur(4px); color: var(--white); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 12px 24px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all .22s var(--spring); align-self: center; }
-  .profile-edit-btn:hover { background: var(--white); color: var(--black); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,255,255,0.15); }
-  .profile-edit-btn[hidden]{display:none;}
   .profile-section-divider { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); margin: 48px 0 24px; display: flex; align-items: center; gap: 16px; }
   .profile-section-divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 
@@ -296,16 +293,13 @@
   .chart-sub{ font-size:12px; color:var(--dim2); margin-bottom:18px; }
   .chart-card svg{display:block;width:100%;height:auto;overflow:visible;}
   @keyframes fadeInSlow{to{opacity:1;}} @keyframes growUp{from{transform:scaleY(0);}to{transform:scaleY(1);}}
-  .axis-list{ display:flex; flex-direction:column; gap:14px; padding-top:6px; }
-  .axis-row{ display:grid; grid-template-columns:minmax(110px, 38%) 1fr 48px; align-items:center; gap:14px; opacity:0; animation:barIn .5s var(--ease) forwards; }
-  .axis-label{ font-size:11.5px; color:var(--dim); text-transform:uppercase; letter-spacing:0.06em; line-height:1.35; word-break:break-word; }
-  .axis-bar{ position:relative; height:10px; background:var(--black); border:1px solid var(--line); border-radius:999px; overflow:hidden; }
-  .axis-fill{ position:absolute; top:0; bottom:0; left:0; border-radius:999px; background:linear-gradient(90deg, var(--dim2), var(--white)); box-shadow:0 0 12px rgba(255,255,255,0.25); transform-origin:left; animation:detailFill .8s var(--ease) both; overflow:hidden; }
-  .axis-fill::after{ content:''; position:absolute; inset:0; background:linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.4) 50%, transparent 70%); transform:translateX(-120%); animation:axisSheen 2.8s var(--ease) infinite; }
-  @keyframes axisSheen{ 0%{ transform:translateX(-120%);} 60%{ transform:translateX(120%);} 100%{ transform:translateX(120%);} }
-  .axis-val{ font-family:'Space Mono',monospace; font-size:13px; font-weight:700; color:var(--white); text-align:right; }
-  .axis-val small{ font-size:10px; color:var(--dim2); font-weight:400; }
-  @media(max-width:520px){ .axis-row{ grid-template-columns:1fr 56px; } .axis-label{ grid-column:1 / -1; margin-bottom:-6px; } }
+  .radar-chart{ display:block; width:100%; max-width:340px; margin:0 auto; }
+  .radar-ring{ fill:none; stroke:var(--line); stroke-width:1; }
+  .radar-spoke{ stroke:var(--line); stroke-width:1; }
+  .radar-area{ fill:rgba(255,255,255,0.13); stroke:var(--white); stroke-width:1.6; stroke-linejoin:round; filter:drop-shadow(0 0 12px rgba(255,255,255,0.22)); opacity:0; animation:fadeInSlow .7s var(--ease) forwards .15s; }
+  .radar-dot{ fill:var(--white); filter:drop-shadow(0 0 6px rgba(255,255,255,0.5)); opacity:0; animation:fadeInSlow .4s ease forwards; }
+  .radar-label{ font-size:10px; fill:var(--dim); text-transform:uppercase; letter-spacing:0.05em; }
+  .radar-val{ font-family:'Space Mono',monospace; font-size:11px; font-weight:700; fill:var(--white); }
   .hist-bar{ fill:var(--white); opacity:0.9; transform-box:fill-box; transform-origin:bottom; transform:scaleY(0); animation:growUp .6s var(--ease) forwards; transition:opacity .2s var(--ease); }
   .hist-bar:hover{opacity:1;} .hist-track{fill:var(--black2);}
   .hist-count{ font-family:'Space Mono',monospace; font-size:11px; font-weight:700; fill:var(--white); opacity:0; animation:fadeInSlow .4s ease forwards .5s; }
@@ -392,6 +386,7 @@
   .google-btn:active{ transform:scale(0.98); }
   .google-btn svg{ width:16px; height:16px; flex-shrink:0; }
   #google-auth-area[hidden]{ display:none; }
+  #auth-main-tabs[hidden]{ display:none; }
   #tab-login[hidden], #tab-settings[hidden]{ display:none; }
   .settings-card[hidden]{ display:none; }
 
@@ -772,8 +767,11 @@
   .lang-opt:active{ transform:scale(0.96); }
   .lang-opt.active{ background:var(--white); color:#0a0a0a; border-color:var(--white); box-shadow:0 0 16px rgba(255,255,255,0.18); }
   .lang-opt.active .lang-flag{ filter:grayscale(0); opacity:1; transform:scale(1.15); }
-  .shell.lang-swap{ animation:langSwap .5s var(--ease); }
-  @keyframes langSwap{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+  .shell.lang-fade-out{ opacity:0; transform:translateY(8px) scale(0.995); filter:blur(5px); transition:opacity .24s var(--ease), transform .24s var(--ease), filter .24s var(--ease); }
+  .shell.lang-fade-in{ animation:langFadeIn .5s var(--ease); }
+  @keyframes langFadeIn{ from{ opacity:0; transform:translateY(-8px) scale(0.995); filter:blur(5px); } to{ opacity:1; transform:none; filter:blur(0); } }
+  .lang-opt.active .lang-flag{ animation:flagPop .55s var(--spring); }
+  @keyframes flagPop{ 0%{ transform:scale(0.3) rotate(-18deg); } 65%{ transform:scale(1.3) rotate(4deg); } 100%{ transform:scale(1.15) rotate(0); } }
   .settings-card.danger{ border-color:rgba(224,85,85,0.4); }
   .social-field { margin-bottom: 14px; }
   .social-field-label { display: flex; align-items: center; gap: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--dim); margin-bottom: 6px; }
@@ -1074,7 +1072,6 @@
             </div>
             <div class="profile-desc" id="prof-desc"></div>
           </div>
-          <button class="profile-edit-btn" id="btn-edit-profile" hidden data-i18n="btnEditProf">Edit Profile</button>
         </div>
       </div>
 
@@ -1134,7 +1131,6 @@
           <div class="set-title" data-i18n="setLinks">Social Links</div>
           <div class="set-sub" data-i18n="setLinksSub">Links shown next to your name. Leave blank to hide.</div>
           <div id="socials-fields"></div>
-          <button class="modal-btn ghost" id="btn-save-links" data-i18n="btnSaveLinks">Save Links</button>
         </div>
         <div class="settings-card">
           <div class="set-title" data-i18n="setEmail">Email</div>
@@ -1150,7 +1146,7 @@
           <div class="field"><div class="pass-wrap"><input type="password" id="inp-new-pass" class="modal-input" data-i18n-ph="newPass" autocomplete="new-password"></div><div class="field-err"></div></div>
           <div class="field"><div class="pass-wrap"><input type="password" id="inp-new-pass2" class="modal-input" data-i18n-ph="phPassConfirm" autocomplete="new-password"></div><div class="field-err"></div></div>
           <button class="modal-btn ghost" id="btn-change-pass" data-i18n="btnUpdatePass">Update Password</button>
-          <button class="auth-link" id="btn-settings-forgot" style="margin-top:10px;" data-i18n="authForgot">Forgot password?</button>
+          <button class="auth-link" id="btn-settings-forgot" style="display:block;margin:12px auto 0;" data-i18n="authForgot">Forgot password?</button>
         </div>
         <div class="settings-card danger">
           <div class="set-title" style="color:#e05555;" data-i18n="setDanger">Danger Zone</div>
@@ -1377,7 +1373,7 @@ const i18n = {
     navAdmin:'Admin', adminQueueTitle:'Walkthrough Submissions', adminEmptyTitle:'Queue is empty', adminEmptySub:'No pending walkthrough submissions.', adminLevel:'Level', adminBy:'by', adminApprove:'Approve', adminReject:'Reject', adminApproved:'Walkthrough approved', adminRejected:'Walkthrough rejected', adminRejectTitle:'Reject this walkthrough?', adminRejectText:'The video will not be shown on the level page.',
     wtWatch:'Watch Walkthrough', wtSubmit:'Submit Walkthrough', wtModalTitle:'Submit Walkthrough', wtModalText:'Share a YouTube video showing how to beat this level. An admin will review it before it appears on the level page.', wtUrlLabel:'YouTube link', wtSubmitBtn:'Submit for Review', wtSubmitted:'Submitted! It will appear after admin approval.', wtUrlRequired:'Paste a YouTube link first',
     err_invalid_youtube_url:'That does not look like a valid YouTube link', err_walkthrough_exists:'This video was already submitted for this level', err_admin_only:'Admin access required',
-    btnEditProf:'Edit Profile', changeAvatar:'Change Avatar', changeBanner:'Change Banner',
+    changeAvatar:'Change Avatar', changeBanner:'Change Banner',
     statsTitle:'Statistics', statReviews:'Reviews', statAvg:'Average Score', statLikes:'Likes Received', statSince:'Member Since',
     chartCat:'Category Profile', chartCatSub:'Average score for each rating axis', chartDist:'Score Distribution', chartDistSub:'Number of reviews in each score range',
     achBoardTitle:'Achievements Board', achBoardSub:'Milestones earned across GD Review', achDone:'Unlocked',
@@ -1392,10 +1388,10 @@ const i18n = {
     descLabel:'Description', frameLabel:'Avatar Frame', cancel:'Cancel', saveBtn:'Save', savedProfile:'Profile saved', defaultDesc:'No description yet.',
     setProfile:'Profile', setProfileSub:'Your public identity — avatar, banner, username, description and avatar frame.', usernameLabel:'Username', btnSaveProfile:'Save Profile', usernameChanged:'Username updated',
     setLang:'Language', setLangSub:'Interface language.',
-    setLinks:'Social Links', setLinksSub:'Links shown next to your name. Leave blank to hide.', btnSaveLinks:'Save Links', invalidLink:'That does not look like a {platform} link',
+    setLinks:'Social Links', setLinksSub:'Links shown next to your name. Leave blank to hide. Saved together with “Save Profile”.', invalidLink:'That does not look like a {platform} link',
     setEmail:'Email', currentEmail:'Current email:', currPass:'Current password', newEmail:'New email', btnUpdateEmail:'Update Email', emailChanged:'Email updated',
     setPass:'Password', setPassSub:'At least 8 characters.', newPass:'New password', btnUpdatePass:'Update Password', passChanged:'Password updated',
-    btnLogout:'Log Out',
+    btnLogout:'Log Out', logoutTitle:'Log out?', logoutText:'Are you sure you want to log out?',
     setDanger:'Danger Zone', setDangerSub:'Deleting your account removes all your reviews permanently.', btnDeleteAcc:'Delete Account', deleteTitle:'Delete account?', deleteText:'This action is permanent. All your reviews will be removed. Enter your password to confirm.', accDeleted:'Account deleted',
     detailSummary:'Review', detailNoSummary:'No written summary provided.', madeBy:'made by', ok:'OK',
     reviewRules:'Review rules: no abusive insults, no advertising, no external links. Every submission is checked automatically before it is published.',
@@ -1451,7 +1447,7 @@ const i18n = {
     navAdmin:'Админ', adminQueueTitle:'Заявки на прохождения', adminEmptyTitle:'Очередь пуста', adminEmptySub:'Нет заявок, ожидающих проверки.', adminLevel:'Уровень', adminBy:'от', adminApprove:'Одобрить', adminReject:'Отклонить', adminApproved:'Прохождение одобрено', adminRejected:'Прохождение отклонено', adminRejectTitle:'Отклонить это прохождение?', adminRejectText:'Видео не будет показано на странице уровня.',
     wtWatch:'Смотреть прохождение', wtSubmit:'Предложить прохождение', wtModalTitle:'Предложить прохождение', wtModalText:'Поделитесь YouTube-видео с прохождением уровня. Админ проверит его перед публикацией на странице уровня.', wtUrlLabel:'Ссылка на YouTube', wtSubmitBtn:'Отправить на проверку', wtSubmitted:'Отправлено! Появится после одобрения админом.', wtUrlRequired:'Сначала вставьте ссылку на YouTube',
     err_invalid_youtube_url:'Это не похоже на корректную ссылку YouTube', err_walkthrough_exists:'Это видео уже предложено для этого уровня', err_admin_only:'Требуются права администратора',
-    btnEditProf:'Редактировать', changeAvatar:'Сменить аватар', changeBanner:'Сменить баннер',
+    changeAvatar:'Сменить аватар', changeBanner:'Сменить баннер',
     statsTitle:'Статистика', statReviews:'Рецензий', statAvg:'Средний балл', statLikes:'Получено лайков', statSince:'На сайте с',
     chartCat:'Профиль по категориям', chartCatSub:'Средний балл по каждой оси оценки', chartDist:'Распределение оценок', chartDistSub:'Сколько рецензий в каждом диапазоне',
     achBoardTitle:'Доска достижений', achBoardSub:'Ваши вехи на GD Review', achDone:'Получено',
@@ -1466,10 +1462,10 @@ const i18n = {
     descLabel:'Описание', frameLabel:'Рамка аватара', cancel:'Отмена', saveBtn:'Сохранить', savedProfile:'Профиль сохранён', defaultDesc:'Описания пока нет.',
     setProfile:'Профиль', setProfileSub:'Ваша публичная страница — аватар, баннер, никнейм, описание и рамка аватара.', usernameLabel:'Никнейм', btnSaveProfile:'Сохранить профиль', usernameChanged:'Никнейм обновлён',
     setLang:'Язык', setLangSub:'Язык интерфейса.',
-    setLinks:'Соцсети', setLinksSub:'Ссылки рядом с вашим именем. Оставьте пустым, чтобы скрыть.', btnSaveLinks:'Сохранить ссылки', invalidLink:'Это не похоже на ссылку {platform}',
+    setLinks:'Соцсети', setLinksSub:'Ссылки рядом с вашим именем. Оставьте пустым, чтобы скрыть. Сохраняются кнопкой «Сохранить профиль».', invalidLink:'Это не похоже на ссылку {platform}',
     setEmail:'Почта', currentEmail:'Текущая почта:', currPass:'Текущий пароль', newEmail:'Новый email', btnUpdateEmail:'Обновить почту', emailChanged:'Почта обновлена',
     setPass:'Пароль', setPassSub:'Минимум 8 символов.', newPass:'Новый пароль', btnUpdatePass:'Обновить пароль', passChanged:'Пароль обновлён',
-    btnLogout:'Выйти',
+    btnLogout:'Выйти', logoutTitle:'Выйти из аккаунта?', logoutText:'Вы уверены, что хотите выйти?',
     setDanger:'Опасная зона', setDangerSub:'Удаление аккаунта навсегда сотрёт все ваши рецензии.', btnDeleteAcc:'Удалить аккаунт', deleteTitle:'Удалить аккаунт?', deleteText:'Действие необратимо. Все рецензии будут удалены. Введите пароль для подтверждения.', accDeleted:'Аккаунт удалён',
     detailSummary:'Рецензия', detailNoSummary:'Без текстового описания.', madeBy:'сделано', ok:'ОК',
     reviewRules:'Правила рецензий: без оскорблений, без рекламы, без внешних ссылок. Каждая публикация автоматически проверяется перед размещением.',
@@ -1630,12 +1626,14 @@ function runPageTransition(swap){
 }
 function stateToHash(st){
   if(st.screen === 'level' && st.id) return '#/level/' + encodeURIComponent(st.id);
+  if(st.screen === 'create' && st.id) return '#/create/' + encodeURIComponent(st.id);
   if(st.screen === 'user' && st.user) return '#/user/' + encodeURIComponent(st.user);
   return st.screen === 'home' ? '#/' : '#/' + st.screen;
 }
 function parseHash(){
   const h = location.hash || '';
   let m = h.match(/^#\/level\/([^\/?#]+)/); if(m) return { screen:'level', id: decodeURIComponent(m[1]) };
+  m = h.match(/^#\/create\/([^\/?#]+)/); if(m) return { screen:'create', id: decodeURIComponent(m[1]) };
   m = h.match(/^#\/user\/([^\/?#]+)/); if(m) return { screen:'user', user: decodeURIComponent(m[1]) };
   m = h.match(/^#\/([a-z]+)/); if(m && SCREENS.indexOf(m[1]) !== -1) return { screen: m[1] };
   return { screen:'home' };
@@ -1647,7 +1645,12 @@ function renderRoute(st){
     case 'level': if(st.id){ openLevelPage(st.id, false); return; } break;
     case 'user': if(st.user){ openUserProfile(st.user, false); return; } break;
     case 'profile': if(me){ openOwnProfile(false); return; } break;
-    case 'create': if(currentLevel){ showScreen('create'); return; } break;
+    case 'create':
+      /* One-step entry: the level ID travels with the navigation state, so
+         the review page opens immediately for the selected level. */
+      if(st.id){ showScreen('create'); openReviewFor(st.id); return; }
+      if(currentLevel){ showScreen('create'); return; }
+      break;
     case 'settings': showScreen('settings'); fillSettings(); return;
     case 'admin': showScreen('admin'); loadAdminQueue(); return;
     case 'spin': showScreen('spin'); return;
@@ -1708,8 +1711,12 @@ userMenuBtn.addEventListener('keydown', function(e){
 });
 $('dd-profile').addEventListener('click', function(){ closeUserMenu(); openOwnProfile(); });
 $('dd-settings').addEventListener('click', function(){ closeUserMenu(); if(currentScreen !== 'settings') navigateTo({ screen:'settings' }); });
-/* Logging out is immediate — no confirmation and never a password prompt. */
-$('dd-logout').addEventListener('click', function(){ closeUserMenu(); forceLogout(); });
+/* Logging out asks for a simple confirmation — never a password prompt. */
+$('dd-logout').addEventListener('click', async function(){
+  closeUserMenu();
+  const ok = await confirmDialog({ title: t('logoutTitle'), text: t('logoutText'), okLabel: t('btnLogout'), danger:true });
+  if(ok) forceLogout();
+});
 
 /* ================= AUTH ================= */
 const AUTH_SUBS = { login:'authTagline', register:'authTagline', verify:'verifyTitle', forgot:'forgotTitle', reset:'resetTitle' };
@@ -1718,14 +1725,20 @@ function switchAuthView(name){
   $('view-'+name).classList.add('active');
   qsa('#auth-main-tabs .auth-tab').forEach(function(b){ b.classList.toggle('active', b.dataset.authTab===name); });
   $('auth-sub').textContent = t(AUTH_SUBS[name] || 'authTagline');
-  $('google-auth-area').hidden = (name !== 'login' && name !== 'register');
+  $('google-auth-area').hidden = (name !== 'login' && name !== 'register') || authResetOnly;
+  /* Reset-only mode (an existing user coming from Settings): only the reset
+     flow is visible — no login/register tabs and no "Back to login" links. */
+  $('auth-main-tabs').hidden = authResetOnly;
+  $('link-forgot-back').hidden = authResetOnly;
+  $('link-reset-back').hidden = authResetOnly;
   $('auth-error').textContent = '';
 }
 qsa('#auth-main-tabs .auth-tab').forEach(function(b){ b.addEventListener('click', function(){ switchAuthView(b.dataset.authTab); }); });
 /* The auth overlay is no longer a wall: it opens on demand (Log In button or
    any action that requires an account) and can always be dismissed. */
-function openAuthOverlay(view){ switchAuthView(view || 'login'); $('auth-overlay').classList.remove('hidden'); }
-function closeAuthOverlay(){ $('auth-overlay').classList.add('hidden'); }
+let authResetOnly = false;
+function openAuthOverlay(view, resetOnly){ authResetOnly = !!resetOnly; switchAuthView(view || 'login'); $('auth-overlay').classList.remove('hidden'); }
+function closeAuthOverlay(){ $('auth-overlay').classList.add('hidden'); authResetOnly = false; }
 function requireAuth(){ if(me) return true; openAuthOverlay('login'); return false; }
 $('auth-close').addEventListener('click', closeAuthOverlay);
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && !$('auth-overlay').classList.contains('hidden')) closeAuthOverlay(); });
@@ -1803,7 +1816,8 @@ $('btn-reset').addEventListener('click', authBusy($('btn-reset'), async function
   if(!ok) return;
   const r = await api('/reset-password', { method:'POST', body:{ email: pendingEmail, code: code, newPassword: pass }, auth:false });
   if(!r.ok) return authFail(ERR(r.data.error));
-  toast(t('resetOk'), 'ok'); switchAuthView('login');
+  toast(t('resetOk'), 'ok');
+  if(authResetOnly) closeAuthOverlay(); else switchAuthView('login');
 }));
 
 /* ================= LIFTOFF ================= */
@@ -2035,7 +2049,7 @@ function renderLevelReviews(){
 }
 $('lvl-sort').addEventListener('change', renderLevelReviews);
 $('level-back').addEventListener('click', goBack);
-$('lvl-write-btn').addEventListener('click', function(){ if(!levelPage.id) return; navigateTo({ screen:'create' }); openReviewFor(levelPage.id); });
+$('lvl-write-btn').addEventListener('click', function(){ if(!levelPage.id) return; navigateTo({ screen:'create', id: levelPage.id }); });
 
 /* ================= WALKTHROUGH PLAYER ================= */
 const wtPlayerModal = $('wt-player-modal');
@@ -2357,7 +2371,6 @@ function renderProfile(){
   const revs = own ? myReviews : profileView.reviews;
   profileView.reviews = revs;
   $('profile-back').hidden = own;
-  $('btn-edit-profile').hidden = !own;
   $('prof-banner').style.backgroundImage = u.banner ? 'url(\''+u.banner+'\')' : '';
   $('prof-avatar').src = u.avatar || DEFAULT_AVATAR;
   $('prof-frame-wrap').className = 'profile-avatar-wrap ' + (u.frame || 'frame-default');
@@ -2369,19 +2382,34 @@ function renderProfile(){
   renderArchive();
 }
 $('profile-back').addEventListener('click', goBack);
-/* Edit Profile does not edit in place — it simply opens the Settings page. */
-$('btn-edit-profile').addEventListener('click', function(){ navigateTo({ screen:'settings' }); });
 
 /* ---- Charts & achievements board ---- */
-/* Category Profile: premium animated bar list — readable at any width. */
-function buildCategoryBars(categoryAverages){
-  return '<div class="axis-list">'+categoryAverages.map(function(c,i){
-    return '<div class="axis-row" style="animation-delay:'+(0.06+i*0.07)+'s">'
-      + '<div class="axis-label">'+escapeHTML(c.label)+'</div>'
-      + '<div class="axis-bar"><div class="axis-fill" style="width:'+((c.avg/10)*100).toFixed(1)+'%;animation-delay:'+(0.12+i*0.07)+'s"></div></div>'
-      + '<div class="axis-val">'+c.avg.toFixed(1)+'<small>/10</small></div>'
-      + '</div>';
-  }).join('')+'</div>';
+/* Category Profile: five-axis radar (pentagon) chart — scaled to its card,
+   responsive via viewBox, with grid rings, spokes and per-axis values. */
+function buildCategoryRadar(categoryAverages){
+  const W = 340, H = 300, cx = W/2, cy = H/2 + 8, R = 92;
+  const N = categoryAverages.length;
+  function pt(i, r){ const a = -Math.PI/2 + i*2*Math.PI/N; return [cx + r*Math.cos(a), cy + r*Math.sin(a)]; }
+  let grid = '';
+  [0.25, 0.5, 0.75, 1].forEach(function(f){
+    grid += '<polygon class="radar-ring" points="'+categoryAverages.map(function(_,i){ const p = pt(i, R*f); return p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' ')+'"/>';
+  });
+  categoryAverages.forEach(function(_,i){ const p = pt(i, R); grid += '<line class="radar-spoke" x1="'+cx+'" y1="'+cy+'" x2="'+p[0].toFixed(1)+'" y2="'+p[1].toFixed(1)+'"/>'; });
+  const valPts = categoryAverages.map(function(c,i){ const p = pt(i, R*Math.max(0.04, c.avg/10)); return p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' ');
+  let dots = '', labels = '';
+  categoryAverages.forEach(function(c,i){
+    const vp = pt(i, R*Math.max(0.04, c.avg/10));
+    dots += '<circle class="radar-dot" cx="'+vp[0].toFixed(1)+'" cy="'+vp[1].toFixed(1)+'" r="3.4" style="animation-delay:'+(0.4+i*0.07)+'s"/>';
+    const a = -Math.PI/2 + i*2*Math.PI/N;
+    const lp = pt(i, R + 18);
+    const anchor = Math.cos(a) > 0.25 ? 'start' : (Math.cos(a) < -0.25 ? 'end' : 'middle');
+    const lines = String(c.label).split(' / ');
+    /* Stack lines upward above the shape for the top half, downward below. */
+    let y = Math.sin(a) > -0.2 ? lp[1] + 10 : lp[1] - (lines.length*12 + 4);
+    lines.forEach(function(ln){ labels += '<text class="radar-label" x="'+lp[0].toFixed(1)+'" y="'+y.toFixed(1)+'" text-anchor="'+anchor+'">'+escapeHTML(ln)+'</text>'; y += 12; });
+    labels += '<text class="radar-val" x="'+lp[0].toFixed(1)+'" y="'+(y+2).toFixed(1)+'" text-anchor="'+anchor+'">'+c.avg.toFixed(1)+'</text>';
+  });
+  return '<svg class="radar-chart" viewBox="0 0 '+W+' '+H+'" role="img">'+grid+'<polygon class="radar-area" points="'+valPts+'"/>'+dots+labels+'</svg>';
 }
 function buildHistogram(reviews){ const buckets=[{label:'0–2',min:0,max:2},{label:'2–4',min:2,max:4},{label:'4–6',min:4,max:6},{label:'6–8',min:6,max:8},{label:'8–10',min:8,max:10.001}].map(function(b){ b.count=0; return b; }); reviews.forEach(function(r){ const b=buckets.find(function(b){ return r.finalScore>=b.min && r.finalScore<b.max; }); if(b) b.count++; }); const w=320,h=200,padB=26,padT=14,gap=14; const barW=(w-gap*(buckets.length-1))/buckets.length; const maxCount=Math.max(1, Math.max.apply(null, buckets.map(function(b){ return b.count; }))); const usableH=h-padB-padT; const bars=buckets.map(function(b,i){ const x=i*(barW+gap); const barH=(b.count/maxCount)*usableH; const y=h-padB-barH; return '<rect class="hist-track" x="'+x+'" y="'+padT+'" width="'+barW+'" height="'+usableH+'" rx="4"/><rect class="hist-bar" x="'+x+'" y="'+y+'" width="'+barW+'" height="'+Math.max(barH,2)+'" rx="4" style="animation-delay:'+(0.2+i*0.08)+'s"></rect><text class="hist-count" x="'+(x+barW/2)+'" y="'+(y-8)+'" text-anchor="middle" style="animation-delay:'+(0.5+i*0.08)+'s">'+b.count+'</text><text class="hist-label" x="'+(x+barW/2)+'" y="'+(h-6)+'" text-anchor="middle">'+b.label+'</text>'; }).join(''); return '<svg viewBox="0 0 '+w+' '+h+'"><line class="hist-axis" x1="0" y1="'+(h-padB)+'" x2="'+w+'" y2="'+(h-padB)+'"/>'+bars+'</svg>'; }
 /* Exact registration date — full "Day Month Year" format. */
@@ -2419,7 +2447,7 @@ function renderStatsFor(reviews, user){
     + '<div class="stat-card" style="animation-delay:.10s"><div class="stat-label">'+t('statLikes')+'</div><div class="stat-number">'+likes+'</div></div>'
     + '<div class="stat-card" style="animation-delay:.14s"><div class="stat-label">'+t('statSince')+'</div><div class="stat-number stat-date">'+escapeHTML(memberSinceLabel(user))+'</div></div>'
     + '</div><div class="charts-grid">'
-    + '<div class="chart-card" style="animation-delay:.10s"><div class="chart-title">'+t('chartCat')+'</div><div class="chart-sub">'+t('chartCatSub')+'</div>'+buildCategoryBars(categoryAverages)+'</div>'
+    + '<div class="chart-card" style="animation-delay:.10s"><div class="chart-title">'+t('chartCat')+'</div><div class="chart-sub">'+t('chartCatSub')+'</div>'+buildCategoryRadar(categoryAverages)+'</div>'
     + '<div class="chart-card" style="animation-delay:.16s"><div class="chart-title">'+t('chartDist')+'</div><div class="chart-sub">'+t('chartDistSub')+'</div>'+buildHistogram(reviews)+'</div>'
     + achCard + '</div>';
 }
@@ -2473,6 +2501,9 @@ async function saveProfile(){
   else toast(ERR(r.data.error), 'error');
 }
 /* ---- Frame selector (Settings → Profile): every frame freely selectable ---- */
+/* Pending profile media: avatar/banner chosen in Settings are only previewed
+   locally and applied together with everything else on "Save Profile". */
+const pendingProfile = { avatar:null, banner:null };
 let settingsFrame = 'frame-default';
 function renderSettingsFrames(){
   $('frame-selector').innerHTML = FRAMES.map(function(f){
@@ -2481,8 +2512,10 @@ function renderSettingsFrames(){
 }
 function updateSettingsPreview(){
   $('set-frame-preview').className = 'profile-avatar-wrap ' + (settingsFrame || 'frame-default');
-  $('set-avatar-preview').src = (me && me.avatar) || DEFAULT_AVATAR;
-  $('set-banner-preview').style.backgroundImage = (me && me.banner) ? 'url(\''+me.banner+'\')' : '';
+  const avatar = pendingProfile.avatar || (me && me.avatar);
+  const banner = pendingProfile.banner || (me && me.banner);
+  $('set-avatar-preview').src = avatar || DEFAULT_AVATAR;
+  $('set-banner-preview').style.backgroundImage = banner ? 'url(\''+banner+'\')' : '';
 }
 $('frame-selector').addEventListener('click', function(e){
   const opt = e.target.closest('.frame-option'); if(!opt) return;
@@ -2531,7 +2564,7 @@ cropResizeHandle.addEventListener('pointerdown', function(e){ e.stopPropagation(
 document.addEventListener('pointermove', function(e){ if(!cropperState.dragMode) return; const wrapperW = cropArea.clientWidth, wrapperH = cropArea.clientHeight; if(cropperState.dragMode === 'pan'){ cropperState.x = e.clientX - cropperState.startX; cropperState.y = e.clientY - cropperState.startY; clampPan(); updateCropVisual(); } else if(cropperState.dragMode === 'move-guide'){ cropperState.guideLeft = cropperState.startGuideLeft + (e.clientX - cropperState.startX); cropperState.guideTop = cropperState.startGuideTop + (e.clientY - cropperState.startY); clampGuidePosition(); updateGuideVisual(); } else if(cropperState.dragMode === 'resize-guide'){ const dx = e.clientX - cropperState.startX, dy = e.clientY - cropperState.startY; const maxW = wrapperW - cropperState.guideLeft, maxH = wrapperH - cropperState.guideTop; if(cropperState.aspectLocked){ const d = Math.max(dx, dy); const size = clamp(cropperState.startGuideW + d, MIN_GUIDE, Math.min(maxW, maxH)); cropperState.guideW = size; cropperState.guideH = size; } else { cropperState.guideW = clamp(cropperState.startGuideW + dx, MIN_GUIDE, maxW); cropperState.guideH = clamp(cropperState.startGuideH + dy, MIN_GUIDE, maxH); } updateGuideVisual(); } });
 document.addEventListener('pointerup', function(){ cropperState.dragMode = null; });
 document.addEventListener('pointercancel', function(){ cropperState.dragMode = null; });
-$('crop-save-btn').addEventListener('click', async function(){
+$('crop-save-btn').addEventListener('click', function(){
   const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d');
   let ratio = 2, outW = cropperState.guideW*ratio, outH = cropperState.guideH*ratio;
   const MAX_DIM = 900;
@@ -2540,10 +2573,10 @@ $('crop-save-btn').addEventListener('click', async function(){
   ctx.drawImage(cropperState.img, (cropperState.x - cropperState.guideLeft)*ratio, (cropperState.y - cropperState.guideTop)*ratio, cropperState.img.width*cropperState.scale*ratio, cropperState.img.height*cropperState.scale*ratio);
   const base64 = canvas.toDataURL('image/jpeg', 0.9);
   closeModalOverlay(cropModal);
-  if(cropTarget === 'avatar') me.avatar = base64; else me.banner = base64;
-  if(profileView.own) renderProfile();
-  renderHeader(); updateSettingsPreview();
-  await saveProfile();
+  /* Pending state: preview locally in Settings only — nothing is uploaded or
+     applied to the real profile until "Save Profile" is pressed. */
+  if(cropTarget === 'avatar') pendingProfile.avatar = base64; else pendingProfile.banner = base64;
+  updateSettingsPreview();
 });
 $('crop-cancel-btn').addEventListener('click', function(){ closeModalOverlay(cropModal); });
 $('inp-file-avatar').addEventListener('change', function(e){ if(e.target.files && e.target.files[0]) openCropper(e.target.files[0], 'avatar'); e.target.value = ''; });
@@ -2555,6 +2588,7 @@ $('btn-set-banner').addEventListener('click', function(){ $('inp-file-banner').c
 function fillSettings(){
   /* Guests only see the language card — the account cards need a session. */
   qsa('.settings-grid .settings-card').forEach(function(c, i){ c.hidden = (i > 0) && !me; });
+  pendingProfile.avatar = null; pendingProfile.banner = null;
   if(me){
     $('set-cur-email').textContent = me.email || '—';
     $('inp-set-username').value = me.username || '';
@@ -2567,13 +2601,18 @@ function fillSettings(){
   $('set-lang-en').classList.toggle('active', lang === 'en');
   $('set-lang-ru').classList.toggle('active', lang === 'ru');
 }
-/* ---- Profile settings: username, description and frame in one save ---- */
+/* ---- Profile settings: one atomic save — avatar, banner, username,
+   description, frame and social links are validated and applied together ---- */
 $('btn-save-profile').addEventListener('click', async function(){
   const btn = this; if(btn.disabled || !me) return;
   const uInp = $('inp-set-username');
   const newName = uInp.value.trim();
   if(!/^[a-zA-Z0-9\u0430-\u044f\u0410-\u042f\u0451\u0401_\-. ]{3,20}$/.test(newName)){ markField(uInp, t('vUserLen')); uInp.focus(); return; }
   markField(uInp, '');
+  /* Validate social links up front so nothing is saved partially. */
+  let firstInvalid = null; const newSocials = {};
+  SOCIAL_PLATFORMS.forEach(function(p){ const input = $('inp-soc-'+p.key); const raw = input.value.trim(); const valid = isValidSocialUrl(p, raw); setSocialFieldError(p, !valid); if(!valid && !firstInvalid) firstInvalid = input; if(valid && raw) newSocials[p.key] = normalizeUrl(raw); });
+  if(firstInvalid){ firstInvalid.focus(); return; }
   setBusy(btn, true);
   try{
     if(newName !== me.username){
@@ -2592,14 +2631,17 @@ $('btn-save-profile').addEventListener('click', async function(){
       (levelPage.reviews || []).forEach(function(x){ if(x.username === oldName) x.username = me.username; });
       toast(t('usernameChanged'), 'ok');
     }
+    if(pendingProfile.avatar) me.avatar = pendingProfile.avatar;
+    if(pendingProfile.banner) me.banner = pendingProfile.banner;
     me.description = $('inp-set-desc').value.trim();
     me.frame = settingsFrame;
+    me.socials = newSocials;
     await saveProfile();
     fillSettings();
   } finally { setBusy(btn, false); }
 });
-function setLang(l){
-  if(l === lang) return;
+let langSwapBusy = false;
+function applyLang(l){
   lang = l; localStorage.setItem('gd_lang', l); applyI18n(); fillSettings();
   CATEGORIES.forEach(function(cat){ const lbl = $('label-text-'+cat.key); if(lbl) lbl.textContent = axisLabel(cat.key, currentLevel ? currentLevel.difficulty : ''); });
   renderCriteriaGuide();
@@ -2607,19 +2649,24 @@ function setLang(l){
   if($('screen-home').classList.contains('active')) loadDashboard();
   if($('screen-profile').classList.contains('active')) renderProfile();
   if($('screen-level').classList.contains('active') && levelPage.id){ renderLevelStats(); renderLevelReviews(); }
-  /* Smooth page-wide transition when the language changes. */
+}
+function setLang(l){
+  if(l === lang || langSwapBusy) return;
   const sh = document.querySelector('.shell');
-  if(sh){ sh.classList.remove('lang-swap'); void sh.offsetWidth; sh.classList.add('lang-swap'); }
+  if(!sh || matchMedia('(prefers-reduced-motion: reduce)').matches){ applyLang(l); return; }
+  /* Polished two-phase transition: the page softly blurs out, the language
+     swaps while hidden, then the new content settles back in. */
+  langSwapBusy = true;
+  sh.classList.add('lang-fade-out');
+  setTimeout(function(){
+    applyLang(l);
+    sh.classList.remove('lang-fade-out');
+    sh.classList.add('lang-fade-in');
+    setTimeout(function(){ sh.classList.remove('lang-fade-in'); langSwapBusy = false; }, 500);
+  }, 240);
 }
 $('set-lang-en').addEventListener('click', function(){ setLang('en'); });
 $('set-lang-ru').addEventListener('click', function(){ setLang('ru'); });
-$('btn-save-links').addEventListener('click', async function(){
-  let firstInvalid = null; const newSocials = {};
-  SOCIAL_PLATFORMS.forEach(function(p){ const input = $('inp-soc-'+p.key); const raw = input.value.trim(); const valid = isValidSocialUrl(p, raw); setSocialFieldError(p, !valid); if(!valid && !firstInvalid) firstInvalid = input; if(valid && raw) newSocials[p.key] = normalizeUrl(raw); });
-  if(firstInvalid){ firstInvalid.focus(); return; }
-  me.socials = newSocials;
-  setBusy(this, true); await saveProfile(); setBusy(this, false);
-});
 $('btn-change-email').addEventListener('click', async function(){
   const pass = vReq($('inp-email-pass')); const email = vEmail($('inp-new-email'));
   if(!pass || !email) return;
@@ -2640,8 +2687,12 @@ $('btn-change-pass').addEventListener('click', async function(){
   if(r.ok){ toast(t('passChanged'), 'ok'); $('inp-old-pass').value=''; $('inp-new-pass').value=''; $('inp-new-pass2').value=''; }
   else toast(ERR(r.data.error), 'error');
 });
-/* Reuses the existing auth overlay's password recovery flow. */
-$('btn-settings-forgot').addEventListener('click', function(){ openAuthOverlay('forgot'); });
+/* Opens the recovery flow in reset-only mode: a registered user coming from
+   Settings sees only the password reset — no login/register options. */
+$('btn-settings-forgot').addEventListener('click', function(){
+  openAuthOverlay('forgot', true);
+  if(me && me.email) $('forgot-email').value = me.email;
+});
 $('btn-delete-account').addEventListener('click', async function(){
   const pass = await confirmDialog({ title: t('deleteTitle'), text: t('deleteText'), okLabel: t('btnDeleteAcc'), danger:true, input:true, inputType:'password', inputPlaceholder: t('currPass') });
   if(!pass) return;
@@ -2970,7 +3021,7 @@ function showSpinResult(lv){
     el.textContent = avg.toFixed(1)+'/10 · '+t('spinReviewsCount').replace('{n}', revs.length);
   });
   $('sr-open').addEventListener('click', function(){ hideSpinResult(); openLevelPage(id); });
-  $('sr-review').addEventListener('click', function(){ hideSpinResult(); navigateTo({ screen:'create' }); openReviewFor(id); });
+  $('sr-review').addEventListener('click', function(){ hideSpinResult(); navigateTo({ screen:'create', id: id }); });
   $('sr-again').addEventListener('click', function(){ hideSpinResult(); startSpin(); });
 }
 function hideSpinResult(){
