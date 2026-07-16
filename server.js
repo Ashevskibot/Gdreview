@@ -614,6 +614,22 @@ app.post('/api/change-email', authenticateToken, async (req, res) => {
     } catch (err) { fail(res, 500, 'server_error'); }
 });
 
+// Username changes are validated (format + uniqueness), pass automatic
+// moderation, and take effect immediately: reviews join on user id, so the
+// new name shows up everywhere without any data migration.
+app.post('/api/change-username', authenticateToken, rateLimit(10, 600000), async (req, res) => {
+    try {
+        const username = String(req.body.username || '').trim();
+        if (!isUsername(username)) return fail(res, 400, 'invalid_username');
+        const verdict = await moderateText(username);
+        if (!verdict.ok) return rejectContent(res, verdict, 'username');
+        const dup = await pool.query('SELECT id FROM users WHERE LOWER(username) = LOWER($1) AND id <> $2', [username, req.user.userId]);
+        if (dup.rows.length > 0) return fail(res, 400, 'user_exists');
+        await pool.query('UPDATE users SET username = $1 WHERE id = $2', [username, req.user.userId]);
+        res.json({ message: 'username_changed', username });
+    } catch (err) { fail(res, 500, 'server_error'); }
+});
+
 app.delete('/api/account', authenticateToken, async (req, res) => {
     try {
         const { password } = req.body || {};
