@@ -27,7 +27,7 @@
   ::selection{background:var(--white);color:var(--black);}
   @media (hover:none){ body{cursor:auto;} #cursor-dot,#cursor-ring{display:none;} }
   @media (prefers-reduced-motion:reduce){ *{animation-duration:0.001s !important;animation-iteration-count:1 !important;transition-duration:0.001s !important;scroll-behavior:auto !important;} }
-  @media (hover: hover) { * { cursor: none !important; } .modal-input, .archive-search-row input, #level-id-input, #review-text, #review-title, #home-search-input, .field input { cursor: text !important; } }
+  @media (hover: hover) { * { cursor: none !important; } .modal-input, .archive-search-row input, #review-text, #review-title, #home-search-input, .field input { cursor: text !important; } }
 
   #bg-glow{ position:fixed; top:0;left:0; width:100vw;height:100vh; pointer-events:none; z-index:0; background:radial-gradient(600px circle at 50% 50%, rgba(255,255,255,0.06), transparent 70%); transition:background .05s linear; }
   #bg-grid{ position:fixed; inset:0; z-index:0; pointer-events:none; background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px); background-size:48px 48px; -webkit-mask-image:radial-gradient(1200px circle at 50% 0%, #000 40%, transparent 90%); mask-image:radial-gradient(1200px circle at 50% 0%, #000 40%, transparent 90%); }
@@ -81,14 +81,6 @@
   .screen.active{display:block;}
   @keyframes screenIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
   @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-
-  .search-row{ display:flex; gap:12px; margin-bottom:40px; }
-  .search-row input{ flex:1; background:var(--panel); border:1px solid var(--line); border-radius:8px; color:var(--white); font-size:14px; padding:16px 18px; letter-spacing:0.02em; outline:none; transition:border-color .25s var(--ease), box-shadow .25s var(--ease); }
-  .search-row input:focus{border-color:var(--white);box-shadow:0 0 0 3px rgba(255,255,255,0.1), 0 0 20px rgba(255,255,255,0.08);}
-  .search-row button{ background:var(--white); color:#0a0a0a; border:none; border-radius:8px; font-size:12px; font-weight:700; text-transform:uppercase; padding:0 28px; cursor:pointer; transition:all .2s var(--ease); }
-  .search-row button:hover{filter:brightness(0.92);box-shadow:0 4px 24px rgba(255,255,255,0.2);transform:translateY(-1px);}
-  .api-status{ font-family:'Space Mono',monospace; font-size:12px; color:var(--dim2); margin-top:-24px; margin-bottom:32px; min-height:16px; }
-  .api-status.error{color:#e8a1a1;} .api-status.ok{color:#bdbdbd;}
 
   .level-block{ margin-bottom:40px; position:relative; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:40px 32px; display:none; overflow:hidden; }
   .level-block.show{display:block;animation:fadeIn .5s ease;}
@@ -210,25 +202,6 @@
   .frame-hex .profile-frame-overlay { border-radius: 0; border: none; background-image: url("data:image/svg+xml,%3Csvg width='128' height='128' viewBox='0 0 128 128' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='64,2 126,32 126,96 64,126 2,96 2,32' stroke='white' stroke-width='4'/%3E%3C/svg%3E"); background-size: cover; background-position: center; }
   .frame-tech .profile-avatar { border-radius: 8px; }
   .frame-tech .profile-frame-overlay { border-radius: 12px; border: none; background: linear-gradient(to right, white 4px, transparent 4px) 0 0, linear-gradient(to right, white 4px, transparent 4px) 0 100%, linear-gradient(to left, white 4px, transparent 4px) 100% 0, linear-gradient(to left, white 4px, transparent 4px) 100% 100%, linear-gradient(to bottom, white 4px, transparent 4px) 0 0, linear-gradient(to bottom, white 4px, transparent 4px) 100% 0, linear-gradient(to top, white 4px, transparent 4px) 0 100%, linear-gradient(to top, white 4px, transparent 4px) 100% 100%; background-repeat: no-repeat; background-size: 20px 20px; }
-  .frame-bronze .profile-avatar { border-radius: 14px; }
-  .frame-bronze .profile-frame-overlay { border-radius: 16px; border: 3px solid #7a4a22; box-shadow: inset 0 0 0 1px rgba(230,170,110,0.3), inset 0 0 10px rgba(0,0,0,0.5), 0 0 8px rgba(120,70,25,0.45); }
-  .frame-silver .profile-avatar { border-radius: 20px; }
-  .frame-silver .profile-frame-overlay { border-radius: 24px; border: 1.5px solid #c9ccd1; box-shadow: inset 0 0 0 3px rgba(255,255,255,0.05), inset 0 0 0 4px rgba(201,204,209,0.22), 0 0 12px rgba(201,204,209,0.4); }
-  .frame-gold .profile-avatar { border-radius: 16px; }
-  .frame-gold .profile-frame-overlay { border-radius: 20px; border: 2px solid #ffd155; box-shadow: 0 0 14px rgba(255,209,85,0.55); animation: goldPulse 2.4s ease-in-out infinite; }
-  @keyframes goldPulse { 0%,100%{ box-shadow: 0 0 10px rgba(255,209,85,0.4); } 50%{ box-shadow: 0 0 20px rgba(255,209,85,0.75); } }
-  .frame-platinum .profile-avatar { border-radius: 0; clip-path: polygon(18% 0,82% 0,100% 18%,100% 82%,82% 100%,18% 100%,0 82%,0 18%); }
-  .frame-platinum .profile-frame-overlay { border-radius: 0; border: none; padding: 3px; clip-path: polygon(18% 0,82% 0,100% 18%,100% 82%,82% 100%,18% 100%,0 82%,0 18%); background: conic-gradient(from var(--plat-angle,0deg), #eaf6fb, #bfe3f0, #7fc7e0, #dff3fb, #eaf6fb); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: platSpin 4.4s linear infinite; filter: drop-shadow(0 0 9px rgba(180,225,240,0.6)); }
-  @keyframes platSpin { to { --plat-angle: 360deg; } } @property --plat-angle { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
-  .frame-diamond .profile-avatar { border-radius: 0; clip-path: polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%); }
-  .frame-diamond .profile-frame-overlay { border-radius: 0; border: none; padding: 3px; clip-path: polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%); background: conic-gradient(from var(--dia-angle,0deg), #ffffff, #9fe0ff, #6cc8ff, #ffffff, #c8ecff, #ffffff); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: diaSpin 2.8s linear infinite; filter: drop-shadow(0 0 12px rgba(150,220,255,0.7)); }
-  @keyframes diaSpin { to { --dia-angle: 360deg; } } @property --dia-angle { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
-  .frame-master .profile-avatar { border-radius: 0; clip-path: polygon(9% 0,91% 0,100% 9%,100% 91%,91% 100%,9% 100%,0 91%,0 9%); }
-  .frame-master .profile-frame-overlay { border-radius: 0; border: none; padding: 3px; clip-path: polygon(9% 0,91% 0,100% 9%,100% 91%,91% 100%,9% 100%,0 91%,0 9%); background: conic-gradient(from var(--mst-angle,0deg), #c061ff, #7c3aff, #ff5fb2, #c061ff, #4ea1ff, #c061ff); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: mstSpin 3.2s linear infinite; filter: drop-shadow(0 0 14px rgba(192,97,255,0.6)); }
-  @keyframes mstSpin { to { --mst-angle: 360deg; } } @property --mst-angle { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
-  .frame-legend .profile-avatar { border-radius: 0; clip-path: polygon(50% 0%, 61% 10%, 78% 4%, 82% 22%, 100% 28%, 94% 45%, 100% 62%, 84% 70%, 80% 88%, 62% 84%, 50% 100%, 38% 84%, 20% 88%, 16% 70%, 0% 62%, 6% 45%, 0% 28%, 18% 22%, 22% 4%, 39% 10%); }
-  .frame-legend .profile-frame-overlay { border-radius: 0; border: none; padding: 3px; clip-path: polygon(50% 0%, 61% 10%, 78% 4%, 82% 22%, 100% 28%, 94% 45%, 100% 62%, 84% 70%, 80% 88%, 62% 84%, 50% 100%, 38% 84%, 20% 88%, 16% 70%, 0% 62%, 6% 45%, 0% 28%, 18% 22%, 22% 4%, 39% 10%); background: conic-gradient(from var(--leg2-angle,0deg), #fff3b0, #ffd155, #ff8a3d, #fff, #ffd155, #fff3b0); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: leg2Spin 2s linear infinite; filter: drop-shadow(0 0 14px rgba(255,209,85,0.7)); }
-  @keyframes leg2Spin { to { --leg2-angle: 360deg; } } @property --leg2-angle { syntax: '<angle>'; inherits: true; initial-value: 0deg; }
   .frame-option { border: 1px solid transparent; border-radius: 10px; padding: 4px; } .frame-option.active { border-color: var(--line2); }
   .frame-selector-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 12px; }
   .frame-option { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s ease, transform 0.2s var(--spring); }
@@ -242,6 +215,9 @@
   .profile-name-socials { display: flex; align-items: center; gap: 6px; flex-shrink: 0; } .profile-name-socials a { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; opacity: 0.9; transition: transform 0.2s var(--spring), opacity 0.2s ease; }
   .profile-name-socials a:hover { opacity: 1; transform: translateY(-2px) scale(1.12); } .profile-name-socials svg { width: 100%; height: 100%; display: block; }
   .profile-desc { font-size: 14px; color: var(--dim); max-width: 600px; line-height: 1.6; word-break: break-word; overflow-wrap: anywhere; white-space: pre-line; }
+  .profile-edit-btn { background: rgba(255,255,255,0.1); backdrop-filter: blur(4px); color: var(--white); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 12px 24px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all .22s var(--spring); align-self: center; }
+  .profile-edit-btn:hover { background: var(--white); color: var(--black); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(255,255,255,0.15); }
+  .profile-edit-btn[hidden]{display:none;}
   .profile-section-divider { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim); margin: 48px 0 24px; display: flex; align-items: center; gap: 16px; }
   .profile-section-divider::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 
@@ -319,13 +295,17 @@
   .chart-title{ font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--dim); margin-bottom:6px; }
   .chart-sub{ font-size:12px; color:var(--dim2); margin-bottom:18px; }
   .chart-card svg{display:block;width:100%;height:auto;overflow:visible;}
-  @keyframes dashReveal{to{stroke-dashoffset:0;}} @keyframes fadeInSlow{to{opacity:1;}} @keyframes growUp{from{transform:scaleY(0);}to{transform:scaleY(1);}} @keyframes popDot{from{opacity:0;transform:scale(0);}to{opacity:1;transform:scale(1);}}
-  .radar-grid{fill:none;stroke:var(--line);stroke-width:1;} .radar-axis{stroke:var(--line);stroke-width:1;}
-  .radar-fill{ fill:rgba(255,255,255,0.12); stroke:var(--white); stroke-width:2; stroke-linejoin:round; stroke-dasharray:1; stroke-dashoffset:1; animation:dashReveal 1.1s var(--ease) forwards .15s; }
-  .radar-dot{ fill:var(--black); stroke:var(--white); stroke-width:2; opacity:0; animation:popDot .35s var(--ease) forwards; transition:r .18s var(--ease), fill .18s var(--ease); }
-  .radar-dot:hover{fill:var(--white);r:5.5;}
-  .radar-label{ font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.04em; text-transform:uppercase; fill:var(--dim); }
-  .radar-value{ font-family:'Space Mono',monospace; font-size:10px; font-weight:700; fill:var(--white); }
+  @keyframes fadeInSlow{to{opacity:1;}} @keyframes growUp{from{transform:scaleY(0);}to{transform:scaleY(1);}}
+  .axis-list{ display:flex; flex-direction:column; gap:14px; padding-top:6px; }
+  .axis-row{ display:grid; grid-template-columns:minmax(110px, 38%) 1fr 48px; align-items:center; gap:14px; opacity:0; animation:barIn .5s var(--ease) forwards; }
+  .axis-label{ font-size:11.5px; color:var(--dim); text-transform:uppercase; letter-spacing:0.06em; line-height:1.35; word-break:break-word; }
+  .axis-bar{ position:relative; height:10px; background:var(--black); border:1px solid var(--line); border-radius:999px; overflow:hidden; }
+  .axis-fill{ position:absolute; top:0; bottom:0; left:0; border-radius:999px; background:linear-gradient(90deg, var(--dim2), var(--white)); box-shadow:0 0 12px rgba(255,255,255,0.25); transform-origin:left; animation:detailFill .8s var(--ease) both; overflow:hidden; }
+  .axis-fill::after{ content:''; position:absolute; inset:0; background:linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.4) 50%, transparent 70%); transform:translateX(-120%); animation:axisSheen 2.8s var(--ease) infinite; }
+  @keyframes axisSheen{ 0%{ transform:translateX(-120%);} 60%{ transform:translateX(120%);} 100%{ transform:translateX(120%);} }
+  .axis-val{ font-family:'Space Mono',monospace; font-size:13px; font-weight:700; color:var(--white); text-align:right; }
+  .axis-val small{ font-size:10px; color:var(--dim2); font-weight:400; }
+  @media(max-width:520px){ .axis-row{ grid-template-columns:1fr 56px; } .axis-label{ grid-column:1 / -1; margin-bottom:-6px; } }
   .hist-bar{ fill:var(--white); opacity:0.9; transform-box:fill-box; transform-origin:bottom; transform:scaleY(0); animation:growUp .6s var(--ease) forwards; transition:opacity .2s var(--ease); }
   .hist-bar:hover{opacity:1;} .hist-track{fill:var(--black2);}
   .hist-count{ font-family:'Space Mono',monospace; font-size:11px; font-weight:700; fill:var(--white); opacity:0; animation:fadeInSlow .4s ease forwards .5s; }
@@ -778,23 +758,38 @@
   .level-reviews-head .section-label{margin-bottom:0;flex:1;}
 
   /* ---------- SETTINGS ---------- */
-  .settings-grid{ display:flex; flex-direction:column; gap:18px; max-width:640px; }
+  .settings-grid{ display:flex; flex-direction:column; gap:18px; max-width:640px; margin:0 auto; width:100%; }
   .settings-card{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:26px; opacity:0; transform:translateY(14px); animation:barIn .5s var(--ease) forwards; }
   .settings-card:nth-child(2){animation-delay:.05s;} .settings-card:nth-child(3){animation-delay:.1s;} .settings-card:nth-child(4){animation-delay:.15s;} .settings-card:nth-child(5){animation-delay:.2s;} .settings-card:nth-child(6){animation-delay:.25s;}
   .set-title{ font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--dim); margin-bottom:6px; }
   .set-sub{ font-size:12.5px; color:var(--dim2); margin-bottom:18px; line-height:1.6; }
   .set-sub b{color:var(--white);}
   .lang-row{ display:flex; gap:8px; }
-  .lang-opt{ flex:1; padding:14px; background:var(--black2); border:1px solid var(--line); border-radius:10px; color:var(--dim); font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.1em; cursor:pointer; transition:all .22s var(--spring); }
+  .lang-opt{ flex:1; display:flex; align-items:center; justify-content:center; gap:10px; padding:14px; background:var(--black2); border:1px solid var(--line); border-radius:10px; color:var(--dim); font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:0.1em; cursor:pointer; transition:all .25s var(--spring); }
+  .lang-opt .lang-flag{ font-size:18px; line-height:1; filter:grayscale(1); opacity:0.6; transition:filter .25s ease, opacity .25s ease, transform .25s var(--spring); }
   .lang-opt:hover{color:var(--white);border-color:var(--line2);transform:translateY(-1px);}
-  .lang-opt.active{ background:var(--white); color:#0a0a0a; border-color:var(--white); }
+  .lang-opt:hover .lang-flag{ filter:grayscale(0); opacity:1; transform:scale(1.12); }
+  .lang-opt:active{ transform:scale(0.96); }
+  .lang-opt.active{ background:var(--white); color:#0a0a0a; border-color:var(--white); box-shadow:0 0 16px rgba(255,255,255,0.18); }
+  .lang-opt.active .lang-flag{ filter:grayscale(0); opacity:1; transform:scale(1.15); }
+  .shell.lang-swap{ animation:langSwap .5s var(--ease); }
+  @keyframes langSwap{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
   .settings-card.danger{ border-color:rgba(224,85,85,0.4); }
   .social-field { margin-bottom: 14px; }
   .social-field-label { display: flex; align-items: center; gap: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--dim); margin-bottom: 6px; }
   .social-field-badge { display:inline-flex; align-items:center; justify-content:center; min-width:20px; width:auto; padding:0 5px; height:20px; border-radius:5px; background:var(--line); color:var(--white); font-size:9px; font-family:'Space Mono',monospace; font-weight:700; flex-shrink:0; }
-  .set-profile-preview{ display:flex; align-items:center; gap:18px; margin-bottom:20px; flex-wrap:wrap; }
-  .set-media-btns{ display:flex; flex-direction:column; gap:8px; }
-  .set-media-btns .modal-btn{ width:auto; padding:11px 18px; font-size:11px; }
+  .set-id-card{ position:relative; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--black2); margin-bottom:20px; transition:border-color .25s var(--ease); }
+  .set-id-card:hover{ border-color:var(--line2); }
+  .set-banner-preview{ position:relative; height:110px; background:linear-gradient(160deg,#161616,#0b0b0b); background-size:cover; background-position:center; border-bottom:1px solid var(--line); }
+  .set-banner-preview::after{ content:''; position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.55), transparent); pointer-events:none; }
+  .set-id-bottom{ display:flex; align-items:flex-end; gap:14px; padding:0 16px 14px; margin-top:-28px; position:relative; z-index:2; }
+  .set-id-bottom .profile-avatar-wrap{ width:64px; height:64px; flex-shrink:0; }
+  .set-media-edit{ display:inline-flex; align-items:center; gap:7px; background:rgba(10,10,10,0.72); backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.22); border-radius:999px; color:var(--white); font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; padding:9px 15px; cursor:pointer; transition:all .22s var(--spring); }
+  .set-media-edit svg{ width:13px; height:13px; fill:currentColor; flex-shrink:0; }
+  .set-media-edit:hover{ background:var(--white); color:#0a0a0a; border-color:var(--white); transform:translateY(-1px); box-shadow:0 6px 18px rgba(255,255,255,0.18); }
+  .set-media-edit:active{ transform:scale(0.95); }
+  .set-banner-preview .set-media-edit{ position:absolute; right:12px; bottom:10px; z-index:2; }
+  .set-id-bottom .set-media-edit{ margin-bottom:6px; }
   .social-field input.modal-input { margin-bottom: 4px; } .social-field input.modal-input.invalid { border-color: var(--red); box-shadow: 0 0 0 3px rgba(224,85,85,0.12); }
   .social-field-error { display: none; font-size: 10.5px; color: var(--red); font-family: 'Space Mono', monospace; letter-spacing: 0.02em; margin-bottom: 8px; }
   .social-field.has-error .social-field-error { display: block; }
@@ -920,7 +915,6 @@
       <div class="nav-area">
         <nav class="tabs">
           <button class="tab-btn active" data-tab="home" data-i18n="navHome">Home</button>
-          <button class="tab-btn" data-tab="create" data-i18n="navCreate">Create</button>
           <button class="tab-btn" id="tab-login" hidden data-i18n="navLogin">Log In</button>
           <button class="tab-btn" data-tab="admin" id="tab-admin" hidden data-i18n="navAdmin">Admin</button>
           <button class="tab-btn tab-icon" data-tab="settings" id="tab-settings" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg></button>
@@ -1015,11 +1009,7 @@
     </section>
 
     <section class="screen" id="screen-create">
-      <div class="search-row">
-        <input id="level-id-input" type="text" data-i18n-ph="createSearchPh" inputmode="search">
-        <button id="search-btn" data-i18n="searchBtn">Search</button>
-      </div>
-      <div class="api-status" id="api-status"></div>
+      <button class="back-btn" id="create-back">← <span data-i18n="backBtn">Back</span></button>
 
       <div class="level-block" id="level-block">
         <button class="wt-icon-btn" id="create-wt-play" hidden aria-label="Watch Walkthrough" title="Watch Walkthrough"></button>
@@ -1084,6 +1074,7 @@
             </div>
             <div class="profile-desc" id="prof-desc"></div>
           </div>
+          <button class="profile-edit-btn" id="btn-edit-profile" hidden data-i18n="btnEditProf">Edit Profile</button>
         </div>
       </div>
 
@@ -1110,21 +1101,23 @@
           <div class="set-title" data-i18n="setLang">Language</div>
           <div class="set-sub" data-i18n="setLangSub">Interface language.</div>
           <div class="lang-row">
-            <button class="lang-opt" id="set-lang-en">English</button>
-            <button class="lang-opt" id="set-lang-ru">Русский</button>
+            <button class="lang-opt" id="set-lang-en"><span class="lang-flag">🇬🇧</span><span>English</span></button>
+            <button class="lang-opt" id="set-lang-ru"><span class="lang-flag">🇷🇺</span><span>Русский</span></button>
           </div>
         </div>
         <div class="settings-card">
           <div class="set-title" data-i18n="setProfile">Profile</div>
           <div class="set-sub" data-i18n="setProfileSub">Your public identity — avatar, banner, username, description and avatar frame.</div>
-          <div class="set-profile-preview">
-            <div class="profile-avatar-wrap frame-default" id="set-frame-preview" style="width:72px;height:72px;">
-              <div class="profile-frame-overlay"></div>
-              <img class="profile-avatar" id="set-avatar-preview" src="" alt="">
+          <div class="set-id-card">
+            <div class="set-banner-preview" id="set-banner-preview">
+              <button class="set-media-edit" id="btn-set-banner"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span data-i18n="changeBanner">Change Banner</span></button>
             </div>
-            <div class="set-media-btns">
-              <button class="modal-btn ghost" id="btn-set-avatar" data-i18n="changeAvatar">Change Avatar</button>
-              <button class="modal-btn ghost" id="btn-set-banner" data-i18n="changeBanner">Change Banner</button>
+            <div class="set-id-bottom">
+              <div class="profile-avatar-wrap frame-default" id="set-frame-preview">
+                <div class="profile-frame-overlay"></div>
+                <img class="profile-avatar" id="set-avatar-preview" src="" alt="">
+              </div>
+              <button class="set-media-edit" id="btn-set-avatar"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg><span data-i18n="changeAvatar">Change Avatar</span></button>
             </div>
           </div>
           <input type="file" id="inp-file-avatar" accept="image/*" hidden>
@@ -1157,6 +1150,7 @@
           <div class="field"><div class="pass-wrap"><input type="password" id="inp-new-pass" class="modal-input" data-i18n-ph="newPass" autocomplete="new-password"></div><div class="field-err"></div></div>
           <div class="field"><div class="pass-wrap"><input type="password" id="inp-new-pass2" class="modal-input" data-i18n-ph="phPassConfirm" autocomplete="new-password"></div><div class="field-err"></div></div>
           <button class="modal-btn ghost" id="btn-change-pass" data-i18n="btnUpdatePass">Update Password</button>
+          <button class="auth-link" id="btn-settings-forgot" style="margin-top:10px;" data-i18n="authForgot">Forgot password?</button>
         </div>
         <div class="settings-card danger">
           <div class="set-title" style="color:#e05555;" data-i18n="setDanger">Danger Zone</div>
@@ -1340,7 +1334,7 @@ function scoreColors(score){ if(score >= 8.5) return {color:'#ffffff', glow:'rgb
 /* ================= I18N ================= */
 const i18n = {
   en: {
-    navHome:'Home', navCreate:'Create', ddProfile:'My Profile', navSettings:'Settings', navLogin:'Log In',
+    navHome:'Home', ddProfile:'My Profile', navSettings:'Settings', navLogin:'Log In',
     authTagline:'Rate. Review. Share.', authLogin:'Log In', authRegister:'Sign Up', authOr:'or', authContinueGoogle:'Continue with Google',
     phEmail:'Email', phPassword:'Password', phUsername:'Username', phPassConfirm:'Repeat password', phNewPass:'New password',
     btnLoginTxt:'Log In', btnRegisterTxt:'Create Account', authForgot:'Forgot password?',
@@ -1348,7 +1342,7 @@ const i18n = {
     forgotTitle:'Password recovery', forgotText:'Enter your account email and we will send you a reset code.', btnSendCode:'Send Code', backLogin:'Back to login',
     resetTitle:'New password', btnResetTxt:'Reset Password', resetOk:'Password changed! You can log in now.', codeSent:'Code sent to your email',
     vEmail:'Enter a valid email', vPassLen:'At least 8 characters', vPassMatch:'Passwords do not match', vUserLen:'3–20 characters (letters, digits, _ - .)', vRequired:'Required field', vCode:'Enter the 6-digit code', vTitleReq:'Add a title for your review',
-    searchPlaceholder:'Search levels by name or ID…', searchBtn:'Search', createSearchPh:'Level name or ID to review',
+    searchPlaceholder:'Search levels by name or ID…', searchBtn:'Search',
     dashStatsTitle:'Global Statistics', statTotalReviews:'Total reviews & ratings', statTotalUsers:'Registered users',
     dashLbTitle:'Top Reviewers', dashLbSub:'Top 10 by total likes received', lbEmpty:'No reviewers yet',
     dashRankTitle:'Level Rankings', diffAll:'All Difficulties', diffNA:'NA', rankEmpty:'No levels here yet', rankReviews:'reviews',
@@ -1383,8 +1377,7 @@ const i18n = {
     navAdmin:'Admin', adminQueueTitle:'Walkthrough Submissions', adminEmptyTitle:'Queue is empty', adminEmptySub:'No pending walkthrough submissions.', adminLevel:'Level', adminBy:'by', adminApprove:'Approve', adminReject:'Reject', adminApproved:'Walkthrough approved', adminRejected:'Walkthrough rejected', adminRejectTitle:'Reject this walkthrough?', adminRejectText:'The video will not be shown on the level page.',
     wtWatch:'Watch Walkthrough', wtSubmit:'Submit Walkthrough', wtModalTitle:'Submit Walkthrough', wtModalText:'Share a YouTube video showing how to beat this level. An admin will review it before it appears on the level page.', wtUrlLabel:'YouTube link', wtSubmitBtn:'Submit for Review', wtSubmitted:'Submitted! It will appear after admin approval.', wtUrlRequired:'Paste a YouTube link first',
     err_invalid_youtube_url:'That does not look like a valid YouTube link', err_walkthrough_exists:'This video was already submitted for this level', err_admin_only:'Admin access required',
-    enterQuery:'Enter level name or ID', levelNotFoundCreate:'Level not found. Check the spelling or ID.',
-    changeAvatar:'Change Avatar', changeBanner:'Change Banner',
+    btnEditProf:'Edit Profile', changeAvatar:'Change Avatar', changeBanner:'Change Banner',
     statsTitle:'Statistics', statReviews:'Reviews', statAvg:'Average Score', statLikes:'Likes Received', statSince:'Member Since',
     chartCat:'Category Profile', chartCatSub:'Average score for each rating axis', chartDist:'Score Distribution', chartDistSub:'Number of reviews in each score range',
     achBoardTitle:'Achievements Board', achBoardSub:'Milestones earned across GD Review', achDone:'Unlocked',
@@ -1402,7 +1395,7 @@ const i18n = {
     setLinks:'Social Links', setLinksSub:'Links shown next to your name. Leave blank to hide.', btnSaveLinks:'Save Links', invalidLink:'That does not look like a {platform} link',
     setEmail:'Email', currentEmail:'Current email:', currPass:'Current password', newEmail:'New email', btnUpdateEmail:'Update Email', emailChanged:'Email updated',
     setPass:'Password', setPassSub:'At least 8 characters.', newPass:'New password', btnUpdatePass:'Update Password', passChanged:'Password updated',
-    btnLogout:'Log Out', logoutTitle:'Log out?', logoutText:'You will need to sign in again.',
+    btnLogout:'Log Out',
     setDanger:'Danger Zone', setDangerSub:'Deleting your account removes all your reviews permanently.', btnDeleteAcc:'Delete Account', deleteTitle:'Delete account?', deleteText:'This action is permanent. All your reviews will be removed. Enter your password to confirm.', accDeleted:'Account deleted',
     detailSummary:'Review', detailNoSummary:'No written summary provided.', madeBy:'made by', ok:'OK',
     reviewRules:'Review rules: no abusive insults, no advertising, no external links. Every submission is checked automatically before it is published.',
@@ -1415,7 +1408,7 @@ const i18n = {
     err_google_auth_failed:'Google sign-in failed. Try again.', err_google_email_unverified:'Your Google email address is not verified', err_use_google_signin:'This account uses Google Sign-In — use the Google button below', err_password_not_set:'No password set for this account — create one via “Forgot password?” first', err_google_not_configured:'Google sign-in is not available right now'
   },
   ru: {
-    navHome:'Главная', navCreate:'Создать', ddProfile:'Мой профиль', navSettings:'Настройки', navLogin:'Войти',
+    navHome:'Главная', ddProfile:'Мой профиль', navSettings:'Настройки', navLogin:'Войти',
     authTagline:'Оценивай. Пиши. Делись.', authLogin:'Вход', authRegister:'Регистрация', authOr:'или', authContinueGoogle:'Продолжить с Google',
     phEmail:'Email', phPassword:'Пароль', phUsername:'Никнейм', phPassConfirm:'Повторите пароль', phNewPass:'Новый пароль',
     btnLoginTxt:'Войти', btnRegisterTxt:'Создать аккаунт', authForgot:'Забыли пароль?',
@@ -1423,7 +1416,7 @@ const i18n = {
     forgotTitle:'Восстановление пароля', forgotText:'Введите почту аккаунта — мы пришлём код для сброса.', btnSendCode:'Выслать код', backLogin:'Вернуться ко входу',
     resetTitle:'Новый пароль', btnResetTxt:'Сбросить пароль', resetOk:'Пароль изменён! Теперь можно войти.', codeSent:'Код отправлен на почту',
     vEmail:'Введите корректный email', vPassLen:'Минимум 8 символов', vPassMatch:'Пароли не совпадают', vUserLen:'3–20 символов (буквы, цифры, _ - .)', vRequired:'Обязательное поле', vCode:'Введите 6-значный код', vTitleReq:'Добавьте заголовок рецензии',
-    searchPlaceholder:'Поиск уровней по названию или ID…', searchBtn:'Поиск', createSearchPh:'Название или ID уровня для рецензии',
+    searchPlaceholder:'Поиск уровней по названию или ID…', searchBtn:'Поиск',
     dashStatsTitle:'Глобальная статистика', statTotalReviews:'Всего рецензий и оценок', statTotalUsers:'Зарегистрировано пользователей',
     dashLbTitle:'Топ рецензентов', dashLbSub:'Топ-10 по полученным лайкам', lbEmpty:'Пока нет рецензентов',
     dashRankTitle:'Рейтинги уровней', diffAll:'Все сложности', diffNA:'NA', rankEmpty:'Здесь пока пусто', rankReviews:'рец.',
@@ -1458,8 +1451,7 @@ const i18n = {
     navAdmin:'Админ', adminQueueTitle:'Заявки на прохождения', adminEmptyTitle:'Очередь пуста', adminEmptySub:'Нет заявок, ожидающих проверки.', adminLevel:'Уровень', adminBy:'от', adminApprove:'Одобрить', adminReject:'Отклонить', adminApproved:'Прохождение одобрено', adminRejected:'Прохождение отклонено', adminRejectTitle:'Отклонить это прохождение?', adminRejectText:'Видео не будет показано на странице уровня.',
     wtWatch:'Смотреть прохождение', wtSubmit:'Предложить прохождение', wtModalTitle:'Предложить прохождение', wtModalText:'Поделитесь YouTube-видео с прохождением уровня. Админ проверит его перед публикацией на странице уровня.', wtUrlLabel:'Ссылка на YouTube', wtSubmitBtn:'Отправить на проверку', wtSubmitted:'Отправлено! Появится после одобрения админом.', wtUrlRequired:'Сначала вставьте ссылку на YouTube',
     err_invalid_youtube_url:'Это не похоже на корректную ссылку YouTube', err_walkthrough_exists:'Это видео уже предложено для этого уровня', err_admin_only:'Требуются права администратора',
-    enterQuery:'Введите название или ID', levelNotFoundCreate:'Уровень не найден. Проверьте название или ID.',
-    changeAvatar:'Сменить аватар', changeBanner:'Сменить баннер',
+    btnEditProf:'Редактировать', changeAvatar:'Сменить аватар', changeBanner:'Сменить баннер',
     statsTitle:'Статистика', statReviews:'Рецензий', statAvg:'Средний балл', statLikes:'Получено лайков', statSince:'На сайте с',
     chartCat:'Профиль по категориям', chartCatSub:'Средний балл по каждой оси оценки', chartDist:'Распределение оценок', chartDistSub:'Сколько рецензий в каждом диапазоне',
     achBoardTitle:'Доска достижений', achBoardSub:'Ваши вехи на GD Review', achDone:'Получено',
@@ -1477,7 +1469,7 @@ const i18n = {
     setLinks:'Соцсети', setLinksSub:'Ссылки рядом с вашим именем. Оставьте пустым, чтобы скрыть.', btnSaveLinks:'Сохранить ссылки', invalidLink:'Это не похоже на ссылку {platform}',
     setEmail:'Почта', currentEmail:'Текущая почта:', currPass:'Текущий пароль', newEmail:'Новый email', btnUpdateEmail:'Обновить почту', emailChanged:'Почта обновлена',
     setPass:'Пароль', setPassSub:'Минимум 8 символов.', newPass:'Новый пароль', btnUpdatePass:'Обновить пароль', passChanged:'Пароль обновлён',
-    btnLogout:'Выйти', logoutTitle:'Выйти из аккаунта?', logoutText:'Для возврата понадобится снова войти.',
+    btnLogout:'Выйти',
     setDanger:'Опасная зона', setDangerSub:'Удаление аккаунта навсегда сотрёт все ваши рецензии.', btnDeleteAcc:'Удалить аккаунт', deleteTitle:'Удалить аккаунт?', deleteText:'Действие необратимо. Все рецензии будут удалены. Введите пароль для подтверждения.', accDeleted:'Аккаунт удалён',
     detailSummary:'Рецензия', detailNoSummary:'Без текстового описания.', madeBy:'сделано', ok:'ОК',
     reviewRules:'Правила рецензий: без оскорблений, без рекламы, без внешних ссылок. Каждая публикация автоматически проверяется перед размещением.',
@@ -1655,7 +1647,7 @@ function renderRoute(st){
     case 'level': if(st.id){ openLevelPage(st.id, false); return; } break;
     case 'user': if(st.user){ openUserProfile(st.user, false); return; } break;
     case 'profile': if(me){ openOwnProfile(false); return; } break;
-    case 'create': showScreen('create'); return;
+    case 'create': if(currentLevel){ showScreen('create'); return; } break;
     case 'settings': showScreen('settings'); fillSettings(); return;
     case 'admin': showScreen('admin'); loadAdminQueue(); return;
     case 'spin': showScreen('spin'); return;
@@ -1716,11 +1708,8 @@ userMenuBtn.addEventListener('keydown', function(e){
 });
 $('dd-profile').addEventListener('click', function(){ closeUserMenu(); openOwnProfile(); });
 $('dd-settings').addEventListener('click', function(){ closeUserMenu(); if(currentScreen !== 'settings') navigateTo({ screen:'settings' }); });
-$('dd-logout').addEventListener('click', async function(){
-  closeUserMenu();
-  const ok = await confirmDialog({ title: t('logoutTitle'), text: t('logoutText'), okLabel: t('btnLogout') });
-  if(ok) forceLogout();
-});
+/* Logging out is immediate — no confirmation and never a password prompt. */
+$('dd-logout').addEventListener('click', function(){ closeUserMenu(); forceLogout(); });
 
 /* ================= AUTH ================= */
 const AUTH_SUBS = { login:'authTagline', register:'authTagline', verify:'verifyTitle', forgot:'forgotTitle', reset:'resetTitle' };
@@ -2046,7 +2035,7 @@ function renderLevelReviews(){
 }
 $('lvl-sort').addEventListener('change', renderLevelReviews);
 $('level-back').addEventListener('click', goBack);
-$('lvl-write-btn').addEventListener('click', function(){ if(!levelPage.id) return; $('level-id-input').value = levelPage.id; navigateTo({ screen:'create' }); searchLevel(); });
+$('lvl-write-btn').addEventListener('click', function(){ if(!levelPage.id) return; navigateTo({ screen:'create' }); openReviewFor(levelPage.id); });
 
 /* ================= WALKTHROUGH PLAYER ================= */
 const wtPlayerModal = $('wt-player-modal');
@@ -2238,27 +2227,22 @@ function applyScoreTheme(score){ const sc = scoreColors(score); const el = $('fi
 function recalcFinal(){ const sum = CATEGORIES.reduce(function(a,c){ return a + ratingValues[c.key]; }, 0); const avg = sum / CATEGORIES.length; $('final-score').innerHTML = avg.toFixed(1)+'<span>/10</span>'; applyScoreTheme(avg); return avg; }
 recalcFinal();
 
-/* ================= CREATE: SEARCH & PUBLISH ================= */
+/* ================= REVIEW PAGE ================= */
+/* Reached directly via "Write a Review" on a level page (or the spin result) —
+   there is no standalone Create tab anymore and no level ID is displayed. */
 let currentLevel = null;
-const statusEl = $('api-status'), levelBlock = $('level-block'), ratingSection = $('rating-section');
-async function searchLevel(){
-  const query = $('level-id-input').value.trim();
-  if(!query){ statusEl.textContent = t('enterQuery'); statusEl.className = 'api-status error'; return; }
-  statusEl.textContent = t('loading'); statusEl.className = 'api-status';
+const levelBlock = $('level-block'), ratingSection = $('rating-section');
+async function openReviewFor(levelId){
+  levelBlock.classList.remove('show'); ratingSection.classList.remove('show');
+  $('create-wt-play').hidden = true;
   try{
-    const searchRes = await fetch('https://gdbrowser.com/api/search/'+encodeURIComponent(query));
-    if(!searchRes.ok) throw new Error('nf');
-    const searchData = await searchRes.json();
-    if(!searchData || searchData === '-1' || !searchData.length) throw new Error('nf');
-    const targetId = searchData[0].id;
-    const res = await fetch('https://gdbrowser.com/api/level/'+targetId);
+    const res = await fetch('https://gdbrowser.com/api/level/'+encodeURIComponent(levelId));
     if(!res.ok) throw new Error('nf');
     const data = await res.json();
     if(!data || data.error || !data.name) throw new Error('nf');
     currentLevel = { id: data.id, name: data.name, author: data.author || 'Unknown', difficulty: data.difficulty || '', difficultyFace: data.difficultyFace || '', stars: data.stars || 0 };
     // Load the approved walkthrough (if any) so the icon shows on this page too.
     currentLevel.walkthrough = null;
-    $('create-wt-play').hidden = true;
     api('/levels/'+encodeURIComponent(data.id)).then(function(wr){
       const wt = wr.ok ? (wr.data.walkthrough || null) : null;
       if(currentLevel && String(currentLevel.id) === String(data.id)){ currentLevel.walkthrough = wt; $('create-wt-play').hidden = !wt; }
@@ -2276,20 +2260,18 @@ async function searchLevel(){
     $('level-desc-text').textContent = lvlDescription || t('lvlNoDescription');
     $('level-desc-text').classList.toggle('empty', !lvlDescription);
     levelBlock.classList.add('show'); ratingSection.classList.add('show');
-    statusEl.textContent = '✓ #'+data.id; statusEl.className = 'api-status ok';
   } catch(err){
-    currentLevel = null; levelBlock.classList.remove('show'); ratingSection.classList.remove('show');
-    $('create-wt-play').hidden = true;
-    statusEl.textContent = t('levelNotFoundCreate'); statusEl.className = 'api-status error';
+    currentLevel = null;
+    toast(t('lvlNotFound'), 'error');
+    goBack();
   }
 }
-$('search-btn').addEventListener('click', searchLevel);
-$('level-id-input').addEventListener('keydown', function(e){ if(e.key === 'Enter') searchLevel(); });
+$('create-back').addEventListener('click', goBack);
 
 $('save-btn').addEventListener('click', async function(){
   const btn = $('save-btn'); if(btn.disabled) return;
   if(!requireAuth()) return;
-  if(!currentLevel){ statusEl.textContent = t('createFindFirst'); statusEl.className = 'api-status error'; return; }
+  if(!currentLevel){ toast(t('createFindFirst'), 'error'); return; }
   const title = $('review-title').value.trim();
   if(!title){ toast(t('vTitleReq'), 'error'); $('review-title').focus(); return; }
   const text = $('review-text').value.trim();
@@ -2325,8 +2307,8 @@ function playTierMax(){ const flash = spawnFx('fx-flash fx-flash-max'); setTimeo
 function playSaveAnimation(score){ if(score < 2) playTierFail(); else if(score < 4) playTierLow(); else if(score < 6) playTierMeh(); else if(score < 8) playTierMid(); else if(score < 9.5) playTierHigh(); else playTierMax(); }
 /* ================= FRAMES ================= */
 /* Every frame is freely selectable — the old review-count unlock system is gone. */
-const FRAMES = ['frame-default','frame-circle','frame-hex','frame-tech','frame-bronze','frame-silver','frame-gold','frame-platinum','frame-diamond','frame-master','frame-legend'];
-const FRAME_LABEL = { 'frame-default':'Default', 'frame-circle':'Circle', 'frame-hex':'Hex', 'frame-tech':'Tech', 'frame-bronze':'Bronze', 'frame-silver':'Silver', 'frame-gold':'Gold', 'frame-platinum':'Platinum', 'frame-diamond':'Diamond', 'frame-master':'Master', 'frame-legend':'Legend' };
+const FRAMES = ['frame-default','frame-circle','frame-hex','frame-tech'];
+const FRAME_LABEL = { 'frame-default':'Default', 'frame-circle':'Circle', 'frame-hex':'Hex', 'frame-tech':'Tech' };
 
 /* ================= ACHIEVEMENTS ================= */
 const ACHIEVEMENTS = [
@@ -2343,11 +2325,11 @@ const ACHIEVEMENTS = [
 ];
 
 /* ================= SOCIALS ================= */
-/* Simplified to the essentials: a personal website and YouTube. `domains:null` means any valid http(s) URL is accepted. */
-const SOCIAL_PLATFORMS = [ { key:'website', label:'Website', abbr:'WEB', domains:null, placeholder:'https://your-site.com' }, { key:'youtube', label:'YouTube', abbr:'YT', domains:['youtube.com','youtu.be'], placeholder:'https://youtube.com/@handle' } ];
-const SOCIAL_ICONS = { website:'<svg viewBox="0 0 24 24"><path fill="#9fd0ff" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.9 6h-3a15.7 15.7 0 0 0-1.4-3.6A8 8 0 0 1 18.9 8zM12 4c.83 1.2 1.48 2.53 1.9 4h-3.8c.42-1.47 1.07-2.8 1.9-4zM4.26 14a8.2 8.2 0 0 1 0-4h3.38a16.6 16.6 0 0 0 0 4H4.26zm.85 2h3a15.7 15.7 0 0 0 1.4 3.6A8 8 0 0 1 5.11 16zm3-8h-3a8 8 0 0 1 4.4-3.6A15.7 15.7 0 0 0 8.11 8zM12 20c-.83-1.2-1.48-2.53-1.9-4h3.8c-.42 1.47-1.07 2.8-1.9 4zm2.34-6H9.66a14.6 14.6 0 0 1 0-4h4.68a14.6 14.6 0 0 1 0 4zm.25 5.6c.6-1.13 1.07-2.34 1.4-3.6h3a8 8 0 0 1-4.4 3.6zM16.36 14a16.6 16.6 0 0 0 0-4h3.38a8.2 8.2 0 0 1 0 4h-3.38z"/></svg>', youtube:'<svg viewBox="0 0 24 24"><path fill="#FF0000" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><path fill="#fff" d="M9.6 15.6V8.4L15.8 12z"/></svg>' };
+/* Simplified to the essentials: Twitch and YouTube. */
+const SOCIAL_PLATFORMS = [ { key:'twitch', label:'Twitch', abbr:'TTV', domains:['twitch.tv'], placeholder:'https://twitch.tv/handle' }, { key:'youtube', label:'YouTube', abbr:'YT', domains:['youtube.com','youtu.be'], placeholder:'https://youtube.com/@handle' } ];
+const SOCIAL_ICONS = { twitch:'<svg viewBox="0 0 24 24"><path fill="#9146FF" d="M4 2 2 6.4v13.2h5V22l3.6-2.4H14L20 14V2H4zm14.4 11.2-2.8 2.8h-3.2l-2.4 2.4v-2.4H6.4V3.6h12v9.6z"/><path fill="#9146FF" d="M15.6 6.8h1.6v4.8h-1.6zM11.2 6.8h1.6v4.8h-1.6z"/></svg>', youtube:'<svg viewBox="0 0 24 24"><path fill="#FF0000" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8z"/><path fill="#fff" d="M9.6 15.6V8.4L15.8 12z"/></svg>' };
 function normalizeUrl(raw){ let v = (raw||'').trim(); if(!v) return ''; if(!/^https?:\/\//i.test(v)) v = 'https://'+v; return v; }
-function isValidSocialUrl(platform, raw){ const v = (raw||'').trim(); if(!v) return true; let url; try{ url = new URL(normalizeUrl(v)); }catch(e){ return false; } if(!/^https?:$/.test(url.protocol)) return false; if(!platform.domains) return url.hostname.indexOf('.') !== -1; const h = url.hostname.toLowerCase().replace(/^www\./,''); return platform.domains.some(function(d){ return h === d || h.endsWith('.'+d); }); }
+function isValidSocialUrl(platform, raw){ const v = (raw||'').trim(); if(!v) return true; let url; try{ url = new URL(normalizeUrl(v)); }catch(e){ return false; } if(!/^https?:$/.test(url.protocol)) return false; const h = url.hostname.toLowerCase().replace(/^www\./,''); return platform.domains.some(function(d){ return h === d || h.endsWith('.'+d); }); }
 function setSocialFieldError(platform, hasError){ const field = $('soc-field-'+platform.key), input = $('inp-soc-'+platform.key), errorEl = $('soc-error-'+platform.key); field.classList.toggle('has-error', hasError); input.classList.toggle('invalid', hasError); if(hasError) errorEl.textContent = t('invalidLink').replace('{platform}', platform.label); }
 function buildSocialFields(){
   $('socials-fields').innerHTML = SOCIAL_PLATFORMS.map(function(p){ return '<div class="social-field" id="soc-field-'+p.key+'"><label class="social-field-label" for="inp-soc-'+p.key+'"><span class="social-field-badge">'+p.abbr+'</span>'+p.label+'</label><input type="text" class="modal-input" id="inp-soc-'+p.key+'" placeholder="'+p.placeholder+'"><div class="social-field-error" id="soc-error-'+p.key+'"></div></div>'; }).join('');
@@ -2375,6 +2357,7 @@ function renderProfile(){
   const revs = own ? myReviews : profileView.reviews;
   profileView.reviews = revs;
   $('profile-back').hidden = own;
+  $('btn-edit-profile').hidden = !own;
   $('prof-banner').style.backgroundImage = u.banner ? 'url(\''+u.banner+'\')' : '';
   $('prof-avatar').src = u.avatar || DEFAULT_AVATAR;
   $('prof-frame-wrap').className = 'profile-avatar-wrap ' + (u.frame || 'frame-default');
@@ -2386,12 +2369,20 @@ function renderProfile(){
   renderArchive();
 }
 $('profile-back').addEventListener('click', goBack);
+/* Edit Profile does not edit in place — it simply opens the Settings page. */
+$('btn-edit-profile').addEventListener('click', function(){ navigateTo({ screen:'settings' }); });
 
-/* ---- Charts (radar / histogram) & achievements board ---- */
-/* Short axis labels keep the radar readable and inside its own card (fixes
-   the long "Synchronization / Rhythm"-style labels overflowing the chart). */
-function shortAxisLabel(s){ return String(s).split('/')[0].trim(); }
-function buildRadarChart(categoryAverages){ const w=380, h=252, cx=w/2, cy=118, maxR=88, n=categoryAverages.length; const angleFor=function(i){ return (i/n)*Math.PI*2 - Math.PI/2; }; const pointAt=function(i,r){ return [cx + r*Math.cos(angleFor(i)), cy + r*Math.sin(angleFor(i))]; }; const rings=[0.25,0.5,0.75,1].map(function(f){ return '<polygon class="radar-grid" points="'+categoryAverages.map(function(_,i){ return pointAt(i, maxR*f).join(','); }).join(' ')+'"/>'; }).join(''); const axes=categoryAverages.map(function(_,i){ const p=pointAt(i,maxR); return '<line class="radar-axis" x1="'+cx+'" y1="'+cy+'" x2="'+p[0]+'" y2="'+p[1]+'"/>'; }).join(''); const dataPts=categoryAverages.map(function(c,i){ return pointAt(i, maxR*(c.avg/10)); }); const dots=dataPts.map(function(p,i){ return '<circle class="radar-dot" cx="'+p[0]+'" cy="'+p[1]+'" r="4" style="animation-delay:'+(1.1+i*0.06)+'s"><title>'+escapeHTML(categoryAverages[i].label)+': '+categoryAverages[i].avg.toFixed(1)+'</title></circle>'; }).join(''); const labels=categoryAverages.map(function(c,i){ const p=pointAt(i, maxR+24); const anchor=Math.abs(p[0]-cx)<4?'middle':(p[0]>cx?'start':'end'); const lx=Math.max(4, Math.min(w-4, p[0])); return '<text class="radar-label" x="'+lx+'" y="'+(p[1]-4)+'" text-anchor="'+anchor+'">'+escapeHTML(shortAxisLabel(c.label))+'</text><text class="radar-value" x="'+lx+'" y="'+(p[1]+9)+'" text-anchor="'+anchor+'">'+c.avg.toFixed(1)+'</text>'; }).join(''); return '<svg viewBox="0 0 '+w+' '+h+'">'+rings+axes+'<polygon class="radar-fill" pathLength="1" points="'+dataPts.map(function(p){ return p.join(','); }).join(' ')+'"/>'+dots+labels+'</svg>'; }
+/* ---- Charts & achievements board ---- */
+/* Category Profile: premium animated bar list — readable at any width. */
+function buildCategoryBars(categoryAverages){
+  return '<div class="axis-list">'+categoryAverages.map(function(c,i){
+    return '<div class="axis-row" style="animation-delay:'+(0.06+i*0.07)+'s">'
+      + '<div class="axis-label">'+escapeHTML(c.label)+'</div>'
+      + '<div class="axis-bar"><div class="axis-fill" style="width:'+((c.avg/10)*100).toFixed(1)+'%;animation-delay:'+(0.12+i*0.07)+'s"></div></div>'
+      + '<div class="axis-val">'+c.avg.toFixed(1)+'<small>/10</small></div>'
+      + '</div>';
+  }).join('')+'</div>';
+}
 function buildHistogram(reviews){ const buckets=[{label:'0–2',min:0,max:2},{label:'2–4',min:2,max:4},{label:'4–6',min:4,max:6},{label:'6–8',min:6,max:8},{label:'8–10',min:8,max:10.001}].map(function(b){ b.count=0; return b; }); reviews.forEach(function(r){ const b=buckets.find(function(b){ return r.finalScore>=b.min && r.finalScore<b.max; }); if(b) b.count++; }); const w=320,h=200,padB=26,padT=14,gap=14; const barW=(w-gap*(buckets.length-1))/buckets.length; const maxCount=Math.max(1, Math.max.apply(null, buckets.map(function(b){ return b.count; }))); const usableH=h-padB-padT; const bars=buckets.map(function(b,i){ const x=i*(barW+gap); const barH=(b.count/maxCount)*usableH; const y=h-padB-barH; return '<rect class="hist-track" x="'+x+'" y="'+padT+'" width="'+barW+'" height="'+usableH+'" rx="4"/><rect class="hist-bar" x="'+x+'" y="'+y+'" width="'+barW+'" height="'+Math.max(barH,2)+'" rx="4" style="animation-delay:'+(0.2+i*0.08)+'s"></rect><text class="hist-count" x="'+(x+barW/2)+'" y="'+(y-8)+'" text-anchor="middle" style="animation-delay:'+(0.5+i*0.08)+'s">'+b.count+'</text><text class="hist-label" x="'+(x+barW/2)+'" y="'+(h-6)+'" text-anchor="middle">'+b.label+'</text>'; }).join(''); return '<svg viewBox="0 0 '+w+' '+h+'"><line class="hist-axis" x1="0" y1="'+(h-padB)+'" x2="'+w+'" y2="'+(h-padB)+'"/>'+bars+'</svg>'; }
 /* Exact registration date — full "Day Month Year" format. */
 function memberSinceLabel(user){ if(!(user && user.created_at)) return '—'; return new Date(user.created_at).toLocaleDateString(lang==='ru'?'ru-RU':'en-US', { day:'numeric', month:'long', year:'numeric' }); }
@@ -2428,7 +2419,7 @@ function renderStatsFor(reviews, user){
     + '<div class="stat-card" style="animation-delay:.10s"><div class="stat-label">'+t('statLikes')+'</div><div class="stat-number">'+likes+'</div></div>'
     + '<div class="stat-card" style="animation-delay:.14s"><div class="stat-label">'+t('statSince')+'</div><div class="stat-number stat-date">'+escapeHTML(memberSinceLabel(user))+'</div></div>'
     + '</div><div class="charts-grid">'
-    + '<div class="chart-card" style="animation-delay:.10s"><div class="chart-title">'+t('chartCat')+'</div><div class="chart-sub">'+t('chartCatSub')+'</div>'+buildRadarChart(categoryAverages)+'</div>'
+    + '<div class="chart-card" style="animation-delay:.10s"><div class="chart-title">'+t('chartCat')+'</div><div class="chart-sub">'+t('chartCatSub')+'</div>'+buildCategoryBars(categoryAverages)+'</div>'
     + '<div class="chart-card" style="animation-delay:.16s"><div class="chart-title">'+t('chartDist')+'</div><div class="chart-sub">'+t('chartDistSub')+'</div>'+buildHistogram(reviews)+'</div>'
     + achCard + '</div>';
 }
@@ -2491,6 +2482,7 @@ function renderSettingsFrames(){
 function updateSettingsPreview(){
   $('set-frame-preview').className = 'profile-avatar-wrap ' + (settingsFrame || 'frame-default');
   $('set-avatar-preview').src = (me && me.avatar) || DEFAULT_AVATAR;
+  $('set-banner-preview').style.backgroundImage = (me && me.banner) ? 'url(\''+me.banner+'\')' : '';
 }
 $('frame-selector').addEventListener('click', function(e){
   const opt = e.target.closest('.frame-option'); if(!opt) return;
@@ -2568,7 +2560,7 @@ function fillSettings(){
     $('inp-set-username').value = me.username || '';
     markField($('inp-set-username'), '');
     $('inp-set-desc').value = me.description || '';
-    settingsFrame = me.frame || 'frame-default';
+    settingsFrame = FRAMES.indexOf(me.frame) !== -1 ? me.frame : 'frame-default';
     renderSettingsFrames(); updateSettingsPreview();
     SOCIAL_PLATFORMS.forEach(function(p){ const inp = $('inp-soc-'+p.key); if(inp){ inp.value = (me.socials && me.socials[p.key]) || ''; setSocialFieldError(p, false); } });
   }
@@ -2607,6 +2599,7 @@ $('btn-save-profile').addEventListener('click', async function(){
   } finally { setBusy(btn, false); }
 });
 function setLang(l){
+  if(l === lang) return;
   lang = l; localStorage.setItem('gd_lang', l); applyI18n(); fillSettings();
   CATEGORIES.forEach(function(cat){ const lbl = $('label-text-'+cat.key); if(lbl) lbl.textContent = axisLabel(cat.key, currentLevel ? currentLevel.difficulty : ''); });
   renderCriteriaGuide();
@@ -2614,6 +2607,9 @@ function setLang(l){
   if($('screen-home').classList.contains('active')) loadDashboard();
   if($('screen-profile').classList.contains('active')) renderProfile();
   if($('screen-level').classList.contains('active') && levelPage.id){ renderLevelStats(); renderLevelReviews(); }
+  /* Smooth page-wide transition when the language changes. */
+  const sh = document.querySelector('.shell');
+  if(sh){ sh.classList.remove('lang-swap'); void sh.offsetWidth; sh.classList.add('lang-swap'); }
 }
 $('set-lang-en').addEventListener('click', function(){ setLang('en'); });
 $('set-lang-ru').addEventListener('click', function(){ setLang('ru'); });
@@ -2644,6 +2640,8 @@ $('btn-change-pass').addEventListener('click', async function(){
   if(r.ok){ toast(t('passChanged'), 'ok'); $('inp-old-pass').value=''; $('inp-new-pass').value=''; $('inp-new-pass2').value=''; }
   else toast(ERR(r.data.error), 'error');
 });
+/* Reuses the existing auth overlay's password recovery flow. */
+$('btn-settings-forgot').addEventListener('click', function(){ openAuthOverlay('forgot'); });
 $('btn-delete-account').addEventListener('click', async function(){
   const pass = await confirmDialog({ title: t('deleteTitle'), text: t('deleteText'), okLabel: t('btnDeleteAcc'), danger:true, input:true, inputType:'password', inputPlaceholder: t('currPass') });
   if(!pass) return;
@@ -2972,7 +2970,7 @@ function showSpinResult(lv){
     el.textContent = avg.toFixed(1)+'/10 · '+t('spinReviewsCount').replace('{n}', revs.length);
   });
   $('sr-open').addEventListener('click', function(){ hideSpinResult(); openLevelPage(id); });
-  $('sr-review').addEventListener('click', function(){ hideSpinResult(); $('level-id-input').value = id; navigateTo({ screen:'create' }); searchLevel(); });
+  $('sr-review').addEventListener('click', function(){ hideSpinResult(); navigateTo({ screen:'create' }); openReviewFor(id); });
   $('sr-again').addEventListener('click', function(){ hideSpinResult(); startSpin(); });
 }
 function hideSpinResult(){
