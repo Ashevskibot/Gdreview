@@ -2489,7 +2489,7 @@ function setLang(l){
   lang = l; localStorage.setItem('gd_lang', l); applyI18n(); fillSettings();
   CATEGORIES.forEach(function(cat){ const lbl = $('label-text-'+cat.key); if(lbl) lbl.textContent = axisLabel(cat.key, currentLevel ? currentLevel.difficulty : ''); });
   renderCriteriaGuide();
-  if(spinBuilt){ buildSpinFilters(); renderCustomList(); updatePoolStatus(); updateSpinButton(); updateWheelEmpty(); }
+  if(window.refreshSpinI18n) window.refreshSpinI18n();
   if($('screen-home').classList.contains('active')) loadDashboard();
   if($('screen-profile').classList.contains('active')) renderProfile();
   if($('screen-level').classList.contains('active') && levelPage.id){ renderLevelStats(); renderLevelReviews(); }
@@ -2535,7 +2535,11 @@ $('btn-delete-account').addEventListener('click', async function(){
   else toast(ERR(r.data.error), 'error');
 });
 
-/* ================= RANDOM LEVEL — WHEELSPIN ================= */
+/* ================= RANDOM LEVEL — WHEELSPIN (LEGACY — DISABLED) ================= */
+/* Replaced by app.js + buffered-wheel-pool.js (BufferedWheelPool). The legacy
+   engine below is kept inside a dead `if(false)` block for reference only and
+   can be deleted in a follow-up. Do not re-enable: app.js owns these DOM ids. */
+if(false){
 /* A dedicated page with a horizontal reward wheel. Inspired by the *feeling*
    of Forza Horizon's Wheelspin — anticipation, pacing, a satisfying reveal —
    but with an original monochrome presentation. The wheel idles on its own,
@@ -3222,6 +3226,7 @@ function stopSpinPage(){
   if(!$('spin-result').hidden) hideSpinResult();
   if(wheel.anim || wheel.spinning){ wheel.anim = null; wheel.spinning = false; $('spin-filters').classList.remove('locked'); $('spin-custom').classList.remove('locked'); updateSpinButton(); }
 }
+} /* end legacy wheel engine (disabled) — see app.js */
 
 /* ================= CAROUSEL DRAG-TO-SCROLL ================= */
 /* Hold & drag with the mouse on the level rows (touch already scrolls
@@ -3281,5 +3286,6 @@ window.addEventListener('load', async function(){
   setTimeout(function(){ document.body.classList.add('loaded'); }, 700);
 });
 </script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
