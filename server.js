@@ -115,7 +115,7 @@ async function initDb() {
             ADD COLUMN IF NOT EXISTS avatar TEXT,
             ADD COLUMN IF NOT EXISTS banner TEXT,
             ADD COLUMN IF NOT EXISTS frame VARCHAR(50) DEFAULT 'frame-default',
-            ADD COLUMN IF NOT EXISTS description TEXT,
+            ADD COLUMN IF NOT EXISTS description VARCHAR(150),
             ADD COLUMN IF NOT EXISTS socials TEXT,
             ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT FALSE,
             ADD COLUMN IF NOT EXISTS verify_code VARCHAR(10),
@@ -130,7 +130,15 @@ async function initDb() {
         await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255);`).catch(() => {});
         await client.query(`ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;`).catch(err => console.error('⚠️  Could not make password_hash nullable:', err.message));
         await client.query(`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);`).catch(() => {});
-        await client.query(`ALTER TABLE reviews ADD COLUMN IF NOT EXISTS title VARCHAR(120);`).catch(() => {});
+        await client.query(`ALTER TABLE reviews ADD COLUMN IF NOT EXISTS title VARCHAR(30);`).catch(() => {});
+        // Enforce current public text limits for existing databases. Legacy values
+        // are trimmed once before the varchar columns are narrowed.
+        await client.query(`
+            UPDATE users SET description = LEFT(description, 150) WHERE CHAR_LENGTH(description) > 150;
+            ALTER TABLE users ALTER COLUMN description TYPE VARCHAR(150);
+            UPDATE reviews SET title = LEFT(title, 30) WHERE CHAR_LENGTH(title) > 30;
+            ALTER TABLE reviews ALTER COLUMN title TYPE VARCHAR(30);
+        `).catch(err => console.error('⚠️  Could not migrate text limits:', err.message));
         // New 5-axis scoring system (Gameplay / Sync / Design / Creativity /
         // Optimization). Legacy 6-axis data is backfilled so old reviews keep
         // meaningful values: music -> sync_rhythm, decoration -> design_deco,
@@ -661,9 +669,10 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
 app.post('/api/profile', authenticateToken, async (req, res) => {
     try {
         let { avatar, banner, frame, description, socials } = req.body;
-        if (description && String(description).length > 300) description = String(description).slice(0, 300);
+        description = String(description || '').trim();
+        if (description.length > 150) return fail(res, 400, 'description_too_long');
         // Automatic moderation BEFORE anything is stored or uploaded.
-        const bioVerdict = await moderateText(description || '');
+        const bioVerdict = await moderateText(description);
         if (!bioVerdict.ok) return rejectContent(res, bioVerdict, 'description');
         if (avatar && String(avatar).startsWith('data:image')) {
             const v = await moderateImage(avatar);
@@ -715,8 +724,12 @@ app.post('/api/reviews', authenticateToken, async (req, res) => {
         }
         const score = Number(finalScore);
         if (!(score >= 0 && score <= 10)) return fail(res, 400, 'invalid_payload');
-        const safeTitle = String(title || '').slice(0, 120);
-        const safeText = String(text || '').slice(0, 5000);
+        const safeTitle = String(title || '').trim();
+        const safeText = String(text || '').trim();
+        if (!safeTitle) return fail(res, 400, 'review_title_required');
+        if (safeTitle.length > 30) return fail(res, 400, 'review_title_too_long');
+        if (safeText.length < 50) return fail(res, 400, 'review_text_too_short');
+        if (safeText.length > 2000) return fail(res, 400, 'review_text_too_long');
 
         // Automatic moderation BEFORE the review is published (or updated).
         const verdict = await moderateText(`${safeTitle}\n${safeText}`);
