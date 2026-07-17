@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
     avatar TEXT,
     banner TEXT,
     frame VARCHAR(50) DEFAULT 'frame-default',
-    description TEXT,
+    description VARCHAR(150),
     socials TEXT,
     is_verified BOOLEAN DEFAULT FALSE,
     verify_code VARCHAR(10),
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     music INTEGER,
     originality INTEGER,
     final_score NUMERIC(4,2),
-    title VARCHAR(120),
+    title VARCHAR(30),
     review_text TEXT,
     saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -76,6 +76,10 @@ ALTER TABLE reviews
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS register_ip VARCHAR(45);
+UPDATE users SET description = LEFT(description, 150) WHERE CHAR_LENGTH(description) > 150;
+ALTER TABLE users ALTER COLUMN description TYPE VARCHAR(150);
+UPDATE reviews SET title = LEFT(title, 30) WHERE CHAR_LENGTH(title) > 30;
+ALTER TABLE reviews ALTER COLUMN title TYPE VARCHAR(30);
 
 -- Миграция на 5-осевую систему оценок (server.js применяет автоматически):
 ALTER TABLE reviews ADD COLUMN IF NOT EXISTS sync_rhythm INTEGER;
