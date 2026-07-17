@@ -304,6 +304,11 @@
   .hist-bar:hover{opacity:1;} .hist-track{fill:var(--black2);}
   .hist-count{ font-family:'Space Mono',monospace; font-size:11px; font-weight:700; fill:var(--white); opacity:0; animation:fadeInSlow .4s ease forwards .5s; }
   .hist-label{ font-family:'Space Mono',monospace; font-size:10px; fill:var(--dim); text-transform:uppercase; } .hist-axis{stroke:var(--line);stroke-width:1;}
+  .limited-field{ position:relative; display:flex; flex-direction:column; gap:6px; }
+  .char-count{ align-self:flex-end; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.08em; color:var(--dim2); transition:color .2s ease; }
+  .limited-field.limit-near .char-count{ color:var(--dim); }
+  .limited-field.limit-invalid .char-count{ color:#e05555; }
+  .limited-field.limit-invalid input, .limited-field.limit-invalid textarea{ border-color:#e05555; }
   .ach-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:12px; }
   .ach-card{ position:relative; display:flex; flex-direction:column; gap:8px; background:var(--black2); border:1px solid var(--line); border-radius:12px; padding:16px; opacity:0; transform:translateY(10px); animation:barIn .5s var(--ease) forwards; transition:transform .22s var(--ease), border-color .22s var(--ease), box-shadow .25s var(--ease); }
   .ach-card:hover{ transform:translateY(-3px); border-color:var(--line2); }
@@ -346,7 +351,13 @@
   .trophy:hover .trophy-medal{ transition:transform .14s ease-out; }
   .medal-back{ position:absolute; inset:0; background:linear-gradient(160deg, var(--m3), #08080a); transform:translateZ(-7px) scale(1.07); filter:blur(0.8px); opacity:.92; }
   .medal-face{ position:absolute; inset:0; background:radial-gradient(circle at var(--lx) var(--ly), rgba(255,255,255,0.55), rgba(255,255,255,0.06) 42%, transparent 62%), linear-gradient(160deg, var(--m1), var(--m2) 55%, var(--m3)); box-shadow:inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -7px 12px rgba(0,0,0,0.55); }
-  .medal-glyph{ position:relative; z-index:4; font-size:20px; line-height:1; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,0.65), 0 0 12px var(--mglow); transform:translateZ(14px); }
+  .medal-glyph{ position:relative; z-index:4; width:68%; height:68%; color:#fff; filter:drop-shadow(0 2px 2px rgba(0,0,0,.72)); transform:translateZ(14px); }
+  .medal-glyph svg{ display:block; width:100%; height:100%; overflow:visible; }
+  .medal-glyph .motif-fill{ fill:currentColor; }
+  .medal-glyph .motif-cut{ fill:var(--m3); }
+  .medal-glyph .motif-line{ fill:none; stroke:currentColor; stroke-width:4; stroke-linecap:square; stroke-linejoin:miter; }
+  .mtier-epic .medal-glyph, .mtier-legendary .medal-glyph{ filter:drop-shadow(0 3px 2px rgba(0,0,0,.8)); }
+  .mtier-legendary .medal-glyph{ width:72%; height:72%; }
   .medal-gloss{ position:absolute; inset:0; z-index:3; background:radial-gradient(46px circle at var(--lx) var(--ly), rgba(255,255,255,0.5), rgba(255,255,255,0.08) 45%, transparent 65%); mix-blend-mode:screen; pointer-events:none; }
   /* No permanent glow: the halo is a hover-only inspection effect. */
   .medal-halo{ position:absolute; inset:-10px; z-index:0; border-radius:50%; background:radial-gradient(circle, transparent 52%, var(--mglow) 68%, transparent 80%); opacity:0; transform:translateZ(-10px); transition:opacity .3s ease; pointer-events:none; }
@@ -386,7 +397,6 @@
   @keyframes trophyShine{ 0%{transform:translateX(-120%);} 100%{transform:translateX(120%);} }
   .trophy-name{ font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--white); line-height:1.35; word-break:break-word; }
   .trophy-tier{ font-family:'Space Mono',monospace; font-size:8.5px; letter-spacing:0.18em; text-transform:uppercase; color:var(--dim2); border:1px solid var(--line); border-radius:999px; padding:2px 8px; }
-  .trophy-uncommon .trophy-tier{ color:#a9e6c3; border-color:rgba(90,210,150,0.35); }
   .trophy-rare .trophy-tier{ color:#a8ccff; border-color:rgba(110,165,255,0.4); }
   .trophy-epic .trophy-tier{ color:#dcb8ff; border-color:rgba(190,120,255,0.45); }
   .trophy-legendary .trophy-tier{ color:#ffe19a; border-color:rgba(255,205,110,0.5); }
@@ -1157,8 +1167,14 @@
           <span data-i18n="reviewRules">Review rules: no abusive insults, no advertising, no external links. Every submission is checked automatically before it is published.</span>
         </div>
         <div class="mod-reject-banner" id="mod-reject-review"></div>
-        <input id="review-title" class="title-input" maxlength="120" data-i18n-ph="reviewTitlePh">
-        <textarea id="review-text" data-i18n-ph="summaryPlaceholder"></textarea>
+        <div class="limited-field">
+          <input id="review-title" class="title-input" maxlength="30" aria-describedby="review-title-count" data-i18n-ph="reviewTitlePh">
+          <span class="char-count" id="review-title-count" aria-live="polite">0 / 30</span>
+        </div>
+        <div class="limited-field">
+          <textarea id="review-text" minlength="50" maxlength="2000" aria-describedby="review-text-count" data-i18n-ph="summaryPlaceholder"></textarea>
+          <span class="char-count" id="review-text-count" aria-live="polite">0 / 2000 · min 50</span>
+        </div>
 
         <button class="save-btn" id="save-btn" data-i18n="btnPublish">Publish Review</button>
       </div>
@@ -1230,7 +1246,10 @@
           <label class="modal-input-label" data-i18n="usernameLabel">Username</label>
           <div class="field"><input type="text" id="inp-set-username" class="modal-input" maxlength="20" autocomplete="username"><div class="field-err"></div></div>
           <label class="modal-input-label" data-i18n="descLabel">Description</label>
-          <input type="text" id="inp-set-desc" class="modal-input" maxlength="300">
+          <div class="limited-field">
+            <input type="text" id="inp-set-desc" class="modal-input" maxlength="150" aria-describedby="profile-desc-count">
+            <span class="char-count" id="profile-desc-count" aria-live="polite">0 / 150</span>
+          </div>
           <label class="modal-input-label" data-i18n="frameLabel">Avatar Frame</label>
           <div class="frame-selector-grid" id="frame-selector"></div>
           <button class="modal-btn ghost" id="btn-save-profile" data-i18n="btnSaveProfile">Save Profile</button>
@@ -1430,6 +1449,24 @@ const qsa = (s, el) => Array.prototype.slice.call((el||document).querySelectorAl
 function escapeHTML(str){ const d=document.createElement('div'); d.textContent = (str==null?'':String(str)); return d.innerHTML; }
 function safeParse(v){ if(!v) return null; if(typeof v==='object') return v; try{ return JSON.parse(v); }catch(e){ return null; } }
 const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23181818'/%3E%3Ccircle cx='50' cy='38' r='16' fill='%233a3a3a'/%3E%3Cpath d='M18 96c4-20 18-28 32-28s28 8 32 28z' fill='%233a3a3a'/%3E%3C/svg%3E";
+const TEXT_LIMITS = { reviewTitle:30, reviewMin:50, reviewMax:2000, description:150 };
+function updateTextCounter(input, counter, min, max){
+  if(!input || !counter) return;
+  const n = input.value.length;
+  counter.textContent = n+' / '+max+(min ? ' · min '+min : '');
+  const wrap = input.closest('.limited-field');
+  const invalid = (min && n > 0 && n < min) || n > max;
+  wrap.classList.toggle('limit-invalid', !!invalid);
+  wrap.classList.toggle('limit-near', !invalid && n >= max * .85);
+  input.setAttribute('aria-invalid', invalid ? 'true' : 'false');
+}
+function refreshTextCounters(){
+  updateTextCounter($('review-title'), $('review-title-count'), 0, TEXT_LIMITS.reviewTitle);
+  updateTextCounter($('review-text'), $('review-text-count'), TEXT_LIMITS.reviewMin, TEXT_LIMITS.reviewMax);
+  updateTextCounter($('inp-set-desc'), $('profile-desc-count'), 0, TEXT_LIMITS.description);
+}
+['review-title','review-text','inp-set-desc'].forEach(function(id){ const el=$(id); if(el) el.addEventListener('input', refreshTextCounters); });
+refreshTextCounters();
 const HEART = '<svg viewBox="0 0 24 24" width="14" height="14"><path d="M12 21s-7.6-4.7-10.1-9.3C.3 8.6 2.3 5 5.7 5c2 0 3.4 1.1 4.3 2.6h4C14.9 6.1 16.3 5 18.3 5c3.4 0 5.4 3.6 3.8 6.7C19.6 16.3 12 21 12 21z" fill="currentColor"/></svg>';
 /* Monochrome YouTube glyph — inherits currentColor from the button. */
 const YT_ICON = '<svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4L15.8 12z"/></svg>';
@@ -1474,7 +1511,7 @@ const i18n = {
     guideDesignTitle:'Design / Decoration', guideDesignText:'Visual quality of the level: composition, color palette, consistency of the theme, detail work, backgrounds and effects. Both minimalistic and heavily decorated styles can score high if executed cleanly.',
     guideCreativityTitle:'Idea / Creativity', guideCreativityText:'Originality of the concept and its execution: unique mechanics, fresh visual ideas, memorable moments. Levels that copy popular formulas without adding anything new score lower here.',
     guideOptTitle:'Optimization', guideOptText:'Technical performance: stable FPS on average hardware, a proper LDM (Low Detail Mode) option for heavy decoration, and no object spam that lags the game for no visual gain.',
-    finalScore:'Final Score', summaryTitle:'Your Review', reviewTitlePh:'Review title — sum it up in one line', summaryPlaceholder:'What makes this level special? Share the details…',
+    finalScore:'Final Score', summaryTitle:'Your Review', reviewTitlePh:'Review title — 30 characters max', summaryPlaceholder:'What makes this level special? Share 50–2000 characters…',
     lvlDescription:'Level Description', lvlNoDescription:'The author has not provided a description for this level.',
     btnPublish:'Publish Review', createFindFirst:'Search for a level first', published:'Review published!',
     modalDupTitle:'Level already reviewed', modalDupText:'You already have a review for this level. Overwrite it?', modalOverwrite:'Overwrite',
@@ -1513,6 +1550,7 @@ const i18n = {
     justNow:'just now', minAgo:'m ago', hourAgo:'h ago', dayAgo:'d ago',
     cropTitle:'Adjust Image', cropHint:'Scroll to zoom · drag photo to move · drag corner to resize', cropApply:'Apply',
     err_auth_required:'Please log in', err_session_expired:'Session expired — log in again', err_too_many_requests:'Too many attempts. Try again later.', err_user_exists:'This username or email is already taken', err_invalid_code:'Wrong code', err_code_expired:'Code expired — request a new one', err_wrong_password:'Wrong password', err_wrong_credentials:'Wrong email or password', err_account_not_found:'Account not found', err_email_taken:'This email is already in use', err_invalid_email:'Invalid email', err_invalid_username:'Invalid username', err_weak_password:'Password must be at least 8 characters', err_server_error:'Server error. Try again.', err_network:'Network error. Check your connection.', err_not_found:'Not found', err_invalid_payload:'Invalid data',
+    err_review_title_required:'Add a title for your review', err_review_title_too_long:'Review title must be 30 characters or fewer', err_review_text_too_short:'Review must be at least 50 characters', err_review_text_too_long:'Review must be 2000 characters or fewer', err_description_too_long:'Description must be 150 characters or fewer',
     err_google_auth_failed:'Google sign-in failed. Try again.', err_google_email_unverified:'Your Google email address is not verified', err_use_google_signin:'This account uses Google Sign-In — use the Google button below', err_password_not_set:'No password set for this account — create one via “Forgot password?” first', err_google_not_configured:'Google sign-in is not available right now'
   },
   ru: {
@@ -1551,8 +1589,8 @@ const i18n = {
     guideSyncTitle:'Синхронизация / Ритм', guideSyncText:'Насколько точно уровень следует музыке: клики попадают в биты, дропы подчёркнуты пиками интенсивности, переходы и эффекты срабатывают в ритм. Идеально синхронизированный уровень ощущается как игра в саму музыку.',
     guideDesignTitle:'Дизайн / Декор', guideDesignText:'Визуальное качество уровня: композиция, палитра, целостность темы, проработка деталей, фоны и эффекты. Высокий балл может получить и минимализм, и насыщенный декор — если исполнение чистое.',
     guideCreativityTitle:'Идея / Креативность', guideCreativityText:'Оригинальность концепции и её воплощения: уникальные механики, свежие визуальные идеи, запоминающиеся моменты. Уровни, копирующие популярные шаблоны без чего-то нового, получают здесь меньше.',
-    guideOptTitle:'Оптимизация', guideOptText:'Техническая часть: стабильный FPS на среднем железе, корректный LDM (режим упрощённого декора) для тяжёлых уровней и отсутствие бессмысленного спама объектами, который лагает без визуальной пользы.',
-    finalScore:'Итоговый балл', summaryTitle:'Ваша рецензия', reviewTitlePh:'Заголовок — суть рецензии одной строкой', summaryPlaceholder:'Чем особенен этот уровень? Расскажите подробнее…',
+    guideOptTitle:'Оптимизация', guideOptText:'Техническая часть: стабильный FPS на среднем железе, корректный LDM (режим упрощённого декора) для тяжёлых уровней и отсутствие бессмысленного спама объектами, ко��орый лагает без визуальной пользы.',
+    finalScore:'Итоговый балл', summaryTitle:'Ваша рецензия', reviewTitlePh:'Заголовок — не более 30 символов', summaryPlaceholder:'Чем особенен этот уровень? Напишите 50–2000 символов…',
     lvlDescription:'Описание уровня', lvlNoDescription:'Автор не добавил описание к этому уровню.',
     btnPublish:'Опубликовать', createFindFirst:'Сначала найдите уровень', published:'Рецензия опубликована!',
     modalDupTitle:'Уровень уже оценён', modalDupText:'У вас уже есть рецензия на этот уровень. Заменить её?', modalOverwrite:'Заменить',
@@ -1591,6 +1629,7 @@ const i18n = {
     justNow:'только что', minAgo:' мин', hourAgo:' ч', dayAgo:' дн',
     cropTitle:'Настройка изображения', cropHint:'Колесо — зум · тяните фото · угол — размер', cropApply:'Применить',
     err_auth_required:'Необходима авторизация', err_session_expired:'Сессия истекла — войдите снова', err_too_many_requests:'Слишком много попыток. Попробуйте позже.', err_user_exists:'Такой никнейм или email уже занят', err_invalid_code:'Неверный код', err_code_expired:'Код истёк — запросите новый', err_wrong_password:'Неверный пароль', err_wrong_credentials:'Неверный email или пароль', err_account_not_found:'Аккаунт не найден', err_email_taken:'Эта почта уже занята', err_invalid_email:'Некорректный email', err_invalid_username:'Некорректный никнейм', err_weak_password:'Пароль — минимум 8 символов', err_server_error:'Ошибка сервера. Попробуйте ещё раз.', err_network:'Ошибка сети. Проверьте соединение.', err_not_found:'Не найдено', err_invalid_payload:'Некорректные данные',
+    err_review_title_required:'Добавьте заголовок рецензии', err_review_title_too_long:'Заголовок — не более 30 символов', err_review_text_too_short:'Рецензия должна содержать минимум 50 символов', err_review_text_too_long:'Рецензия должна содержать не более 2000 символов', err_description_too_long:'Описание — не более 150 символов',
     err_google_auth_failed:'Не удалось войти через Google. Попробуйте ещё раз.', err_google_email_unverified:'Ваш email в Google не подтверждён', err_use_google_signin:'Этот аккаунт использует вход через Google — нажмите кнопку Google ниже', err_password_not_set:'У аккаунта нет пароля — сначала создайте его через «Забыли пароль?»', err_google_not_configured:'Вход через Google сейчас недоступен'
   }
 };
@@ -2408,7 +2447,10 @@ $('save-btn').addEventListener('click', async function(){
   if(!currentLevel){ toast(t('createFindFirst'), 'error'); return; }
   const title = $('review-title').value.trim();
   if(!title){ toast(t('vTitleReq'), 'error'); $('review-title').focus(); return; }
+  if(title.length > TEXT_LIMITS.reviewTitle){ toast(t('err_review_title_too_long'), 'error'); $('review-title').focus(); return; }
   const text = $('review-text').value.trim();
+  if(text.length < TEXT_LIMITS.reviewMin){ toast(t('err_review_text_too_short'), 'error'); $('review-text').focus(); refreshTextCounters(); return; }
+  if(text.length > TEXT_LIMITS.reviewMax){ toast(t('err_review_text_too_long'), 'error'); $('review-text').focus(); refreshTextCounters(); return; }
   const finalScore = recalcFinal();
   const exists = myReviews.find(function(r){ return String(r.id) === String(currentLevel.id); });
   if(exists){ const ok = await confirmDialog({ title: t('modalDupTitle'), text: t('modalDupText'), okLabel: t('modalOverwrite') }); if(!ok) return; }
@@ -2424,7 +2466,7 @@ $('save-btn').addEventListener('click', async function(){
   }
   playSaveAnimation(finalScore);
   toast(t('published'), 'ok');
-  $('review-title').value = ''; $('review-text').value = '';
+  $('review-title').value = ''; $('review-text').value = ''; refreshTextCounters();
   const rr = await api('/reviews'); if(rr.ok) myReviews = rr.data.map(mapReview);
   const lvlId = currentLevel.id;
   setTimeout(function(){ openLevelPage(lvlId); }, 1000);
@@ -2445,9 +2487,9 @@ const FRAMES = ['frame-default','frame-circle','frame-hex','frame-tech'];
 const FRAME_LABEL = { 'frame-default':'Default', 'frame-circle':'Circle', 'frame-hex':'Hex', 'frame-tech':'Tech' };
 
 /* ================= ACHIEVEMENTS ================= */
-/* Prestige progression: fewer, harder, memorable. Five rarity levels —
-   common / uncommon / rare / epic / legendary — each with its own 3D reward
-   complexity and material identity. No trivial one-action unlocks. */
+/* Prestige progression: fewer, harder, memorable. Four rarity levels —
+   common / rare / epic / legendary — each with increasing collectible detail.
+   No trivial one-action unlocks. */
 const ACHIEVEMENTS = [
   /* Reviewer progression */
   { cat:'achCatReviews', metric:'reviews', goal:10,  tier:'common',    icon:'✒', shape:'disc',  pal:'bronze',   color:'#c9855a', nameKey:'achRev10',  descKey:'achRev10D' },
@@ -2459,21 +2501,21 @@ const ACHIEVEMENTS = [
   { cat:'achCatCommunity', metric:'likes', goal:100, tier:'rare',      icon:'♥', shape:'star',  pal:'ruby',   color:'#ff5f7a', nameKey:'achLikes100', descKey:'achLikes100D' },
   { cat:'achCatCommunity', metric:'likes', goal:500, tier:'legendary', icon:'♥', shape:'crest', pal:'gold',   color:'#ffcf4d', nameKey:'achLikes500', descKey:'achLikes500D' },
   /* Helpful reviews */
-  { cat:'achCatHelpful', metric:'best',    goal:10, tier:'uncommon', icon:'◆', shape:'shield', pal:'sapphire', color:'#4ea1ff', nameKey:'achHelpful',  descKey:'achHelpfulD' },
+  { cat:'achCatHelpful', metric:'best',    goal:10, tier:'rare', icon:'◆', shape:'shield', pal:'sapphire', color:'#4ea1ff', nameKey:'achHelpful',  descKey:'achHelpfulD' },
   { cat:'achCatHelpful', metric:'best',    goal:25, tier:'rare',     icon:'★', shape:'star',   pal:'gold',     color:'#ffcf4d', nameKey:'achFeatured', descKey:'achFeaturedD' },
   { cat:'achCatHelpful', metric:'best',    goal:50, tier:'epic',     icon:'◆', shape:'gem',    pal:'amethyst', color:'#c061ff', nameKey:'achBest50',   descKey:'achBest50D' },
   { cat:'achCatHelpful', metric:'trusted', goal:10, tier:'epic',     icon:'✪', shape:'cup',    pal:'sapphire', color:'#4ea1ff', nameKey:'achTrusted',  descKey:'achTrustedD' },
   /* Exploration */
-  { cat:'achCatExplorer', metric:'starred',  goal:25, tier:'uncommon',  icon:'★', shape:'disc',   pal:'sapphire', color:'#4ea1ff', nameKey:'achStarred',  descKey:'achStarredD' },
+  { cat:'achCatExplorer', metric:'starred',  goal:25, tier:'rare',  icon:'★', shape:'disc',   pal:'sapphire', color:'#4ea1ff', nameKey:'achStarred',  descKey:'achStarredD' },
   { cat:'achCatExplorer', metric:'diffs',    goal:8,  tier:'rare',      icon:'⚑', shape:'shield', pal:'amethyst', color:'#c061ff', nameKey:'achDiffs8',   descKey:'achDiffs8D' },
   { cat:'achCatExplorer', metric:'demons',   goal:25, tier:'epic',      icon:'⚔', shape:'crest',  pal:'ruby',     color:'#e05555', nameKey:'achDemon25',  descKey:'achDemon25D' },
   { cat:'achCatExplorer', metric:'extremes', goal:5,  tier:'legendary', icon:'⚡', shape:'star',   pal:'obsidian', color:'#8b93a3', nameKey:'achExtreme5', descKey:'achExtreme5D' },
   /* Long-term progress */
-  { cat:'achCatAccount', metric:'days', goal:180, tier:'uncommon', icon:'◑', shape:'disc',   pal:'bronze', color:'#c9855a', nameKey:'achHalfYear', descKey:'achHalfYearD' },
+  { cat:'achCatAccount', metric:'days', goal:180, tier:'rare', icon:'◑', shape:'disc',   pal:'bronze', color:'#c9855a', nameKey:'achHalfYear', descKey:'achHalfYearD' },
   { cat:'achCatAccount', metric:'days', goal:365, tier:'rare',     icon:'✠', shape:'shield', pal:'gold',   color:'#ffcf4d', nameKey:'achYear',     descKey:'achYearD' },
   { cat:'achCatAccount', metric:'days', goal:730, tier:'epic',     icon:'⧗', shape:'hex',    pal:'gold',   color:'#ffcf4d', nameKey:'achTwoYear',  descKey:'achTwoYearD' },
   /* Special */
-  { cat:'achCatSpecial', metric:'essays',     goal:10, tier:'uncommon', icon:'¶', shape:'disc', pal:'emerald', color:'#3ddc84', nameKey:'achEssay',      descKey:'achEssayD' },
+  { cat:'achCatSpecial', metric:'essays',     goal:10, tier:'rare', icon:'¶', shape:'disc', pal:'emerald', color:'#3ddc84', nameKey:'achEssay',      descKey:'achEssayD' },
   { cat:'achCatSpecial', metric:'specialist', goal:25, tier:'rare',     icon:'❖', shape:'hex',  pal:'emerald', color:'#3ddc84', nameKey:'achSpecialist', descKey:'achSpecialistD' }
 ];
 
@@ -2580,12 +2622,31 @@ function achievementValues(reviews, user){
 /* Layered pseudo-3D reward object: shaped back plate + material face + glyph +
    cursor-driven gloss. Clean at rest — halo and shine only appear on hover.
    Epic adds facets; legendary adds a metallic mount ring and richest detail. */
+function achievementMotif(a){
+  const cube = '<rect class="motif-fill" x="13" y="13" width="38" height="38" rx="3"/><rect class="motif-cut" x="20" y="21" width="8" height="8"/><rect class="motif-cut" x="36" y="21" width="8" height="8"/><path class="motif-cut" d="M21 38h22v6H21z"/>';
+  const heartOrb = '<circle class="motif-line" cx="32" cy="32" r="23"/><path class="motif-fill" d="M32 48S15 38 15 26c0-10 13-13 17-4 4-9 17-6 17 4 0 12-17 22-17 22z"/>';
+  const star = '<path class="motif-fill" d="m32 7 7 16 18 2-14 12 4 18-15-9-15 9 4-18L7 25l18-2z"/><circle class="motif-cut" cx="32" cy="32" r="7"/>';
+  const wave = '<path class="motif-line" d="M8 43 22 21l8 17 10-24 16 29"/><path class="motif-fill" d="m25 38 8-8 7 8-7 8z"/>';
+  const demon = '<path class="motif-fill" d="M9 18 23 8l9 10L41 8l14 10-5 33H14z"/><path class="motif-cut" d="m18 27 10 5-12 4zm28 0-10 5 12 4zM22 43h20l-4 7H26z"/>';
+  const clock = '<circle class="motif-line" cx="32" cy="32" r="23"/><path class="motif-line" d="M32 18v15l11 7"/><path class="motif-fill" d="M28 5h8v7h-8z"/>';
+  const coin = '<circle class="motif-fill" cx="32" cy="32" r="24"/><circle class="motif-cut" cx="32" cy="32" r="16"/><path class="motif-fill" d="M25 21h14v7H25zm0 15h14v7H25z"/>';
+  const ship = '<path class="motif-fill" d="M7 37 48 14l9 25-23-4-12 15-2-12z"/><circle class="motif-cut" cx="39" cy="27" r="5"/><path class="motif-line" d="m8 47 12-9"/>';
+  let art = cube;
+  if(a.metric === 'likes') art = heartOrb;
+  else if(a.metric === 'best' || a.metric === 'trusted') art = star;
+  else if(a.metric === 'diffs' || a.metric === 'starred' || a.metric === 'specialist') art = ship;
+  else if(a.metric === 'demons' || a.metric === 'extremes') art = demon;
+  else if(a.metric === 'days') art = clock;
+  else if(a.metric === 'essays') art = coin;
+  else if(a.goal >= 100) art = wave;
+  return '<svg viewBox="0 0 64 64" aria-hidden="true">'+art+'</svg>';
+}
 function medalHTML(a){
   const hoverFx = (a.tier === 'epic' || a.tier === 'legendary') ? '<span class="medal-halo"></span><span class="trophy-shine"></span>' : '';
   return '<div class="trophy-medal medal-'+a.shape+' pal-'+a.pal+' mtier-'+a.tier+'">'
     + '<span class="medal-back"></span><span class="medal-face"></span>'
     + (a.tier === 'legendary' ? '<span class="medal-ring"></span>' : '')
-    + '<span class="medal-glyph">'+a.icon+'</span><span class="medal-gloss"></span>'
+    + '<span class="medal-glyph">'+achievementMotif(a)+'</span><span class="medal-gloss"></span>'
     + hoverFx + '</div>';
 }
 function buildAchievementsBoard(reviews, user){
@@ -2605,8 +2666,8 @@ function buildAchievementsBoard(reviews, user){
   }).join('');
 }
 /* Rarity ladder — the rarest achievements always display first. */
-const TIER_ORDER = { legendary:0, epic:1, rare:2, uncommon:3, common:4 };
-const TIER_LABEL_KEY = { common:'achTierCommon', uncommon:'achTierUncommon', rare:'achTierRare', epic:'achTierEpic', legendary:'achTierLegendary' };
+const TIER_ORDER = { legendary:0, epic:1, rare:2, common:3 };
+const TIER_LABEL_KEY = { common:'achTierCommon', rare:'achTierRare', epic:'achTierEpic', legendary:'achTierLegendary' };
 function achTierLabel(tier){ return t(TIER_LABEL_KEY[tier] || 'achTierCommon'); }
 /* Public trophy showcase: a collectible display board that shows only the
    *earned* rewards — no goals, counters or locked achievements leak out.
@@ -2873,6 +2934,7 @@ function fillSettings(){
     $('inp-set-username').value = me.username || '';
     markField($('inp-set-username'), '');
     $('inp-set-desc').value = me.description || '';
+    refreshTextCounters();
     settingsFrame = FRAMES.indexOf(me.frame) !== -1 ? me.frame : 'frame-default';
     renderSettingsFrames(); updateSettingsPreview();
     SOCIAL_PLATFORMS.forEach(function(p){ const inp = $('inp-soc-'+p.key); if(inp){ inp.value = (me.socials && me.socials[p.key]) || ''; setSocialFieldError(p, false); } });
@@ -2888,6 +2950,9 @@ $('btn-save-profile').addEventListener('click', async function(){
   const newName = uInp.value.trim();
   if(!/^[a-zA-Z0-9\u0430-\u044f\u0410-\u042f\u0451\u0401_\-. ]{3,20}$/.test(newName)){ markField(uInp, t('vUserLen')); uInp.focus(); return; }
   markField(uInp, '');
+  const descInp = $('inp-set-desc');
+  const description = descInp.value.trim();
+  if(description.length > TEXT_LIMITS.description){ toast(t('err_description_too_long'), 'error'); descInp.focus(); refreshTextCounters(); return; }
   /* Validate social links up front so nothing is saved partially. */
   let firstInvalid = null; const newSocials = {};
   SOCIAL_PLATFORMS.forEach(function(p){ const input = $('inp-soc-'+p.key); const raw = input.value.trim(); const valid = isValidSocialUrl(p, raw); setSocialFieldError(p, !valid); if(!valid && !firstInvalid) firstInvalid = input; if(valid && raw) newSocials[p.key] = normalizeUrl(raw); });
@@ -2912,7 +2977,7 @@ $('btn-save-profile').addEventListener('click', async function(){
     }
     if(pendingProfile.avatar) me.avatar = pendingProfile.avatar;
     if(pendingProfile.banner) me.banner = pendingProfile.banner;
-    me.description = $('inp-set-desc').value.trim();
+    me.description = description;
     me.frame = settingsFrame;
     me.socials = newSocials;
     await saveProfile();
