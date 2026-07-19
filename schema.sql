@@ -47,6 +47,8 @@ CREATE TABLE IF NOT EXISTS reviews (
     music INTEGER,
     originality INTEGER,
     final_score NUMERIC(4,2),
+    -- title и review_text равны NULL для rating-only записей (пользователь
+    -- опубликовал только оценки без текстовой рецензии).
     title VARCHAR(30),
     review_text TEXT,
     saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
