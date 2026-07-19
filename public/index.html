@@ -225,6 +225,8 @@
   .archive-list{ display:flex; flex-direction:column; gap:16px; }
   .review-bar{ position:relative; display:flex; align-items:stretch; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; opacity:0; transform:translateY(14px); animation:barIn .5s var(--ease) forwards; transition:all .25s var(--ease); cursor:pointer; }
   @keyframes barIn{to{opacity:1;transform:translateY(0);}}
+  /* barInF reveals without fill-mode:forwards so transforms stay animatable after entry. */
+  @keyframes barInF{from{opacity:0;transform:translateY(10px);}}
   .review-bar:hover{ transform:translateY(-3px) scale(1.005); border-color:var(--line2); box-shadow:0 16px 34px -14px rgba(255,255,255,0.18); }
   .bar-banner-bg { position: absolute; inset: 0; z-index: 0; background-size: cover; background-position: center; -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.9) 75%); mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.9) 75%); opacity: 0.35; transition: opacity .4s ease, transform .5s ease; }
   .review-bar:hover .bar-banner-bg { opacity: 0.7; transform: scale(1.03); }
@@ -518,7 +520,7 @@
   .dash-stats-grid{ display:flex; flex-direction:column; gap:20px; margin-top:16px; }
   .dash-stat-num{ font-family:'Archivo Black',sans-serif; font-size:clamp(34px,5vw,46px); line-height:1; color:var(--white); }
   .dash-stat-label{ font-family:'Space Mono',monospace; font-size:10.5px; letter-spacing:0.16em; text-transform:uppercase; color:var(--dim); margin-top:6px; }
-  .lb-row{ display:flex; align-items:center; gap:12px; padding:9px 10px; border:1px solid transparent; border-radius:10px; cursor:pointer; opacity:0; animation:barIn .45s var(--ease) forwards; transition:background .2s var(--ease), border-color .2s var(--ease), transform .2s var(--ease); }
+  .lb-row{ display:flex; align-items:center; gap:12px; padding:9px 10px; border:1px solid transparent; border-radius:10px; cursor:pointer; animation:barInF .45s var(--ease) backwards; transition:background .2s var(--ease), border-color .2s var(--ease), transform .2s var(--ease); }
   .lb-row:hover{ background:rgba(255,255,255,0.04); border-color:var(--line); transform:translateX(3px); }
   .lb-rank{ font-family:'Space Mono',monospace; width:22px; text-align:center; color:var(--dim2); font-size:12px; font-weight:700; flex-shrink:0; }
   .lb-rank.lb-top{ color:var(--white); text-shadow:0 0 10px rgba(255,255,255,0.5); }
@@ -528,14 +530,28 @@
   .dash-diff-bar{ position:relative; z-index:5; display:flex; flex-direction:column; gap:14px; border-top:1px solid var(--line); padding-top:30px; }
   #dash-rankings{ display:flex; flex-direction:column; gap:32px; transition:opacity .3s var(--ease), transform .3s var(--ease); }
   #dash-rankings.dash-fade{ opacity:0.2; transform:translateY(5px); pointer-events:none; }
-  .dash-sec-head{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
-  .dash-sec-num{ font-family:'Space Mono',monospace; font-size:11px; color:var(--dim2); border:1px solid var(--line); border-radius:6px; padding:3px 7px; }
+  .dash-sec-head{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+  .dash-sec-title{ font-family:'Archivo Black',sans-serif; font-size:clamp(19px,2.6vw,26px); line-height:1.1; text-transform:uppercase; letter-spacing:0.02em; color:var(--white); }
   /* ---- Horizontal level carousels: hidden scrollbar, masked edges, drag-to-scroll ---- */
-  .rank-row{ display:grid; grid-auto-flow:column; grid-auto-columns:230px; gap:14px; overflow-x:auto; overflow-y:hidden; padding:10px 20px 16px; margin:0 -20px; scroll-snap-type:x proximity; scroll-behavior:smooth; scrollbar-width:none; -ms-overflow-style:none; -webkit-mask-image:linear-gradient(to right, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%); mask-image:linear-gradient(to right, transparent 0, #000 20px, #000 calc(100% - 20px), transparent 100%); user-select:none; -webkit-user-select:none; }
+  /* Full-bleed carousels: rows escape the shell and run across the viewport,
+     with wide soft fades instead of hard clipping so neighboring cards stay
+     partially visible and it's obvious there is more to scroll. */
+  .rank-row{ --edge:calc(50vw - 50% + 20px); display:grid; grid-auto-flow:column; grid-auto-columns:230px; gap:14px; overflow-x:auto; overflow-y:hidden; padding:10px var(--edge) 16px; margin:0 calc(50% - 50vw); scrollbar-width:none; -ms-overflow-style:none; -webkit-mask-image:linear-gradient(to right, transparent 0, #000 clamp(36px,7vw,110px), #000 calc(100% - clamp(36px,7vw,110px)), transparent 100%); mask-image:linear-gradient(to right, transparent 0, #000 clamp(36px,7vw,110px), #000 calc(100% - clamp(36px,7vw,110px)), transparent 100%); user-select:none; -webkit-user-select:none; overscroll-behavior-x:contain; touch-action:pan-x pan-y; }
   .rank-row::-webkit-scrollbar{ display:none; }
-  .rank-row.dragging{ scroll-behavior:auto; scroll-snap-type:none; }
   .rank-row.dragging .rank-card{ pointer-events:none; }
-  .rank-card{ scroll-snap-align:start; position:relative; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; cursor:pointer; opacity:0; transform:translateY(10px); animation:barIn .45s var(--ease) forwards; transition:transform .28s var(--spring), border-color .22s var(--ease), box-shadow .28s var(--ease); }
+  /* Custom slim scrollbar: appears while the row is hovered or scrolling. */
+  .row-scroll{ position:relative; height:4px; margin:-6px auto 10px; max-width:min(100%, 560px); border-radius:999px; background:rgba(255,255,255,0.06); opacity:0; transition:opacity .35s var(--ease); pointer-events:none; }
+  .dash-section:hover .row-scroll, .row-scroll.active{ opacity:1; pointer-events:auto; }
+  .row-scroll-thumb{ position:absolute; top:0; bottom:0; left:0; width:20%; border-radius:999px; background:linear-gradient(90deg, rgba(255,255,255,0.55), rgba(255,255,255,0.85)); box-shadow:0 0 8px rgba(255,255,255,0.18); cursor:pointer; transition:background .2s ease; }
+  .row-scroll-thumb:hover, .row-scroll.scrubbing .row-scroll-thumb{ background:var(--white); }
+  .row-scroll.hidden{ display:none; }
+  /* Hover experience: hovered card grows slightly, its neighbors ease back. */
+  @supports selector(:has(*)){
+    .rank-row:has(.rank-card:hover):not(.dragging) .rank-card{ transform:scale(0.972); opacity:0.82; }
+    .rank-row:has(.rank-card:hover):not(.dragging) .rank-card:hover{ transform:translateY(-6px) scale(1.04); opacity:1; }
+  }
+
+  .rank-card{ position:relative; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; cursor:pointer; animation:barInF .45s var(--ease) backwards; transition:transform .32s var(--spring), opacity .3s var(--ease), border-color .22s var(--ease), box-shadow .28s var(--ease); }
   .rank-card::after{ content:''; position:absolute; inset:0; border-radius:inherit; box-shadow:inset 0 0 0 1px rgba(255,255,255,0); pointer-events:none; transition:box-shadow .25s var(--ease); }
   .rank-card:hover{ transform:translateY(-6px); border-color:var(--line2); box-shadow:0 18px 38px -14px rgba(255,255,255,0.22), 0 4px 14px rgba(0,0,0,0.45); }
   .rank-card:hover::after{ box-shadow:inset 0 0 0 1px rgba(255,255,255,0.22); }
@@ -777,19 +793,52 @@
   /* ---------- DIFFICULTY NAVIGATOR (home ranking chips) ---------- */
   /* ---- Difficulty dropdown (homepage rankings filter) ----
      Icons keep their original Geometry Dash colors for instant recognition. */
-  .diff-dropdown{ position:relative; align-self:flex-start; }
-  .diff-dd-btn{ display:inline-flex; align-items:center; gap:9px; padding:10px 14px; background:linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.008)), var(--panel); border:1px solid var(--line); border-radius:12px; color:var(--white); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; cursor:pointer; transition:border-color .22s var(--ease), transform .18s var(--spring), box-shadow .22s var(--ease); }
+  /* Difficulty selector: trigger button + side panel that slides in from the right. */
+  .diff-dd-btn{ align-self:flex-start; display:inline-flex; align-items:center; gap:9px; padding:10px 14px; background:linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.008)), var(--panel); border:1px solid var(--line); border-radius:12px; color:var(--white); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; cursor:pointer; transition:border-color .22s var(--ease), transform .18s var(--spring), box-shadow .22s var(--ease); }
   .diff-dd-btn:hover{ border-color:var(--line2); transform:translateY(-1px); box-shadow:0 4px 14px rgba(0,0,0,0.35); }
   .diff-dd-btn:active{ transform:scale(0.97); }
   .diff-dd-btn img{ width:20px; height:20px; object-fit:contain; }
   .diff-dd-arrow{ width:16px; height:16px; fill:var(--dim); transition:transform .25s var(--ease); }
-  .diff-dropdown.open .diff-dd-arrow{ transform:rotate(180deg); }
-  .diff-dd-menu{ position:absolute; top:calc(100% + 8px); left:0; min-width:240px; max-height:346px; overflow-y:auto; background:var(--panel2); border:1px solid var(--line2); border-radius:14px; padding:6px; z-index:80; box-shadow:0 24px 60px -16px rgba(0,0,0,0.8), 0 0 30px rgba(255,255,255,0.04); opacity:0; transform:translateY(-6px) scale(0.97); transform-origin:top left; pointer-events:none; transition:opacity .22s var(--ease), transform .26s var(--spring); }
-  .diff-dropdown.open .diff-dd-menu{ opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
-  .diff-dd-item{ display:flex; width:100%; align-items:center; gap:10px; padding:9px 12px; background:none; border:none; border-radius:9px; color:var(--dim); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; cursor:pointer; text-align:left; transition:background .15s ease, color .15s ease; }
-  .diff-dd-item:hover{ background:rgba(255,255,255,0.06); color:var(--white); }
-  .diff-dd-item.active{ background:var(--white); color:#0a0a0a; }
-  .diff-dd-item img{ width:20px; height:20px; object-fit:contain; flex-shrink:0; }
+  .diff-dd-btn[aria-expanded="true"] .diff-dd-arrow{ transform:rotate(-90deg); }
+  #diff-panel-backdrop{ position:fixed; inset:0; z-index:100020; background:rgba(4,4,4,0.62); backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px); opacity:0; pointer-events:none; transition:opacity .3s var(--ease); }
+  #diff-panel-backdrop.open{ opacity:1; pointer-events:auto; }
+  #diff-panel{ position:fixed; top:0; right:0; bottom:0; z-index:100021; width:min(400px, 92vw); display:flex; flex-direction:column; background:linear-gradient(200deg, rgba(255,255,255,0.045), rgba(255,255,255,0.008) 40%), var(--panel2); border-left:1px solid var(--line2); box-shadow:-30px 0 80px rgba(0,0,0,0.6); transform:translateX(102%); visibility:hidden; transition:transform .42s var(--spring), visibility 0s linear .42s; }
+  #diff-panel.open{ transform:translateX(0); visibility:visible; transition:transform .42s var(--spring); }
+  .diff-panel-head{ display:flex; align-items:center; justify-content:space-between; gap:14px; padding:26px 26px 18px; border-bottom:1px solid var(--line); }
+  .diff-panel-title{ font-family:'Archivo Black',sans-serif; font-size:19px; text-transform:uppercase; letter-spacing:0.04em; }
+  .diff-panel-close{ width:36px; height:36px; display:flex; align-items:center; justify-content:center; background:var(--black2); border:1px solid var(--line); border-radius:10px; color:var(--dim); font-size:20px; line-height:1; cursor:pointer; transition:all .2s var(--ease); }
+  .diff-panel-close:hover{ color:var(--white); border-color:var(--line2); transform:rotate(90deg); }
+  .diff-panel-list{ flex:1; overflow-y:auto; overscroll-behavior:contain; padding:16px 16px 24px; display:flex; flex-direction:column; gap:8px; scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.18) transparent; }
+  .diff-panel-item{ display:flex; align-items:center; gap:16px; width:100%; padding:14px 16px; background:var(--panel); border:1px solid var(--line); border-radius:14px; color:var(--dim); font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; cursor:pointer; text-align:left; opacity:0; transform:translateX(26px); transition:background .2s ease, color .2s ease, border-color .2s ease, transform .22s var(--spring); }
+  #diff-panel.open .diff-panel-item{ animation:diffItemIn .4s var(--ease) forwards; }
+  @keyframes diffItemIn{ to{ opacity:1; transform:translateX(0); } }
+  .diff-panel-item:hover{ background:rgba(255,255,255,0.06); color:var(--white); border-color:var(--line2); transform:translateX(-4px); }
+  .diff-panel-item.active{ background:var(--white); color:#0a0a0a; border-color:var(--white); }
+  .diff-panel-item img{ width:34px; height:34px; object-fit:contain; flex-shrink:0; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.55)); }
+  .diff-panel-item .dpi-blank{ width:34px; height:34px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:15px; }
+  /* Global search: Levels | Profiles result tabs + profile result cards. */
+  .search-tabs{ display:flex; gap:4px; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:4px; width:max-content; margin-bottom:18px; }
+  .search-tab{ background:none; border:none; border-radius:7px; color:var(--dim); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.09em; padding:9px 18px; cursor:pointer; transition:all .22s var(--spring); }
+  .search-tab:hover{ color:var(--white); }
+  .search-tab.active{ background:var(--white); color:#0a0a0a; }
+  .search-tab .st-count{ font-family:'Space Mono',monospace; font-weight:400; opacity:0.65; margin-left:5px; }
+  .search-pane{ animation:fadeSlideIn .3s var(--ease); }
+  @keyframes fadeSlideIn{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+  .user-result-card{ display:flex; align-items:center; gap:16px; padding:14px 18px; background:var(--panel); border:1px solid var(--line); border-radius:14px; cursor:pointer; animation:barInF .45s var(--ease) backwards; transition:transform .25s var(--spring), border-color .22s var(--ease), box-shadow .25s var(--ease); }
+  .user-result-card:hover{ transform:translateY(-3px); border-color:var(--line2); box-shadow:0 14px 34px -14px rgba(255,255,255,0.18); }
+  .user-result-card .urc-ava{ width:46px; height:46px; border-radius:50%; object-fit:cover; border:1px solid var(--line2); flex-shrink:0; }
+  .user-result-card .urc-name{ font-weight:700; font-size:15px; color:var(--white); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .user-result-card .urc-meta{ font-family:'Space Mono',monospace; font-size:11.5px; color:var(--dim); flex-shrink:0; display:flex; gap:12px; }
+  /* Top reviewers: elegant metallic borders for the podium. */
+  .lb-row.lb-gold{ border-color:rgba(214,178,88,0.6); background:linear-gradient(90deg, rgba(214,178,88,0.1), rgba(214,178,88,0.02) 60%, transparent); }
+  .lb-row.lb-gold .lb-rank{ color:#e8c76a; text-shadow:none; }
+  .lb-row.lb-silver{ border-color:rgba(196,202,212,0.5); background:linear-gradient(90deg, rgba(196,202,212,0.09), rgba(196,202,212,0.02) 60%, transparent); }
+  .lb-row.lb-silver .lb-rank{ color:#ced4de; text-shadow:none; }
+  .lb-row.lb-bronze{ border-color:rgba(205,133,79,0.5); background:linear-gradient(90deg, rgba(205,133,79,0.09), rgba(205,133,79,0.02) 60%, transparent); }
+  .lb-row.lb-bronze .lb-rank{ color:#d99a6c; text-shadow:none; }
+  .lb-row.lb-gold:hover{ border-color:rgba(214,178,88,0.85); }
+  .lb-row.lb-silver:hover{ border-color:rgba(196,202,212,0.8); }
+  .lb-row.lb-bronze:hover{ border-color:rgba(205,133,79,0.8); }
   @keyframes diffPop{ 0%{ transform:scale(0.92);} 60%{ transform:scale(1.05);} 100%{ transform:scale(1);} }
 
   /* ---------- LIFTOFF ---------- */
@@ -1097,22 +1146,19 @@
         </div>
 
         <div class="dash-diff-bar">
-          <div class="section-label" style="margin:0;" data-i18n="dashRankTitle">Level Rankings</div>
-          <div class="diff-dropdown" id="diff-dropdown">
-            <button class="diff-dd-btn" id="diff-dd-btn" aria-haspopup="listbox" aria-expanded="false"></button>
-            <div class="diff-dd-menu" id="diff-dd-menu" role="listbox" aria-label="Difficulty filter"></div>
-          </div>
+          <div class="dash-sec-title" data-i18n="dashRankTitle">Level Rankings</div>
+          <button class="diff-dd-btn" id="diff-panel-btn" aria-haspopup="dialog" aria-expanded="false"></button>
         </div>
 
         <div id="dash-rankings">
-          <div class="dash-section"><div class="dash-sec-head"><span class="dash-sec-num">01</span><span class="section-label" style="margin:0;" data-i18n="secPopularAll">Most Popular Levels — All Time</span></div><div class="rank-row" id="row-popular-all"></div></div>
-          <div class="dash-section"><div class="dash-sec-head"><span class="dash-sec-num">02</span><span class="section-label" style="margin:0;" data-i18n="secTopToday">Top Rated Popular Levels — Today</span></div><div class="rank-row" id="row-top-today"></div></div>
-          <div class="dash-section"><div class="dash-sec-head"><span class="dash-sec-num">03</span><span class="section-label" style="margin:0;" data-i18n="secPopularWeek">Popular Levels — This Week</span></div><div class="rank-row" id="row-popular-week"></div></div>
-          <div class="dash-section"><div class="dash-sec-head"><span class="dash-sec-num">04</span><span class="section-label" style="margin:0;" data-i18n="secDiscussed">Most Discussed Levels</span></div><div class="rank-row" id="row-discussed"></div></div>
+          <div class="dash-section"><div class="dash-sec-head"><span class="dash-sec-title" data-i18n="secPopularAll">Most Popular Levels — All Time</span></div><div class="rank-row" id="row-popular-all"></div></div>
+          <div class="dash-section"><div class="dash-sec-head"><span class="dash-sec-title" data-i18n="secTopToday">Top Rated Popular Levels — Today</span></div><div class="rank-row" id="row-top-today"></div></div>
+          <div class="dash-section"><div class="dash-sec-head"><span class="dash-sec-title" data-i18n="secPopularWeek">Popular Levels — This Week</span></div><div class="rank-row" id="row-popular-week"></div></div>
+          <div class="dash-section"><div class="dash-sec-head"><span class="dash-sec-title" data-i18n="secDiscussed">Most Discussed Levels</span></div><div class="rank-row" id="row-discussed"></div></div>
         </div>
 
         <div class="dash-section">
-          <div class="dash-sec-head"><span class="dash-sec-num">05</span><span class="section-label" style="margin:0;" data-i18n="secCommunity">Global Statistics &amp; Top Reviewers</span></div>
+          <div class="dash-sec-head"><span class="dash-sec-title" data-i18n="secCommunity">Global Statistics &amp; Top Reviewers</span></div>
           <div class="dash-community">
             <div class="chart-card">
               <div class="chart-title" data-i18n="dashStatsTitle">Global Statistics</div>
@@ -1126,7 +1172,7 @@
           </div>
         </div>
 
-        <div class="dash-section" id="dash-latest-section"><div class="dash-sec-head"><span class="dash-sec-num">06</span><span class="section-label" style="margin:0;" data-i18n="secLatest">Latest Reviews</span></div><div id="dash-latest"></div><div class="pagination" id="latest-pagination" hidden></div></div>
+        <div class="dash-section" id="dash-latest-section"><div class="dash-sec-head"><span class="dash-sec-title" data-i18n="secLatest">Latest Reviews</span></div><div id="dash-latest"></div><div class="pagination" id="latest-pagination" hidden></div></div>
       </div>
     </section>
 
@@ -1473,6 +1519,16 @@
   <div class="pt-panel pt-b"></div>
   <div class="pt-mark">RANDOM<span>/</span>LEVEL</div>
 </div>
+<!-- Difficulty side panel: slides in from the right, lists every GD difficulty -->
+<div id="diff-panel-backdrop" aria-hidden="true"></div>
+<aside id="diff-panel" role="dialog" aria-modal="true" aria-label="Difficulty filter">
+  <div class="diff-panel-head">
+    <span class="diff-panel-title" data-i18n="diffPanelTitle">Select Difficulty</span>
+    <button class="diff-panel-close" id="diff-panel-close" aria-label="Close">&times;</button>
+  </div>
+  <div class="diff-panel-list" id="diff-panel-list" role="listbox" aria-label="Difficulty filter"></div>
+</aside>
+
 <script>
 'use strict';
 /* ================= UTILS ================= */
@@ -1533,6 +1589,7 @@ const i18n = {
     chipRecent:'Recent', chipPopular:'Popular', chipToday:'Top Today', chipWeek:'Top Week', chipAllTime:'All Time', chipDiscussed:'Most Discussed', chipBeautiful:'Most Beautiful', chipEasiest:'Easiest', chipHardest:'Hardest', diffAny:'Any difficulty',
     feedEmptyTitle:'Nothing here yet', feedEmptySub:'Be the first — write a review in the Create tab.',
     searchResults:'Search results', clearSearch:'Clear', noResultsTitle:'No results found', noResultsSub:'Try a different query — by level name or ID.', loading:'Loading…', readMore:'Read →',
+    searchTabLevels:'Levels', searchTabProfiles:'Profiles', noProfilesSub:'No users match this name.', diffPanelTitle:'Select Difficulty',
     avgLabel:'Avg', revCount:'Reviews', beautyLabel:'Beauty',
     backBtn:'Back', lvlEyebrow:'Level', lvlReviews:'Reviews', lvlNoReviewsTitle:'No reviews yet', lvlNoReviewsSub:'Be the first to review this level.', lvlWrite:'Write a Review',
     sortRecent:'Newest', sortPopular:'Most liked', sortHighest:'Highest score', sortLowest:'Lowest score', sortNewest:'Newest first', sortOldest:'Oldest first',
@@ -1615,6 +1672,7 @@ const i18n = {
     chipRecent:'Недавние', chipPopular:'Популярные', chipToday:'Лучшие за день', chipWeek:'Лучшие за неделю', chipAllTime:'За всё время', chipDiscussed:'Обсуждаемые', chipBeautiful:'Самые красивые', chipEasiest:'Лёгкие', chipHardest:'Сложные', diffAny:'Любая сложность',
     feedEmptyTitle:'Пока пусто', feedEmptySub:'Станьте первым — напишите рецензию во вкладке «Создать».',
     searchResults:'Результаты поиска', clearSearch:'Сбросить', noResultsTitle:'Ничего не найдено', noResultsSub:'Попробуйте другой запрос — по названию или ID.', loading:'Загрузка…', readMore:'Читать →',
+    searchTabLevels:'Уровни', searchTabProfiles:'Профили', noProfilesSub:'Пользователи с таким именем не найдены.', diffPanelTitle:'Выбор сложности',
     avgLabel:'Средняя', revCount:'Рецензий', beautyLabel:'Красота',
     backBtn:'Назад', lvlEyebrow:'Уровень', lvlReviews:'Рецензии', lvlNoReviewsTitle:'Рецензий пока нет', lvlNoReviewsSub:'Станьте первым, кто оценит этот уровень.', lvlWrite:'Написать рецензию',
     sortRecent:'Сначала новые', sortPopular:'По лайкам', sortHighest:'Высокий балл', sortLowest:'Низкий балл', sortNewest:'Сначала новые', sortOldest:'Сначала старые',
@@ -2139,34 +2197,44 @@ const DIFF_OPTIONS = [
 let dashDiff = '', dashLoaded = false;
 function diffOptionLabel(o){ return o.i18n ? t(o.i18n) : o.label; }
 function diffOptionIcon(o){ return o.face ? '<img src="https://gdbrowser.com/assets/difficulties/'+o.face+'.png" alt="" loading="lazy">' : ''; }
-/* Dropdown difficulty filter: the button shows the current selection with its
-   colored GD difficulty icon; the menu lists every difficulty. */
+/* Difficulty side panel: the trigger button shows the current selection with
+   its colored GD icon; clicking it slides in a panel with every difficulty as
+   a large option. Selecting applies the filter and closes the panel. */
 const DIFF_DD_ARROW = '<svg class="diff-dd-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>';
-function diffDropdownOpen(){ return $('diff-dropdown').classList.contains('open'); }
-function openDiffDropdown(){ $('diff-dropdown').classList.add('open'); $('diff-dd-btn').setAttribute('aria-expanded','true'); }
-function closeDiffDropdown(){ $('diff-dropdown').classList.remove('open'); $('diff-dd-btn').setAttribute('aria-expanded','false'); }
-function buildDiffDropdown(){
+function diffPanelOpen(){ return $('diff-panel').classList.contains('open'); }
+function openDiffPanel(){
+  $('diff-panel').classList.add('open'); $('diff-panel-backdrop').classList.add('open');
+  $('diff-panel-btn').setAttribute('aria-expanded','true');
+  /* Stagger the option entrance every time the panel opens. */
+  qsa('.diff-panel-item').forEach(function(it, i){ it.style.animation = 'none'; void it.offsetWidth; it.style.animation = ''; it.style.animationDelay = (0.05 + i * 0.022) + 's'; });
+}
+function closeDiffPanel(){
+  $('diff-panel').classList.remove('open'); $('diff-panel-backdrop').classList.remove('open');
+  $('diff-panel-btn').setAttribute('aria-expanded','false');
+}
+function buildDiffPanel(){
   const sel = DIFF_OPTIONS.find(function(o){ return o.v === dashDiff; }) || DIFF_OPTIONS[0];
-  $('diff-dd-btn').innerHTML = diffOptionIcon(sel)+'<span>'+escapeHTML(diffOptionLabel(sel))+'</span>'+DIFF_DD_ARROW;
-  $('diff-dd-menu').innerHTML = DIFF_OPTIONS.map(function(o){
-    return '<button class="diff-dd-item'+(dashDiff === o.v ? ' active' : '')+'" role="option" aria-selected="'+(dashDiff === o.v)+'" data-diff="'+escapeHTML(o.v)+'">'+diffOptionIcon(o)+'<span>'+escapeHTML(diffOptionLabel(o))+'</span></button>';
+  $('diff-panel-btn').innerHTML = diffOptionIcon(sel)+'<span>'+escapeHTML(diffOptionLabel(sel))+'</span>'+DIFF_DD_ARROW;
+  $('diff-panel-list').innerHTML = DIFF_OPTIONS.map(function(o){
+    const icon = o.face ? diffOptionIcon(o) : '<span class="dpi-blank">✦</span>';
+    return '<button class="diff-panel-item'+(dashDiff === o.v ? ' active' : '')+'" role="option" aria-selected="'+(dashDiff === o.v)+'" data-diff="'+escapeHTML(o.v)+'">'+icon+'<span>'+escapeHTML(diffOptionLabel(o))+'</span></button>';
   }).join('');
 }
-$('diff-dd-btn').addEventListener('click', function(e){
+$('diff-panel-btn').addEventListener('click', function(e){
   e.stopPropagation();
-  if(diffDropdownOpen()) closeDiffDropdown(); else openDiffDropdown();
+  if(diffPanelOpen()) closeDiffPanel(); else openDiffPanel();
 });
-$('diff-dd-menu').addEventListener('click', function(e){
-  const item = e.target.closest('.diff-dd-item'); if(!item || item.dataset.diff == null) return;
-  closeDiffDropdown();
+$('diff-panel-list').addEventListener('click', function(e){
+  const item = e.target.closest('.diff-panel-item'); if(!item || item.dataset.diff == null) return;
+  closeDiffPanel();
   if(item.dataset.diff === dashDiff) return;
   dashDiff = item.dataset.diff;
-  buildDiffDropdown();
+  buildDiffPanel();
   loadRankings();
 });
-/* Close when clicking outside or pressing Escape. */
-document.addEventListener('click', function(e){ if(diffDropdownOpen() && !e.target.closest('#diff-dropdown')) closeDiffDropdown(); });
-document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && diffDropdownOpen()){ closeDiffDropdown(); $('diff-dd-btn').focus(); } });
+$('diff-panel-close').addEventListener('click', closeDiffPanel);
+$('diff-panel-backdrop').addEventListener('click', closeDiffPanel);
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && diffPanelOpen()){ closeDiffPanel(); $('diff-panel-btn').focus(); } });
 
 /* ---- Rankings: 4 sections, updated together on difficulty change ---- */
 const RANK_ROWS = [ ['row-popular-all','popular_all'], ['row-top-today','top_today'], ['row-popular-week','popular_week'], ['row-discussed','discussed'] ];
@@ -2212,7 +2280,7 @@ async function loadCommunity(){
     + '<div class="dash-stat"><div class="dash-stat-num">'+(s.total_users||0)+'</div><div class="dash-stat-label">'+escapeHTML(t('statTotalUsers'))+'</div></div>';
   const lb = r.data.leaderboard || [];
   $('dash-leaderboard').innerHTML = lb.length ? lb.map(function(u,i){
-    return '<div class="lb-row" data-user="'+escapeHTML(u.username)+'" style="animation-delay:'+(i*0.04)+'s"><span class="lb-rank'+(i<3?' lb-top':'')+'">'+(i+1)+'</span><img class="fc-ava" src="'+escapeHTML(u.avatar || DEFAULT_AVATAR)+'" alt="" loading="lazy"><span class="lb-name">'+escapeHTML(u.username)+'</span><span class="lb-likes">♥ '+(u.likes_received||0)+'</span><span class="lb-reviews">'+(u.review_count||0)+' '+escapeHTML(t('rankReviews'))+'</span></div>';
+    return '<div class="lb-row'+(i===0?' lb-gold':i===1?' lb-silver':i===2?' lb-bronze':'')+'" data-user="'+escapeHTML(u.username)+'" style="animation-delay:'+(i*0.04)+'s"><span class="lb-rank'+(i<3?' lb-top':'')+'">'+(i+1)+'</span><img class="fc-ava" src="'+escapeHTML(u.avatar || DEFAULT_AVATAR)+'" alt="" loading="lazy"><span class="lb-name">'+escapeHTML(u.username)+'</span><span class="lb-likes">♥ '+(u.likes_received||0)+'</span><span class="lb-reviews">'+(u.review_count||0)+' '+escapeHTML(t('rankReviews'))+'</span></div>';
   }).join('') : '<div class="rank-empty">'+escapeHTML(t('lbEmpty'))+'</div>';
 }
 
@@ -2255,33 +2323,76 @@ function startLatestPolling(){
   }, LATEST_POLL_MS);
 }
 
-function loadDashboard(){ dashLoaded = true; buildDiffDropdown(); loadCommunity(); loadRankings(); loadLatest(latestPage); startLatestPolling(); }
+function loadDashboard(){ dashLoaded = true; buildDiffPanel(); loadCommunity(); loadRankings(); loadLatest(latestPage); startLatestPolling(); }
 function ensureDashboard(){ if(!dashLoaded) loadDashboard(); }
 
-/* Home search: ID opens level page, name overlays the dashboard with results */
+/* Global home search: ID opens the level page directly; anything else searches
+   both GD levels and user profiles, shown in Levels | Profiles result tabs. */
+let searchTab = 'levels', searchSeq = 0;
+function renderUserResultCard(u, i){
+  return '<div class="user-result-card" data-user="'+escapeHTML(u.username)+'" style="animation-delay:'+(i*0.05)+'s"><img class="urc-ava" src="'+escapeHTML(u.avatar || DEFAULT_AVATAR)+'" alt="" loading="lazy"><span class="urc-name">'+escapeHTML(u.username)+'</span><span class="urc-meta"><span>♥ '+(u.likes_received||0)+'</span><span>'+(u.review_count||0)+' '+escapeHTML(t('rankReviews'))+'</span></span></div>';
+}
+function renderSearchResults(q, levels, users){
+  const box = $('home-search-results');
+  const head = '<div class="search-results-head"><span class="section-label" style="margin:0">'+t('searchResults')+': “'+escapeHTML(q)+'”</span><button class="chip" id="clear-search">'+t('clearSearch')+'</button></div>';
+  const tabs = '<div class="search-tabs" role="tablist">'
+    + '<button class="search-tab'+(searchTab==='levels'?' active':'')+'" role="tab" data-stab="levels" aria-selected="'+(searchTab==='levels')+'">'+t('searchTabLevels')+'<span class="st-count">'+levels.length+'</span></button>'
+    + '<button class="search-tab'+(searchTab==='profiles'?' active':'')+'" role="tab" data-stab="profiles" aria-selected="'+(searchTab==='profiles')+'">'+t('searchTabProfiles')+'<span class="st-count">'+users.length+'</span></button></div>';
+  const levelsPane = levels.length
+    ? '<div class="feed-list">'+levels.map(function(lv,i){ return renderLevelCard({ level_id: lv.id, level_name: lv.name, level_author: lv.author, difficulty: lv.difficulty, difficulty_face: lv.difficultyFace, stars: lv.stars, review_count: null, avg_score: null, avg_beauty: null }, i); }).join('')+'</div>'
+    : emptyState(t('noResultsTitle'), t('noResultsSub'));
+  const usersPane = users.length
+    ? '<div class="feed-list">'+users.map(renderUserResultCard).join('')+'</div>'
+    : emptyState(t('noResultsTitle'), t('noProfilesSub'));
+  box.innerHTML = head + tabs
+    + '<div class="search-pane" data-pane="levels"'+(searchTab==='levels'?'':' hidden')+'>'+levelsPane+'</div>'
+    + '<div class="search-pane" data-pane="profiles"'+(searchTab==='profiles'?'':' hidden')+'>'+usersPane+'</div>';
+  const clr = $('clear-search'); if(clr) clr.addEventListener('click', clearHomeSearch);
+  qsa('.search-tab', box).forEach(function(b){
+    b.addEventListener('click', function(){
+      if(b.dataset.stab === searchTab) return;
+      searchTab = b.dataset.stab;
+      qsa('.search-tab', box).forEach(function(x){ const on = x.dataset.stab === searchTab; x.classList.toggle('active', on); x.setAttribute('aria-selected', on); });
+      qsa('.search-pane', box).forEach(function(p){
+        const on = p.dataset.pane === searchTab;
+        p.hidden = !on;
+        if(on){ p.style.animation = 'none'; void p.offsetWidth; p.style.animation = ''; }
+      });
+    });
+  });
+  qsa('.user-result-card', box).forEach(function(c){ c.addEventListener('click', function(){ openUserProfile(c.dataset.user); }); });
+}
 async function doHomeSearch(){
   const q = $('home-search-input').value.trim(); if(!q) return;
   if(/^\d+$/.test(q)) return openLevelPage(q);
   const box = $('home-search-results');
   $('home-dashboard').hidden = true; box.hidden = false;
   box.innerHTML = '<div class="feed-loading">'+t('loading')+'</div>';
-  const head = '<div class="search-results-head"><span class="section-label" style="margin:0">'+t('searchResults')+': “'+escapeHTML(q)+'”</span><button class="chip" id="clear-search">'+t('clearSearch')+'</button></div>';
-  try{
-    const res = await fetch('https://gdbrowser.com/api/search/'+encodeURIComponent(q)+'?count=10');
-    const d = res.ok ? await res.json() : null;
-    if(!d || d === '-1' || !Array.isArray(d) || !d.length) throw 0;
-    box.innerHTML = head
-      + '<div class="feed-list">'+d.map(function(lv,i){ return renderLevelCard({ level_id: lv.id, level_name: lv.name, level_author: lv.author, difficulty: lv.difficulty, difficulty_face: lv.difficultyFace, stars: lv.stars, review_count: null, avg_score: null, avg_beauty: null }, i); }).join('')+'</div>';
-  } catch(e){ box.innerHTML = head + emptyState(t('noResultsTitle'), t('noResultsSub')); }
-  const clr = $('clear-search'); if(clr) clr.addEventListener('click', clearHomeSearch);
+  const seq = ++searchSeq;
+  const results = await Promise.all([
+    fetch('https://gdbrowser.com/api/search/'+encodeURIComponent(q)+'?count=10')
+      .then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }),
+    api('/users/search?q='+encodeURIComponent(q))
+  ]);
+  if(seq !== searchSeq || box.hidden) return; // stale response or search already cleared
+  const d = results[0];
+  const levels = (d && d !== '-1' && Array.isArray(d)) ? d : [];
+  const users = results[1].ok ? (results[1].data.users || []) : [];
+  renderSearchResults(q, levels, users);
 }
 function clearHomeSearch(){
   $('home-search-input').value = '';
+  searchSeq++; searchTab = 'levels';
   const box = $('home-search-results'); box.hidden = true; box.innerHTML = '';
   $('home-dashboard').hidden = false;
 }
 $('home-search-btn').addEventListener('click', doHomeSearch);
 $('home-search-input').addEventListener('keydown', function(e){ if(e.key==='Enter') doHomeSearch(); });
+/* Emptying the field by hand resets the search and brings the dashboard back
+   immediately — no extra clicks needed. */
+$('home-search-input').addEventListener('input', function(){
+  if(this.value.trim() === '' && !$('home-search-results').hidden) clearHomeSearch();
+});
 
 /* ================= LEVEL PAGE ================= */
 async function openLevelPage(id, push){
@@ -3960,32 +4071,181 @@ function stopSpinPage(){
   if(wheel.anim || wheel.spinning){ wheel.anim = null; wheel.spinning = false; $('spin-filters').classList.remove('locked'); $('spin-custom').classList.remove('locked'); updateSpinButton(); }
 }
 
-/* ================= CAROUSEL DRAG-TO-SCROLL ================= */
-/* Hold & drag with the mouse on the level rows (touch already scrolls
-   natively). A real drag suppresses the following click so cards don't open
-   accidentally after dragging. */
+/* ================= CAROUSELS: drag, inertia, wheel, snap, auto-drift ================= */
+/* Each level row gets: drag-to-scroll with momentum, horizontal mouse-wheel
+   scrolling, a gentle snap to the nearest card, a custom slim scrollbar, and
+   a very slow independent auto-drift that pauses while the user interacts. */
 (function(){
-  qsa('.rank-row').forEach(function(row){
-    let down = false, dragged = false, startX = 0, startScroll = 0, pid = null;
+  const CARD_STEP = 244; /* card width 230 + 14 gap */
+
+  function setupCarousel(row){
+    let raf = 0, vel = 0;
+    let down = false, dragged = false, startX = 0, startScroll = 0, pid = null, lastX = 0, lastT = 0;
+    let hovered = false, idleUntil = 0;
+    /* Randomized, independent drift per row. */
+    const drift = { dir: Math.random() < 0.5 ? -1 : 1, speed: 0.1 + Math.random() * 0.14, acc: 0 };
+    let driftAt = performance.now() + 1500 + Math.random() * 3000;
+
+    function maxScroll(){ return Math.max(0, row.scrollWidth - row.clientWidth); }
+    function pause(ms){ idleUntil = Math.max(idleUntil, performance.now() + (ms || 2400)); }
+
+    /* ---- custom scrollbar ---- */
+    const bar = document.createElement('div');
+    bar.className = 'row-scroll';
+    bar.innerHTML = '<div class="row-scroll-thumb"></div>';
+    row.insertAdjacentElement('afterend', bar);
+    const thumb = bar.firstChild;
+    let barTO = 0;
+    function syncBar(){
+      const max = maxScroll();
+      if(max <= 4){ bar.classList.add('hidden'); return; }
+      bar.classList.remove('hidden');
+      const w = Math.max(10, row.clientWidth / row.scrollWidth * 100);
+      thumb.style.width = w + '%';
+      thumb.style.left = (row.scrollLeft / max) * (100 - w) + '%';
+    }
+    row.addEventListener('scroll', function(){
+      syncBar();
+      bar.classList.add('active');
+      clearTimeout(barTO); barTO = setTimeout(function(){ bar.classList.remove('active'); }, 900);
+    }, { passive: true });
+    window.addEventListener('resize', syncBar);
+    new MutationObserver(syncBar).observe(row, { childList: true });
+    bar.addEventListener('pointerdown', function(e){
+      const max = maxScroll(); if(max <= 0) return;
+      e.preventDefault();
+      bar.classList.add('scrubbing'); try{ bar.setPointerCapture(e.pointerId); }catch(err){}
+      pause(2600); cancelAnimationFrame(raf);
+      const rect = bar.getBoundingClientRect(), tw = thumb.getBoundingClientRect().width;
+      const move = function(x){ row.scrollLeft = Math.max(0, Math.min(1, (x - rect.left - tw / 2) / (rect.width - tw))) * max; };
+      move(e.clientX);
+      const onMove = function(ev){ move(ev.clientX); };
+      const onUp = function(){
+        bar.classList.remove('scrubbing');
+        bar.removeEventListener('pointermove', onMove); bar.removeEventListener('pointerup', onUp); bar.removeEventListener('pointercancel', onUp);
+        glideTo(snapTarget(row.scrollLeft)); pause(2000);
+      };
+      bar.addEventListener('pointermove', onMove);
+      bar.addEventListener('pointerup', onUp);
+      bar.addEventListener('pointercancel', onUp);
+    });
+
+    /* ---- easing helpers ---- */
+    function snapTarget(from){ return Math.max(0, Math.min(maxScroll(), Math.round(from / CARD_STEP) * CARD_STEP)); }
+    function glideTo(target){
+      cancelAnimationFrame(raf);
+      const start = row.scrollLeft, dist = target - start;
+      if(Math.abs(dist) < 1) return;
+      const t0 = performance.now(), dur = Math.min(700, 280 + Math.abs(dist) * 0.55);
+      const step = function(now){
+        pause(900);
+        const p = Math.min(1, (now - t0) / dur);
+        row.scrollLeft = start + dist * (1 - Math.pow(1 - p, 3)); /* ease-out cubic */
+        if(p < 1) raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+    }
+    /* Momentum: keep gliding with decaying velocity, then settle on a card.
+       Time-based so it feels identical at 30, 60 or 144 fps. */
+    function momentum(){
+      cancelAnimationFrame(raf);
+      let prev = performance.now();
+      const step = function(now){
+        pause(900);
+        const dt = Math.min(3, (now - prev) / 16.67) || 1; prev = now;
+        row.scrollLeft += vel * dt;
+        vel *= Math.pow(0.94, dt);
+        const max = maxScroll();
+        if(Math.abs(vel) > 0.5 && row.scrollLeft > 0 && row.scrollLeft < max){
+          raf = requestAnimationFrame(step);
+        } else {
+          glideTo(snapTarget(row.scrollLeft + vel * 6));
+        }
+      };
+      raf = requestAnimationFrame(step);
+    }
+
+    /* ---- drag with velocity tracking ---- */
     row.addEventListener('pointerdown', function(e){
       if(e.pointerType !== 'mouse' || e.button !== 0) return;
       down = true; dragged = false; startX = e.clientX; startScroll = row.scrollLeft; pid = e.pointerId;
+      lastX = e.clientX; lastT = performance.now(); vel = 0;
+      cancelAnimationFrame(raf); pause(2600);
     });
     row.addEventListener('pointermove', function(e){
       if(!down) return;
       const dx = e.clientX - startX;
       if(!dragged && Math.abs(dx) > 6){ dragged = true; row.classList.add('dragging'); try{ row.setPointerCapture(pid); }catch(err){} }
-      if(dragged) row.scrollLeft = startScroll - dx;
+      if(dragged){
+        row.scrollLeft = startScroll - dx;
+        const now = performance.now(), dt = now - lastT;
+        if(dt > 0){ vel = -(e.clientX - lastX) / dt * 15; lastX = e.clientX; lastT = now; }
+      }
     });
     function release(){
       if(!down) return;
       down = false;
-      if(dragged){ row.classList.remove('dragging'); setTimeout(function(){ dragged = false; }, 0); }
+      if(dragged){
+        row.classList.remove('dragging');
+        setTimeout(function(){ dragged = false; }, 0);
+        vel = Math.max(-70, Math.min(70, vel));
+        momentum();
+      }
+      pause(2600);
     }
     row.addEventListener('pointerup', release);
     row.addEventListener('pointercancel', release);
     row.addEventListener('click', function(e){ if(dragged){ e.stopPropagation(); e.preventDefault(); } }, true);
-  });
+
+    /* ---- mouse wheel → smooth horizontal glide ---- */
+    row.addEventListener('wheel', function(e){
+      let d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+      if(e.deltaMode === 1) d *= 16;
+      const max = maxScroll(); if(max <= 0) return;
+      /* At the edges let the page keep scrolling vertically. */
+      if((row.scrollLeft <= 0 && d < 0) || (row.scrollLeft >= max && d > 0)) return;
+      e.preventDefault();
+      pause(2200);
+      vel = Math.max(-80, Math.min(80, vel + d * 0.3));
+      momentum();
+    }, { passive: false });
+
+    /* ---- touch: native scroll, then a gentle snap once it settles ---- */
+    let settleIV = 0;
+    row.addEventListener('touchstart', function(){ pause(2800); cancelAnimationFrame(raf); clearInterval(settleIV); }, { passive: true });
+    row.addEventListener('touchend', function(){
+      let last = row.scrollLeft;
+      clearInterval(settleIV);
+      settleIV = setInterval(function(){
+        if(Math.abs(row.scrollLeft - last) < 1){ clearInterval(settleIV); glideTo(snapTarget(row.scrollLeft)); }
+        last = row.scrollLeft;
+      }, 140);
+    }, { passive: true });
+
+    /* Hovering counts as interacting — the drift waits for you. */
+    row.addEventListener('pointerenter', function(e){ if(e.pointerType === 'mouse') hovered = true; });
+    row.addEventListener('pointerleave', function(e){ if(e.pointerType === 'mouse'){ hovered = false; pause(1600); } });
+
+    /* ---- very slow independent auto-drift ---- */
+    let prevTick = performance.now();
+    function tick(now){
+      requestAnimationFrame(tick);
+      const dt = Math.min(100, now - prevTick); prevTick = now;
+      if(document.hidden || hovered || down || now < idleUntil || now < driftAt) return;
+      const max = maxScroll(); if(max <= 0) return;
+      drift.acc += drift.speed * (dt / 16.67);
+      if(drift.acc < 1) return;
+      const px = Math.floor(drift.acc); drift.acc -= px;
+      let next = row.scrollLeft + drift.dir * px;
+      if(next <= 0){ next = 0; drift.dir = 1; driftAt = now + 1200 + Math.random() * 2400; }
+      else if(next >= max){ next = max; drift.dir = -1; driftAt = now + 1200 + Math.random() * 2400; }
+      row.scrollLeft = next;
+    }
+    requestAnimationFrame(tick);
+    syncBar();
+  }
+
+  qsa('.rank-row').forEach(setupCarousel);
 })();
 
 /* ================= INIT ================= */
