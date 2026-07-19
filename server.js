@@ -690,6 +690,25 @@ app.post('/api/profile', authenticateToken, async (req, res) => {
     } catch (err) { fail(res, 500, 'server_error'); }
 });
 
+/* Profile search for the global home search (must be registered before the
+   :username route so "search" is not treated as a username). */
+app.get('/api/users/search', rateLimit(60, 60000), async (req, res) => {
+    try {
+        const q = String(req.query.q || '').trim();
+        if (q.length < 1 || q.length > 100) return res.json({ users: [] });
+        const like = '%' + q.replace(/[\\%_]/g, '\\$&') + '%';
+        const result = await pool.query(`
+            SELECT u.username, u.avatar,
+                (SELECT COUNT(*)::int FROM review_likes l JOIN reviews r ON r.id = l.review_id WHERE r.user_id = u.id) AS likes_received,
+                (SELECT COUNT(*)::int FROM reviews r WHERE r.user_id = u.id) AS review_count
+            FROM users u
+            WHERE u.is_verified = TRUE AND u.username ILIKE $2
+            ORDER BY (LOWER(u.username) = LOWER($1)) DESC, POSITION(LOWER($1) IN LOWER(u.username)), u.username
+            LIMIT 10`, [q, like]);
+        res.json({ users: result.rows });
+    } catch (err) { fail(res, 500, 'server_error'); }
+});
+
 app.get('/api/users/:username', optionalAuth, async (req, res) => {
     try {
         const uRes = await pool.query(`
