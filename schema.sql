@@ -122,3 +122,17 @@ CREATE INDEX IF NOT EXISTS idx_walkthroughs_status ON walkthroughs(status, submi
 ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255);
 ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id);
+
+-- ============================================================
+-- Чёрный список запрещённых слов (2-й слой модерации текста).
+-- Встроенный список находится в forbidden-words.js; администраторы
+-- могут расширять его через /api/admin/forbidden-words.
+-- server.js применяет миграцию автоматически при старте.
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS forbidden_words (
+    id SERIAL PRIMARY KEY,
+    word VARCHAR(100) UNIQUE NOT NULL,
+    added_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

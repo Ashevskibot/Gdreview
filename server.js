@@ -186,6 +186,15 @@ async function initDb() {
             CREATE INDEX IF NOT EXISTS idx_walkthroughs_level ON walkthroughs(level_id, status);
             CREATE INDEX IF NOT EXISTS idx_walkthroughs_status ON walkthroughs(status, submitted_at DESC);
         `);
+        // Admin-extensible forbidden-words blacklist (second moderation layer).
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS forbidden_words (
+                id SERIAL PRIMARY KEY,
+                word VARCHAR(100) UNIQUE NOT NULL,
+                added_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        `);
         // Bootstrap admins from ADMIN_EMAILS (comma-separated) so the first
         // moderators can be promoted without manual SQL.
         const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
@@ -196,7 +205,18 @@ async function initDb() {
         console.log('✅ Database ready');
     } finally { client.release(); }
 }
-initDb().catch(err => console.error('❌ DB init error:', err.stack));
+/* ---- Admin-managed forbidden words (kept in memory, reloaded on change) ----
+   The list is passed into moderateText() so the blacklist layer always uses
+   the latest words without a DB round-trip per moderation call. */
+let adminForbiddenWords = [];
+async function loadForbiddenWords() {
+    try {
+        const r = await pool.query('SELECT word FROM forbidden_words ORDER BY word');
+        adminForbiddenWords = r.rows.map(row => row.word);
+    } catch (err) { console.error('⚠️  Could not load forbidden words:', err.message); }
+}
+
+initDb().then(loadForbiddenWords).catch(err => console.error('❌ DB init error:', err.stack));
 
 app.use(express.json({ limit: '20mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -629,7 +649,7 @@ app.post('/api/change-username', authenticateToken, rateLimit(10, 600000), async
     try {
         const username = String(req.body.username || '').trim();
         if (!isUsername(username)) return fail(res, 400, 'invalid_username');
-        const verdict = await moderateText(username);
+        const verdict = await moderateText(username, adminForbiddenWords);
         if (!verdict.ok) return rejectContent(res, verdict, 'username');
         const dup = await pool.query('SELECT id FROM users WHERE LOWER(username) = LOWER($1) AND id <> $2', [username, req.user.userId]);
         if (dup.rows.length > 0) return fail(res, 400, 'user_exists');
@@ -658,8 +678,9 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
     try {
         const result = await pool.query(`
             SELECT u.username, u.email, u.avatar, u.banner, u.frame, u.description, u.socials, u.created_at, u.is_admin,
-                (SELECT COUNT(*)::int FROM reviews r WHERE r.user_id = u.id) AS review_count,
-                (SELECT COUNT(*)::int FROM review_likes l JOIN reviews r ON r.id = l.review_id WHERE r.user_id = u.id) AS likes_received
+                (SELECT COUNT(*)::int FROM reviews r WHERE r.user_id = u.id AND r.review_text IS NOT NULL) AS review_count,
+                (SELECT COUNT(*)::int FROM reviews r WHERE r.user_id = u.id) AS rating_count,
+                (SELECT COUNT(*)::int FROM review_likes l JOIN reviews r ON r.id = l.review_id WHERE r.user_id = u.id AND r.review_text IS NOT NULL) AS likes_received
             FROM users u WHERE u.id = $1`, [req.user.userId]);
         if (result.rows.length === 0) return fail(res, 404, 'not_found');
         res.json(result.rows[0]);
@@ -672,7 +693,7 @@ app.post('/api/profile', authenticateToken, async (req, res) => {
         description = String(description || '').trim();
         if (description.length > 150) return fail(res, 400, 'description_too_long');
         // Automatic moderation BEFORE anything is stored or uploaded.
-        const bioVerdict = await moderateText(description);
+        const bioVerdict = await moderateText(description, adminForbiddenWords);
         if (!bioVerdict.ok) return rejectContent(res, bioVerdict, 'description');
         if (avatar && String(avatar).startsWith('data:image')) {
             const v = await moderateImage(avatar);
@@ -699,8 +720,8 @@ app.get('/api/users/search', rateLimit(60, 60000), async (req, res) => {
         const like = '%' + q.replace(/[\\%_]/g, '\\$&') + '%';
         const result = await pool.query(`
             SELECT u.username, u.avatar,
-                (SELECT COUNT(*)::int FROM review_likes l JOIN reviews r ON r.id = l.review_id WHERE r.user_id = u.id) AS likes_received,
-                (SELECT COUNT(*)::int FROM reviews r WHERE r.user_id = u.id) AS review_count
+                (SELECT COUNT(*)::int FROM review_likes l JOIN reviews r ON r.id = l.review_id WHERE r.user_id = u.id AND r.review_text IS NOT NULL) AS likes_received,
+                (SELECT COUNT(*)::int FROM reviews r WHERE r.user_id = u.id AND r.review_text IS NOT NULL) AS review_count
             FROM users u
             WHERE u.is_verified = TRUE AND u.username ILIKE $2
             ORDER BY (LOWER(u.username) = LOWER($1)) DESC, POSITION(LOWER($1) IN LOWER(u.username)), u.username
@@ -713,7 +734,7 @@ app.get('/api/users/:username', optionalAuth, async (req, res) => {
     try {
         const uRes = await pool.query(`
             SELECT u.id, u.username, u.avatar, u.banner, u.frame, u.description, u.socials, u.created_at,
-                (SELECT COUNT(*)::int FROM review_likes l JOIN reviews r ON r.id = l.review_id WHERE r.user_id = u.id) AS likes_received
+                (SELECT COUNT(*)::int FROM review_likes l JOIN reviews r ON r.id = l.review_id WHERE r.user_id = u.id AND r.review_text IS NOT NULL) AS likes_received
             FROM users u WHERE LOWER(u.username) = LOWER($1) AND u.is_verified = TRUE`, [req.params.username]);
         if (uRes.rows.length === 0) return fail(res, 404, 'not_found');
         const user = uRes.rows[0];
@@ -757,7 +778,7 @@ app.post('/api/reviews', authenticateToken, async (req, res) => {
             if (safeText.length > 2000) return fail(res, 400, 'review_text_too_long');
 
             // Automatic moderation BEFORE the review is published (or updated).
-            const verdict = await moderateText(`${safeTitle}\n${safeText}`);
+            const verdict = await moderateText(`${safeTitle}\n${safeText}`, adminForbiddenWords);
             if (!verdict.ok) return rejectContent(res, verdict, 'review');
         }
         const dbTitle = isWritten ? safeTitle : null;
@@ -776,9 +797,21 @@ app.post('/api/reviews', authenticateToken, async (req, res) => {
     } catch (err) { console.error(err); fail(res, 500, 'server_error'); }
 });
 
+/* Owners can delete their own reviews. Administrators can moderate any
+   review — the is_admin flag is re-checked in the DB on every call, so a
+   revoked admin loses the ability immediately. */
 app.delete('/api/reviews/:id', authenticateToken, async (req, res) => {
     try {
-        await pool.query('DELETE FROM reviews WHERE id = $1 AND user_id = $2', [req.params.id, req.user.userId]);
+        const reviewId = parseInt(req.params.id, 10);
+        if (!Number.isInteger(reviewId)) return fail(res, 400, 'invalid_payload');
+        const rev = await pool.query('SELECT id, user_id FROM reviews WHERE id = $1', [reviewId]);
+        if (!rev.rows.length) return fail(res, 404, 'not_found');
+        if (rev.rows[0].user_id !== req.user.userId) {
+            const adm = await pool.query('SELECT is_admin FROM users WHERE id = $1', [req.user.userId]);
+            if (!adm.rows.length || !adm.rows[0].is_admin) return fail(res, 403, 'admin_only');
+            console.log(`🛡️  Admin ${req.user.userId} deleted review ${reviewId} (author ${rev.rows[0].user_id})`);
+        }
+        await pool.query('DELETE FROM reviews WHERE id = $1', [reviewId]);
         res.json({ message: 'deleted' });
     } catch (err) { fail(res, 500, 'server_error'); }
 });
@@ -813,11 +846,13 @@ app.get('/api/feed/reviews', optionalAuth, async (req, res) => {
         const sort = String(req.query.sort || 'recent');
         const viewerId = req.user ? req.user.userId : null;
         const page = Math.max(0, parseInt(req.query.page, 10) || 0);
-        let where = '';
+        /* The review feed only ever contains WRITTEN reviews — rating-only
+           submissions influence level scores but are not reviews. */
+        let where = 'WHERE r.review_text IS NOT NULL';
         let order = 'r.saved_at DESC';
         if (sort === 'popular') order = 'likes DESC, r.saved_at DESC';
-        else if (sort === 'top_today') { where = `WHERE r.saved_at > NOW() - INTERVAL '1 day'`; order = 'r.final_score DESC, likes DESC'; }
-        else if (sort === 'top_week') { where = `WHERE r.saved_at > NOW() - INTERVAL '7 days'`; order = 'r.final_score DESC, likes DESC'; }
+        else if (sort === 'top_today') { where += ` AND r.saved_at > NOW() - INTERVAL '1 day'`; order = 'r.final_score DESC, likes DESC'; }
+        else if (sort === 'top_week') { where += ` AND r.saved_at > NOW() - INTERVAL '7 days'`; order = 'r.final_score DESC, likes DESC'; }
         else if (sort === 'top_all') order = 'r.final_score DESC, likes DESC';
         const [result, count] = await Promise.all([
             pool.query(`${REVIEW_WITH_USER} ${where} GROUP BY r.id, u.id ORDER BY ${order} LIMIT ${FEED_PAGE_SIZE} OFFSET ${page * FEED_PAGE_SIZE}`, [viewerId]),
@@ -845,7 +880,8 @@ app.get('/api/feed/levels', async (req, res) => {
         const result = await pool.query(`
             SELECT r.level_id, MAX(r.level_name) AS level_name, MAX(r.level_author) AS level_author,
                 MAX(r.difficulty) AS difficulty, MAX(r.difficulty_face) AS difficulty_face, MAX(r.stars) AS stars,
-                COUNT(*)::int AS review_count, ROUND(AVG(r.final_score), 2) AS avg_score,
+                COUNT(*) FILTER (WHERE r.review_text IS NOT NULL)::int AS review_count,
+                COUNT(*)::int AS rating_count, ROUND(AVG(r.final_score), 2) AS avg_score,
                 ROUND(AVG(r.design_deco), 2) AS avg_beauty, MAX(r.saved_at) AS last_at,
                 MIN(CASE LOWER(COALESCE(r.difficulty, ''))
                     WHEN 'auto' THEN 0 WHEN 'easy' THEN 1 WHEN 'normal' THEN 2 WHEN 'hard' THEN 3
@@ -907,10 +943,11 @@ function homeCacheSet(key, payload) { homeCache.set(key, { at: Date.now(), paylo
 const rankingFields = (globalMean) => `
     SELECT r.level_id, MAX(r.level_name) AS level_name, MAX(r.level_author) AS level_author,
         MAX(r.difficulty) AS difficulty, MAX(r.difficulty_face) AS difficulty_face, MAX(r.stars) AS stars,
-        COUNT(DISTINCT r.id)::int AS review_count,
+        COUNT(DISTINCT r.id) FILTER (WHERE r.review_text IS NOT NULL)::int AS review_count,
+        COUNT(DISTINCT r.id)::int AS rating_count,
         ROUND(AVG(r.final_score), 2) AS avg_score,
         COUNT(l.id)::int AS total_likes,
-        (COUNT(l.id) * 3 + COUNT(DISTINCT r.id) * 2)::int AS popularity,
+        (COUNT(l.id) * 3 + COUNT(DISTINCT r.id) FILTER (WHERE r.review_text IS NOT NULL) * 2)::int AS popularity,
         ROUND((COUNT(DISTINCT r.id) * AVG(r.final_score) + ${RANK_BAYES_PRIOR} * ${globalMean}) / (COUNT(DISTINCT r.id) + ${RANK_BAYES_PRIOR}), 2) AS rating,
         MAX(r.saved_at) AS last_at
     FROM reviews r LEFT JOIN review_likes l ON l.review_id = r.id`;
@@ -951,20 +988,22 @@ app.get('/api/home/community', async (req, res) => {
     try {
         const cached = homeCacheGet('community');
         if (cached) return res.json(cached);
+        /* Reviewer leaderboard and review stats count WRITTEN reviews only —
+           rating-only submissions never influence reviewer rankings. */
         const [lb, stats] = await Promise.all([
             pool.query(`
                 SELECT u.username, u.avatar, u.frame,
                     COUNT(DISTINCT r.id)::int AS review_count,
                     COUNT(l.id)::int AS likes_received
                 FROM users u
-                JOIN reviews r ON r.user_id = u.id
+                JOIN reviews r ON r.user_id = u.id AND r.review_text IS NOT NULL
                 LEFT JOIN review_likes l ON l.review_id = r.id
                 WHERE u.is_verified = TRUE
                 GROUP BY u.id
                 ORDER BY likes_received DESC, review_count DESC
                 LIMIT 10`),
             pool.query(`
-                SELECT (SELECT COUNT(*) FROM reviews)::int AS total_reviews,
+                SELECT (SELECT COUNT(*) FROM reviews WHERE review_text IS NOT NULL)::int AS total_reviews,
                        (SELECT COUNT(*) FROM users WHERE is_verified = TRUE)::int AS total_users`),
         ]);
         const payload = { leaderboard: lb.rows, stats: stats.rows[0] };
@@ -1030,6 +1069,43 @@ app.post('/api/admin/walkthroughs/:id/decision', authenticateToken, requireAdmin
         await pool.query('UPDATE walkthroughs SET status = $1, reviewed_at = CURRENT_TIMESTAMP, reviewed_by = $2 WHERE id = $3',
             [action === 'approve' ? 'approved' : 'rejected', req.user.userId, id]);
         res.json({ message: 'ok' });
+    } catch (err) { fail(res, 500, 'server_error'); }
+});
+
+/* ============ ADMIN: FORBIDDEN WORDS ============ */
+/* Admin-maintained blacklist extension. The seed list lives in
+   forbidden-words.js; words added here are stored in the DB and applied to
+   all future text moderation immediately. */
+app.get('/api/admin/forbidden-words', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const r = await pool.query(`
+            SELECT f.id, f.word, f.created_at, u.username AS added_by
+            FROM forbidden_words f LEFT JOIN users u ON u.id = f.added_by
+            ORDER BY f.word ASC LIMIT 500`);
+        res.json(r.rows);
+    } catch (err) { fail(res, 500, 'server_error'); }
+});
+
+app.post('/api/admin/forbidden-words', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const word = String(req.body.word || '').trim().toLowerCase();
+        if (word.length < 2 || word.length > 100) return fail(res, 400, 'invalid_payload');
+        const ins = await pool.query(
+            'INSERT INTO forbidden_words (word, added_by) VALUES ($1, $2) ON CONFLICT (word) DO NOTHING RETURNING id',
+            [word, req.user.userId]);
+        if (!ins.rows.length) return fail(res, 400, 'word_exists');
+        await loadForbiddenWords();
+        res.json({ message: 'word_added', id: ins.rows[0].id });
+    } catch (err) { fail(res, 500, 'server_error'); }
+});
+
+app.delete('/api/admin/forbidden-words/:id', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const id = parseInt(req.params.id, 10);
+        if (!Number.isInteger(id)) return fail(res, 400, 'invalid_payload');
+        await pool.query('DELETE FROM forbidden_words WHERE id = $1', [id]);
+        await loadForbiddenWords();
+        res.json({ message: 'deleted' });
     } catch (err) { fail(res, 500, 'server_error'); }
 });
 

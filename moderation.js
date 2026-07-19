@@ -13,11 +13,18 @@
  *   SIGHTENGINE_API_USER, SIGHTENGINE_API_SECRET
  *
  * Every check resolves to { ok: true } or { ok: false, reason: '<code>' }
- * where reason ∈ links | advertising | toxicity | image | unavailable.
- * 'unavailable' means Sightengine could not be reached — the platform is
- * strict-by-default, so content is NOT published in that case and the
- * client offers a retry.
+ * where reason ∈ links | advertising | forbidden_words | toxicity | image |
+ * unavailable. 'unavailable' means Sightengine could not be reached — the
+ * platform is strict-by-default, so content is NOT published in that case
+ * and the client offers a retry.
+ *
+ * Text moderation is layered — BOTH layers must pass:
+ *   1. Forbidden-words blacklist (./forbidden-words.js) — local, instant,
+ *      admin-extensible, catches slurs the AI provider misses.
+ *   2. Sightengine AI moderation.
  */
+
+const { checkForbiddenWords } = require('./forbidden-words');
 
 const SE_USER = () => process.env.SIGHTENGINE_API_USER;
 const SE_SECRET = () => process.env.SIGHTENGINE_API_SECRET;
@@ -72,12 +79,20 @@ async function sightengineTextCheck(text) {
     }
 }
 
-/** Moderates user-facing text. Resolves to { ok } | { ok:false, reason }. */
-async function moderateText(text) {
+/**
+ * Moderates user-facing text. Resolves to { ok } | { ok:false, reason }.
+ * @param {string} text
+ * @param {string[]} [extraForbiddenWords] - admin-managed blacklist additions
+ */
+async function moderateText(text, extraForbiddenWords) {
     const clean = String(text || '').trim();
     if (!clean) return { ok: true };
     const local = localTextCheck(clean);
     if (!local.ok) return local;
+    // Layer 1: forbidden-words blacklist (never rely on AI moderation alone).
+    const blacklist = checkForbiddenWords(clean, extraForbiddenWords);
+    if (!blacklist.ok) return blacklist;
+    // Layer 2: AI moderation.
     return sightengineTextCheck(clean);
 }
 

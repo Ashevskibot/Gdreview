@@ -107,7 +107,21 @@
   .wt-icon-btn:hover{ background:var(--white); color:#0a0a0a; transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,255,255,0.18); }
   .wt-icon-btn[hidden]{ display:none; }
   /* Embedded YouTube player modal */
-  .wt-player-box{ max-width:860px; width:100%; padding:52px 16px 16px; background:var(--black2); }
+  .wt-player-box{ max-width:min(1240px, 96vw); width:100%; padding:56px 18px 18px; background:var(--black2); }
+  /* Inline walkthrough player — a primary visual element of the level page.
+     Full content width, 16:9, lazy: shows the video cover until clicked. */
+  .lvl-walkthrough{ margin-bottom:20px; }
+  .lvl-wt-head{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .lvl-wt-frame{ position:relative; width:100%; aspect-ratio:16/9; background:#000; border:1px solid var(--line); border-radius:14px; overflow:hidden; box-shadow:0 24px 60px -28px rgba(0,0,0,0.85); }
+  .lvl-wt-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+  .lvl-wt-cover{ position:absolute; inset:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:var(--black2); border:0; cursor:pointer; padding:0; }
+  .lvl-wt-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .5s var(--ease), filter .35s var(--ease); }
+  .lvl-wt-cover::after{ content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.45)); transition:opacity .3s ease; }
+  .lvl-wt-cover:hover img{ transform:scale(1.035); filter:brightness(1.08); }
+  .lvl-wt-play{ position:relative; z-index:2; width:clamp(64px,8vw,86px); height:clamp(64px,8vw,86px); display:flex; align-items:center; justify-content:center; border-radius:50%; background:rgba(10,10,10,0.72); border:1px solid rgba(255,255,255,0.35); backdrop-filter:blur(6px); transition:transform .25s var(--spring), background .2s ease, border-color .2s ease; }
+  .lvl-wt-cover:hover .lvl-wt-play{ transform:scale(1.08); background:var(--white); border-color:var(--white); }
+  .lvl-wt-play svg{ width:38%; height:38%; fill:var(--white); margin-left:4px; transition:fill .2s ease; }
+  .lvl-wt-cover:hover .lvl-wt-play svg{ fill:#0a0a0a; }
   .wt-video-wrap{ position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:10px; overflow:hidden; border:1px solid var(--line); }
   .wt-video-wrap iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
   .submit-walkthrough-btn{ background:transparent; border:1px solid var(--line); color:var(--dim); border-radius:8px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; padding:12px 18px; cursor:pointer; transition:all .22s var(--spring); }
@@ -289,7 +303,8 @@
   .stat-number{ font-family:'Archivo Black',sans-serif; font-size:clamp(38px,6vw,58px); line-height:0.95; letter-spacing:-0.02em; color:var(--white); }
   .stat-number small{ font-size:0.34em; color:var(--dim); font-family:'Space Mono',monospace; margin-left:4px; }
   .stat-number.stat-date{font-size:clamp(16px,2.4vw,24px);line-height:1.3;padding-top:12px;text-transform:uppercase;word-break:break-word;}
-  .stats-hero{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px; }
+  .stats-hero{ display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:20px; }
+  @media(max-width:1080px){.stats-hero{grid-template-columns:repeat(3,1fr);}}
   @media(max-width:780px){.stats-hero{grid-template-columns:repeat(2,1fr);}}
   .charts-grid{ display:grid; grid-template-columns:1fr 1fr; gap:20px; }
   @media(max-width:780px){.charts-grid{grid-template-columns:1fr;}}
@@ -321,10 +336,10 @@
   .ach-card.unlocked{ border-color:var(--ach-color, var(--line2)); box-shadow:0 0 18px -6px var(--ach-color, transparent); }
   .ach-head{ display:flex; align-items:center; gap:10px; min-width:0; }
   .ach-medal{ flex-shrink:0; }
-  .ach-medal .trophy-medal{ width:36px; height:36px; }
-  .ach-medal .medal-glyph{ font-size:13px; }
-  .ach-medal .medal-halo{ inset:-6px; }
-  .ach-card:not(.unlocked) .trophy-medal{ filter:grayscale(1) brightness(0.55); opacity:0.75; }
+  .ach-medal .relic{ width:38px; height:38px; }
+  .ach-medal .relic-halo{ inset:-6px; }
+  .ach-card{ perspective:420px; }
+  .ach-card:not(.unlocked) .relic{ filter:grayscale(1) brightness(0.55); opacity:0.75; }
   .ach-cat-label{ font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--dim2); margin:18px 0 10px; display:flex; align-items:center; gap:12px; }
   .ach-cat-label::after{ content:''; flex:1; height:1px; background:var(--line); }
   .ach-name{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--dim); word-break:break-word; }
@@ -335,6 +350,19 @@
   .ach-fill{ height:100%; background:var(--ach-color, var(--white)); border-radius:999px; }
   .ach-count{ font-family:'Space Mono',monospace; font-size:10px; color:var(--dim); white-space:nowrap; }
   .ach-card.unlocked .ach-count{ color:var(--ach-color, var(--white)); }
+
+  /* ---------- ADMIN: FORBIDDEN WORDS ---------- */
+  .admin-fw-add{ display:flex; gap:10px; margin-bottom:16px; max-width:520px; }
+  .admin-fw-add .modal-input{ flex:1; margin:0; }
+  .admin-fw-list{ display:flex; flex-wrap:wrap; gap:8px; }
+  .fw-chip{ display:inline-flex; align-items:center; gap:8px; background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:7px 8px 7px 14px; font-family:'Space Mono',monospace; font-size:11.5px; color:var(--white); animation:barIn .35s var(--ease) backwards; }
+  .fw-chip-x{ width:20px; height:20px; display:flex; align-items:center; justify-content:center; background:var(--black2); border:1px solid var(--line); border-radius:50%; color:var(--dim); font-size:12px; line-height:1; cursor:pointer; transition:all .18s ease; }
+  .fw-chip-x:hover{ background:var(--red); border-color:var(--red); color:#fff; }
+  .fw-empty{ font-family:'Space Mono',monospace; font-size:11px; color:var(--dim2); text-transform:uppercase; letter-spacing:0.1em; }
+  /* ---------- ADMIN: review moderation button on cards ---------- */
+  .fc-admin-del{ margin-left:auto; background:transparent; border:1px solid rgba(224,85,85,0.4); border-radius:8px; color:var(--red); font-size:10px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; padding:7px 12px; cursor:pointer; transition:all .2s ease; }
+  .fc-admin-del:hover{ background:var(--red); border-color:var(--red); color:#fff; }
+  .fc-foot .fc-admin-del{ margin-left:0; }
 
   /* ---------- ACHIEVEMENT SHOWCASE (public trophy board) ---------- */
   .showcase-board{ position:relative; border:1px solid var(--line2); border-radius:14px; padding:22px 22px 24px; overflow:hidden;
@@ -351,39 +379,57 @@
   .trophy{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:9px; padding:14px 8px 12px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0.004)); border:1px solid var(--line); opacity:0; transform:translateY(12px) scale(.92); animation:trophyIn .55s var(--spring) forwards; transition:border-color .25s ease, box-shadow .3s ease; perspective:420px; }
   .trophy:hover{ border-color:var(--line2); box-shadow:0 14px 30px -12px var(--mglow, rgba(255,255,255,0.18)); }
   @keyframes trophyIn{ to{ opacity:1; transform:none; } }
-  /* ---- 3D collectible rewards: shaped back plate + lit material face +
-     moving gloss. Light position (--lx/--ly) and rotation follow the cursor. */
-  .trophy-medal{ position:relative; width:58px; height:58px; display:flex; align-items:center; justify-content:center; transform-style:preserve-3d; transition:transform .55s var(--spring); --lx:50%; --ly:38%; }
-  .trophy:hover .trophy-medal{ transition:transform .14s ease-out; }
-  .medal-back{ position:absolute; inset:0; background:linear-gradient(160deg, var(--m3), #08080a); transform:translateZ(-7px) scale(1.07); filter:blur(0.8px); opacity:.92; }
-  .medal-face{ position:absolute; inset:0; background:radial-gradient(circle at var(--lx) var(--ly), rgba(255,255,255,0.55), rgba(255,255,255,0.06) 42%, transparent 62%), linear-gradient(160deg, var(--m1), var(--m2) 55%, var(--m3)); box-shadow:inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -7px 12px rgba(0,0,0,0.55); }
-  .medal-glyph{ position:relative; z-index:4; width:68%; height:68%; color:#fff; filter:drop-shadow(0 2px 2px rgba(0,0,0,.72)); transform:translateZ(14px); }
-  .medal-glyph svg{ display:block; width:100%; height:100%; overflow:visible; }
-  .medal-glyph .motif-fill{ fill:currentColor; }
-  .medal-glyph .motif-cut{ fill:var(--m3); }
-  .medal-glyph .motif-line{ fill:none; stroke:currentColor; stroke-width:4; stroke-linecap:square; stroke-linejoin:miter; }
-  .mtier-epic .medal-glyph, .mtier-legendary .medal-glyph{ filter:drop-shadow(0 3px 2px rgba(0,0,0,.8)); }
-  .mtier-legendary .medal-glyph{ width:72%; height:72%; }
-  .medal-gloss{ position:absolute; inset:0; z-index:3; background:radial-gradient(46px circle at var(--lx) var(--ly), rgba(255,255,255,0.5), rgba(255,255,255,0.08) 45%, transparent 65%); mix-blend-mode:screen; pointer-events:none; }
-  /* No permanent glow: the halo is a hover-only inspection effect. */
-  .medal-halo{ position:absolute; inset:-10px; z-index:0; border-radius:50%; background:radial-gradient(circle, transparent 52%, var(--mglow) 68%, transparent 80%); opacity:0; transform:translateZ(-10px); transition:opacity .3s ease; pointer-events:none; }
-  .trophy:hover .medal-halo{ opacity:1; animation:haloPulse 2.2s ease-in-out infinite; }
-  @keyframes haloPulse{ 0%,100%{ opacity:.55; transform:translateZ(-10px) scale(1); } 50%{ opacity:1; transform:translateZ(-10px) scale(1.08); } }
-  /* Rarity detailing — static geometry and material complexity, clean at rest */
-  .mtier-rare .medal-face{ box-shadow:inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -7px 12px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.22); }
-  .mtier-epic .medal-face{ box-shadow:inset 0 2px 4px rgba(255,255,255,0.55), inset 0 -7px 12px rgba(0,0,0,0.55), inset 0 0 0 2px rgba(255,255,255,0.26), inset 0 0 0 5px rgba(0,0,0,0.28); }
-  .mtier-epic .medal-face::after, .mtier-legendary .medal-face::after{ content:''; position:absolute; inset:0; background:conic-gradient(from 0deg, rgba(255,255,255,0.14) 0 12deg, transparent 12deg 45deg, rgba(255,255,255,0.1) 45deg 58deg, transparent 58deg 120deg, rgba(255,255,255,0.14) 120deg 132deg, transparent 132deg 205deg, rgba(255,255,255,0.1) 205deg 218deg, transparent 218deg 300deg, rgba(255,255,255,0.12) 300deg 312deg, transparent 312deg); opacity:.7; mix-blend-mode:overlay; }
-  .mtier-legendary .medal-face{ box-shadow:inset 0 2px 5px rgba(255,255,255,0.65), inset 0 -8px 14px rgba(0,0,0,0.6), inset 0 0 0 2px rgba(255,255,255,0.35), inset 0 0 0 6px rgba(0,0,0,0.32), inset 0 0 0 7px rgba(255,255,255,0.18); }
-  .medal-ring{ position:absolute; inset:-5px; z-index:1; border-radius:50%; border:2px solid transparent; background:linear-gradient(140deg, var(--m1), var(--m3) 45%, var(--m1) 70%, var(--m3)) border-box; -webkit-mask:linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask-composite:exclude; transform:translateZ(-3px); pointer-events:none; }
-  /* Shapes — applied to every layered plane so the object reads as one solid */
-  .medal-disc .medal-face, .medal-disc .medal-back, .medal-disc .medal-gloss, .medal-disc .trophy-shine{ border-radius:50%; }
-  .medal-shield .medal-face, .medal-shield .medal-back, .medal-shield .medal-gloss, .medal-shield .trophy-shine{ clip-path:polygon(50% 0, 100% 13%, 100% 56%, 50% 100%, 0 56%, 0 13%); }
-  .medal-hex .medal-face, .medal-hex .medal-back, .medal-hex .medal-gloss, .medal-hex .trophy-shine{ clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
-  .medal-gem .medal-face, .medal-gem .medal-back, .medal-gem .medal-gloss, .medal-gem .trophy-shine{ clip-path:polygon(50% 0, 100% 38%, 50% 100%, 0 38%); }
-  .medal-star .medal-face, .medal-star .medal-back, .medal-star .medal-gloss, .medal-star .trophy-shine{ clip-path:polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
-  .medal-cup .medal-face, .medal-cup .medal-back, .medal-cup .medal-gloss, .medal-cup .trophy-shine{ clip-path:polygon(14% 0, 86% 0, 82% 34%, 66% 52%, 62% 70%, 76% 76%, 80% 100%, 20% 100%, 24% 76%, 38% 70%, 34% 52%, 18% 34%); }
-  .medal-crown .medal-face, .medal-crown .medal-back, .medal-crown .medal-gloss, .medal-crown .trophy-shine{ clip-path:polygon(0 22%, 25% 46%, 50% 8%, 75% 46%, 100% 22%, 88% 100%, 12% 100%); }
-  .medal-crest .medal-face, .medal-crest .medal-back, .medal-crest .medal-gloss, .medal-crest .trophy-shine{ clip-path:polygon(50% 0, 82% 9%, 100% 34%, 87% 100%, 13% 100%, 0 34%, 18% 9%); }
+  /* ---- GD ARTIFACTS: 3D collectible reward objects ----
+     Every reward is a small CSS-3D construction inspired by the Geometry
+     Dash universe (icon cubes, user coins, orbs, shards, keys, demon
+     sigils): stacked depth slices extrude the silhouette into a solid,
+     the face carries a lit material + engraved glyph, and a cursor-driven
+     specular moves across the surface. Clean at rest — rim light, halo and
+     sheen only appear while inspecting (hover). */
+  .relic{ position:relative; width:62px; height:62px; --lx:50%; --ly:38%; --rx:-8deg; --ry:14deg; perspective:340px; }
+  .relic-obj{ position:absolute; inset:0; transform-style:preserve-3d; transform:rotateX(var(--rx)) rotateY(var(--ry)); transition:transform .55s var(--spring); }
+  .trophy:hover .relic-obj, .ach-card:hover .relic-obj{ transition:transform .12s ease-out; }
+  /* Depth slices — the extrusion that turns the silhouette into an object */
+  .relic-d{ position:absolute; inset:0; background:linear-gradient(160deg, var(--m2), var(--m3)); }
+  .relic-d1{ transform:translateZ(-3px); filter:brightness(0.55); }
+  .relic-d2{ transform:translateZ(-6px); filter:brightness(0.4); }
+  .relic-d3{ transform:translateZ(-9px); filter:brightness(0.26); }
+  .relic-face{ position:absolute; inset:0; transform:translateZ(0.1px); background:radial-gradient(circle at var(--lx) var(--ly), rgba(255,255,255,0.5), rgba(255,255,255,0.06) 44%, transparent 64%), linear-gradient(160deg, var(--m1), var(--m2) 55%, var(--m3)); box-shadow:inset 0 2px 3px rgba(255,255,255,0.5), inset 0 -6px 10px rgba(0,0,0,0.52); }
+  .relic-glyph{ position:absolute; inset:0; z-index:4; display:flex; align-items:center; justify-content:center; color:#fff; transform:translateZ(10px); filter:drop-shadow(0 2px 2px rgba(0,0,0,0.7)); }
+  .relic-glyph svg{ display:block; width:62%; height:62%; overflow:visible; }
+  .relic-glyph .motif-fill{ fill:currentColor; }
+  .relic-glyph .motif-cut{ fill:var(--m3); }
+  .relic-glyph .motif-line{ fill:none; stroke:currentColor; stroke-width:4; stroke-linecap:square; stroke-linejoin:miter; }
+  /* Cursor-driven specular highlight */
+  .relic-spec{ position:absolute; inset:0; z-index:3; transform:translateZ(1px); background:radial-gradient(48px circle at var(--lx) var(--ly), rgba(255,255,255,0.5), rgba(255,255,255,0.08) 45%, transparent 66%); mix-blend-mode:screen; pointer-events:none; }
+  /* Hover-only inspection effects — never active at rest */
+  .relic-halo{ position:absolute; inset:-12px; z-index:0; border-radius:50%; background:radial-gradient(circle, transparent 50%, var(--mglow) 68%, transparent 82%); opacity:0; transition:opacity .3s ease; pointer-events:none; }
+  .trophy:hover .relic-halo, .ach-card.unlocked:hover .relic-halo{ opacity:1; animation:haloPulse 2.2s ease-in-out infinite; }
+  @keyframes haloPulse{ 0%,100%{ opacity:.5; transform:scale(1); } 50%{ opacity:.95; transform:scale(1.07); } }
+  .relic-sheen{ position:absolute; inset:0; z-index:5; transform:translateZ(2px) translateX(-120%); background:linear-gradient(115deg, transparent 32%, rgba(255,255,255,0.5) 50%, transparent 68%); pointer-events:none; }
+  .trophy:hover .relic-sheen, .ach-card.unlocked:hover .relic-sheen{ animation:relicSheen 1.15s var(--ease); }
+  @keyframes relicSheen{ from{ transform:translateZ(2px) translateX(-120%); } to{ transform:translateZ(2px) translateX(120%); } }
+  /* ---- Silhouettes (applied to every stacked plane so the object is solid) ---- */
+  .art-cube .relic-face, .art-cube .relic-d, .art-cube .relic-spec, .art-cube .relic-sheen{ clip-path:inset(5% round 16%); }
+  .art-coin .relic-face, .art-coin .relic-d, .art-coin .relic-spec, .art-coin .relic-sheen{ border-radius:50%; }
+  .art-coin .relic-face::after{ content:''; position:absolute; inset:9%; border-radius:50%; box-shadow:inset 0 0 0 2px rgba(0,0,0,0.3), inset 0 0 0 3px rgba(255,255,255,0.22); }
+  .art-orb .relic-face, .art-orb .relic-d, .art-orb .relic-spec, .art-orb .relic-sheen{ border-radius:50%; }
+  .art-orb .relic-face{ background:radial-gradient(circle at var(--lx) var(--ly), rgba(255,255,255,0.75), rgba(255,255,255,0.1) 34%, transparent 58%), radial-gradient(circle at 50% 58%, var(--m1) 0%, var(--m2) 46%, var(--m3) 88%); box-shadow:inset 0 3px 5px rgba(255,255,255,0.5), inset 0 -8px 14px rgba(0,0,0,0.6); }
+  .art-shard .relic-face, .art-shard .relic-d, .art-shard .relic-spec, .art-shard .relic-sheen{ clip-path:polygon(50% 0, 86% 26%, 74% 100%, 26% 100%, 14% 26%); }
+  .art-shard .relic-face::after{ content:''; position:absolute; inset:0; background:linear-gradient(118deg, transparent 30%, rgba(255,255,255,0.16) 30.5%, transparent 31.5%), linear-gradient(64deg, transparent 55%, rgba(0,0,0,0.22) 55.5%, transparent 57%), linear-gradient(150deg, transparent 68%, rgba(255,255,255,0.12) 68.5%, transparent 70%); }
+  .art-star .relic-face, .art-star .relic-d, .art-star .relic-spec, .art-star .relic-sheen{ clip-path:polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+  .art-sigil .relic-face, .art-sigil .relic-d, .art-sigil .relic-spec, .art-sigil .relic-sheen{ clip-path:polygon(8% 4%, 30% 22%, 50% 8%, 70% 22%, 92% 4%, 86% 62%, 50% 100%, 14% 62%); }
+  .art-key .relic-face, .art-key .relic-d, .art-key .relic-spec, .art-key .relic-sheen{ clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+  .art-prism .relic-face, .art-prism .relic-d, .art-prism .relic-spec, .art-prism .relic-sheen{ clip-path:polygon(50% 0, 100% 42%, 78% 100%, 22% 100%, 0 42%); }
+  /* ---- Rarity detailing: geometry & material complexity, not glow ---- */
+  .rtier-common .relic-d3{ display:none; }
+  .rtier-rare .relic-face{ box-shadow:inset 0 2px 3px rgba(255,255,255,0.5), inset 0 -6px 10px rgba(0,0,0,0.52), inset 0 0 0 1px rgba(255,255,255,0.24); }
+  .rtier-epic .relic-face{ box-shadow:inset 0 2px 4px rgba(255,255,255,0.55), inset 0 -6px 10px rgba(0,0,0,0.52), inset 0 0 0 2px rgba(255,255,255,0.26), inset 0 0 0 5px rgba(0,0,0,0.26); }
+  .rtier-epic .relic-face::before, .rtier-legendary .relic-face::before{ content:''; position:absolute; inset:0; background:conic-gradient(from 0deg, rgba(255,255,255,0.15) 0 12deg, transparent 12deg 45deg, rgba(255,255,255,0.1) 45deg 58deg, transparent 58deg 120deg, rgba(255,255,255,0.15) 120deg 132deg, transparent 132deg 205deg, rgba(255,255,255,0.1) 205deg 218deg, transparent 218deg 300deg, rgba(255,255,255,0.12) 300deg 312deg, transparent 312deg); opacity:.72; mix-blend-mode:overlay; }
+  .rtier-legendary .relic-face{ box-shadow:inset 0 2px 5px rgba(255,255,255,0.65), inset 0 -7px 12px rgba(0,0,0,0.58), inset 0 0 0 2px rgba(255,255,255,0.35), inset 0 0 0 6px rgba(0,0,0,0.3), inset 0 0 0 7px rgba(255,255,255,0.18); }
+  .rtier-legendary .relic-glyph svg{ width:68%; height:68%; }
+  /* Legendary mount ring — solid metal geometry, not a glow */
+  .relic-ring{ position:absolute; inset:-6px; z-index:1; border-radius:50%; border:2px solid transparent; background:linear-gradient(140deg, var(--m1), var(--m3) 45%, var(--m1) 70%, var(--m3)) border-box; -webkit-mask:linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask-composite:exclude; transform:translateZ(-4px) rotateZ(8deg); pointer-events:none; }
   /* Materials */
   .pal-bronze{ --m1:#f2b27e; --m2:#a05a2c; --m3:#5a2f14; --mglow:rgba(240,160,90,0.45); }
   .pal-silver{ --m1:#f4f6f8; --m2:#9aa5b1; --m3:#4d565f; --mglow:rgba(200,215,230,0.45); }
@@ -394,13 +440,9 @@
   .pal-amethyst{ --m1:#e2c2ff; --m2:#9a4fd8; --m3:#4a1a78; --mglow:rgba(190,110,255,0.55); }
   .pal-obsidian{ --m1:#8b93a3; --m2:#2c313c; --m3:#0b0d12; --mglow:rgba(140,160,200,0.4); }
   .pal-prism{ --m1:#ffd76a; --m2:#7db4ff; --m3:#5a2f8a; --mglow:rgba(200,170,255,0.6); }
-  .pal-prism .medal-face{ background:radial-gradient(circle at var(--lx) var(--ly), rgba(255,255,255,0.6), rgba(255,255,255,0.08) 42%, transparent 62%), conic-gradient(from 210deg, #f6d365, #62e3a4, #6fb3ff, #c78bff, #ff8fa0, #f6d365); }
-  .trophy:hover .pal-prism .medal-face{ animation:prismHue 5s linear infinite; }
+  .pal-prism .relic-face{ background:radial-gradient(circle at var(--lx) var(--ly), rgba(255,255,255,0.6), rgba(255,255,255,0.08) 42%, transparent 62%), conic-gradient(from 210deg, #f6d365, #62e3a4, #6fb3ff, #c78bff, #ff8fa0, #f6d365); }
+  .trophy:hover .pal-prism .relic-face, .ach-card.unlocked:hover .pal-prism .relic-face{ animation:prismHue 5s linear infinite; }
   @keyframes prismHue{ to{ filter:hue-rotate(360deg); } }
-  /* Shine sweep runs once per hover — never while the reward is at rest. */
-  .trophy-shine{ position:absolute; inset:0; z-index:5; background:linear-gradient(115deg, transparent 32%, rgba(255,255,255,0.55) 50%, transparent 68%); transform:translateX(-120%); pointer-events:none; }
-  .trophy:hover .trophy-shine{ animation:trophyShine 1.2s var(--ease); }
-  @keyframes trophyShine{ 0%{transform:translateX(-120%);} 100%{transform:translateX(120%);} }
   .trophy-name{ font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--white); line-height:1.35; word-break:break-word; }
   .trophy-tier{ font-family:'Space Mono',monospace; font-size:8.5px; letter-spacing:0.18em; text-transform:uppercase; color:var(--dim2); border:1px solid var(--line); border-radius:999px; padding:2px 8px; }
   .trophy-rare .trophy-tier{ color:#a8ccff; border-color:rgba(110,165,255,0.4); }
@@ -532,6 +574,16 @@
   #dash-rankings.dash-fade{ opacity:0.2; transform:translateY(5px); pointer-events:none; }
   .dash-sec-head{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
   .dash-sec-title{ font-family:'Archivo Black',sans-serif; font-size:clamp(19px,2.6vw,26px); line-height:1.1; text-transform:uppercase; letter-spacing:0.02em; color:var(--white); }
+  /* ---- Category marquee headers: endless advertising-style ticker.
+     Two identical groups tile seamlessly while the track slides -50%. ---- */
+  .sec-marquee{ position:relative; overflow:hidden; margin:0 calc(50% - 50vw) 14px; -webkit-mask-image:linear-gradient(to right, transparent 0, #000 clamp(28px,6vw,90px), #000 calc(100% - clamp(28px,6vw,90px)), transparent 100%); mask-image:linear-gradient(to right, transparent 0, #000 clamp(28px,6vw,90px), #000 calc(100% - clamp(28px,6vw,90px)), transparent 100%); }
+  .mq-track{ display:inline-flex; white-space:nowrap; will-change:transform; animation:mqSlide var(--mq-dur, 30s) linear infinite; }
+  .mq-group{ display:inline-flex; flex-shrink:0; }
+  .mq-unit{ display:inline-flex; align-items:baseline; font-family:'Archivo Black',sans-serif; font-size:clamp(19px,2.6vw,26px); line-height:1.15; text-transform:uppercase; letter-spacing:0.02em; color:var(--dim); }
+  .mq-unit em{ font-style:normal; color:var(--white); margin-left:0.45em; text-shadow:0 0 22px rgba(255,255,255,0.22); }
+  .mq-dot{ color:var(--dim2); margin:0 clamp(16px,2.4vw,30px); font-size:0.72em; align-self:center; }
+  @keyframes mqSlide{ from{ transform:translate3d(0,0,0); } to{ transform:translate3d(-50%,0,0); } }
+  @media (prefers-reduced-motion:reduce){ .mq-track{ animation:none; } }
   /* ---- Horizontal level carousels: hidden scrollbar, masked edges, drag-to-scroll ---- */
   /* Full-bleed carousels: rows escape the shell and run across the viewport,
      with wide soft fades instead of hard clipping so neighboring cards stay
@@ -539,6 +591,10 @@
   .rank-row{ --edge:calc(50vw - 50% + 20px); display:grid; grid-auto-flow:column; grid-auto-columns:230px; gap:14px; overflow-x:auto; overflow-y:hidden; padding:10px var(--edge) 16px; margin:0 calc(50% - 50vw); scrollbar-width:none; -ms-overflow-style:none; -webkit-mask-image:linear-gradient(to right, transparent 0, #000 clamp(36px,7vw,110px), #000 calc(100% - clamp(36px,7vw,110px)), transparent 100%); mask-image:linear-gradient(to right, transparent 0, #000 clamp(36px,7vw,110px), #000 calc(100% - clamp(36px,7vw,110px)), transparent 100%); user-select:none; -webkit-user-select:none; overscroll-behavior-x:contain; touch-action:pan-x pan-y; }
   .rank-row::-webkit-scrollbar{ display:none; }
   .rank-row.dragging .rank-card{ pointer-events:none; }
+  /* While dragging a carousel the cursor disappears completely — both the
+     custom dot/ring and (belt-and-braces) the native cursor. */
+  body.carousel-drag #cursor-dot, body.carousel-drag #cursor-ring{ opacity:0; }
+  body.carousel-drag, body.carousel-drag *{ cursor:none !important; }
   /* Custom slim scrollbar: appears while the row is hovered or scrolling. */
   .row-scroll{ position:relative; height:4px; margin:-6px auto 10px; max-width:min(100%, 560px); border-radius:999px; background:rgba(255,255,255,0.06); opacity:0; transition:opacity .35s var(--ease); pointer-events:none; }
   .dash-section:hover .row-scroll, .row-scroll.active{ opacity:1; pointer-events:auto; }
@@ -552,6 +608,14 @@
   }
 
   .rank-card{ position:relative; background:var(--panel); border:1px solid var(--line); border-radius:12px; overflow:hidden; cursor:pointer; animation:barInF .45s var(--ease) backwards; transition:transform .32s var(--spring), opacity .3s var(--ease), border-color .22s var(--ease), box-shadow .28s var(--ease); }
+  /* ---- Top-3 podium borders: understated metallic framing, no heavy glow ---- */
+  .rank-card.rank-top{ border-color:var(--medal-line); }
+  .rank-card.rank-top::before{ content:''; position:absolute; inset:0; border-radius:inherit; padding:1px; background:linear-gradient(150deg, var(--medal-hi), var(--medal-line) 38%, transparent 62%, var(--medal-line)); -webkit-mask:linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none; z-index:3; }
+  .rank-card.rank-top .rank-num{ background:linear-gradient(160deg, var(--medal-hi), var(--medal-line)); border-color:transparent; color:#0d0d0d; font-weight:700; }
+  .rank-card.rank-top:hover{ border-color:var(--medal-hi); box-shadow:0 18px 38px -14px var(--medal-soft), 0 4px 14px rgba(0,0,0,0.45); }
+  .rank-top-1{ --medal-hi:#f3d789; --medal-line:#a8842e; --medal-soft:rgba(230,190,90,0.28); }
+  .rank-top-2{ --medal-hi:#e8edf2; --medal-line:#8d99a6; --medal-soft:rgba(200,212,225,0.26); }
+  .rank-top-3{ --medal-hi:#e0a878; --medal-line:#8f5a30; --medal-soft:rgba(215,150,95,0.26); }
   .rank-card::after{ content:''; position:absolute; inset:0; border-radius:inherit; box-shadow:inset 0 0 0 1px rgba(255,255,255,0); pointer-events:none; transition:box-shadow .25s var(--ease); }
   .rank-card:hover{ transform:translateY(-6px); border-color:var(--line2); box-shadow:0 18px 38px -14px rgba(255,255,255,0.22), 0 4px 14px rgba(0,0,0,0.45); }
   .rank-card:hover::after{ box-shadow:inset 0 0 0 1px rgba(255,255,255,0.22); }
@@ -800,22 +864,26 @@
   .diff-dd-btn img{ width:20px; height:20px; object-fit:contain; }
   .diff-dd-arrow{ width:16px; height:16px; fill:var(--dim); transition:transform .25s var(--ease); }
   .diff-dd-btn[aria-expanded="true"] .diff-dd-arrow{ transform:rotate(-90deg); }
-  #diff-panel-backdrop{ position:fixed; inset:0; z-index:100020; background:rgba(4,4,4,0.62); backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px); opacity:0; pointer-events:none; transition:opacity .3s var(--ease); }
-  #diff-panel-backdrop.open{ opacity:1; pointer-events:auto; }
-  #diff-panel{ position:fixed; top:0; right:0; bottom:0; z-index:100021; width:min(400px, 92vw); display:flex; flex-direction:column; background:linear-gradient(200deg, rgba(255,255,255,0.045), rgba(255,255,255,0.008) 40%), var(--panel2); border-left:1px solid var(--line2); box-shadow:-30px 0 80px rgba(0,0,0,0.6); transform:translateX(102%); visibility:hidden; transition:transform .42s var(--spring), visibility 0s linear .42s; }
-  #diff-panel.open{ transform:translateX(0); visibility:visible; transition:transform .42s var(--spring); }
-  .diff-panel-head{ display:flex; align-items:center; justify-content:space-between; gap:14px; padding:26px 26px 18px; border-bottom:1px solid var(--line); }
-  .diff-panel-title{ font-family:'Archivo Black',sans-serif; font-size:19px; text-transform:uppercase; letter-spacing:0.04em; }
-  .diff-panel-close{ width:36px; height:36px; display:flex; align-items:center; justify-content:center; background:var(--black2); border:1px solid var(--line); border-radius:10px; color:var(--dim); font-size:20px; line-height:1; cursor:pointer; transition:all .2s var(--ease); }
-  .diff-panel-close:hover{ color:var(--white); border-color:var(--line2); transform:rotate(90deg); }
-  .diff-panel-list{ flex:1; overflow-y:auto; overscroll-behavior:contain; padding:16px 16px 24px; display:flex; flex-direction:column; gap:8px; scrollbar-width:thin; scrollbar-color:rgba(255,255,255,0.18) transparent; }
-  .diff-panel-item{ display:flex; align-items:center; gap:16px; width:100%; padding:14px 16px; background:var(--panel); border:1px solid var(--line); border-radius:14px; color:var(--dim); font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; cursor:pointer; text-align:left; opacity:0; transform:translateX(26px); transition:background .2s ease, color .2s ease, border-color .2s ease, transform .22s var(--spring); }
-  #diff-panel.open .diff-panel-item{ animation:diffItemIn .4s var(--ease) forwards; }
-  @keyframes diffItemIn{ to{ opacity:1; transform:translateX(0); } }
-  .diff-panel-item:hover{ background:rgba(255,255,255,0.06); color:var(--white); border-color:var(--line2); transform:translateX(-4px); }
-  .diff-panel-item.active{ background:var(--white); color:#0a0a0a; border-color:var(--white); }
-  .diff-panel-item img{ width:34px; height:34px; object-fit:contain; flex-shrink:0; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.55)); }
-  .diff-panel-item .dpi-blank{ width:34px; height:34px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:'Space Mono',monospace; font-size:15px; }
+  /* Inline difficulty tray: expands horizontally to the right of the button,
+     anchored to it (absolute — the page layout never moves). */
+  .diff-inline{ position:relative; align-self:flex-start; display:flex; align-items:center; }
+  .diff-tray{ position:absolute; left:calc(100% + 10px); top:50%; z-index:60; display:flex; align-items:center; gap:5px; padding:6px 8px; background:linear-gradient(200deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01) 45%), var(--panel2); border:1px solid var(--line2); border-radius:12px; box-shadow:0 14px 38px -10px rgba(0,0,0,0.7); max-width:min(58vw, 640px); overflow-x:auto; scrollbar-width:none; opacity:0; visibility:hidden; transform:translateY(-50%) translateX(-10px) scaleX(0.86); transform-origin:left center; transition:opacity .28s var(--ease), transform .34s var(--spring), visibility 0s linear .28s; }
+  .diff-tray::-webkit-scrollbar{ display:none; }
+  .diff-tray.open{ opacity:1; visibility:visible; transform:translateY(-50%) translateX(0) scaleX(1); transition:opacity .22s var(--ease), transform .34s var(--spring); }
+  .diff-opt{ flex-shrink:0; width:40px; height:40px; display:flex; align-items:center; justify-content:center; background:transparent; border:1px solid transparent; border-radius:9px; cursor:pointer; opacity:0; transform:translateX(-8px); transition:background .18s ease, border-color .18s ease, transform .22s var(--spring); }
+  .diff-tray.open .diff-opt{ animation:diffOptIn .3s var(--ease) forwards; }
+  @keyframes diffOptIn{ to{ opacity:1; transform:none; } }
+  .diff-opt img{ width:26px; height:26px; object-fit:contain; filter:drop-shadow(0 2px 5px rgba(0,0,0,0.6)); transition:transform .2s var(--spring); }
+  .diff-opt .dpi-blank{ font-family:'Space Mono',monospace; font-size:14px; color:var(--dim); }
+  .diff-opt:hover{ background:rgba(255,255,255,0.07); border-color:var(--line2); }
+  .diff-opt:hover img{ transform:scale(1.16); }
+  .diff-opt:active{ transform:scale(0.9); }
+  .diff-opt.active{ background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.4); }
+  .diff-opt.active .dpi-blank{ color:var(--white); }
+  @media (max-width: 760px){
+    .diff-tray{ left:0; top:calc(100% + 8px); transform:translateY(-6px) scaleX(0.94); transform-origin:left top; max-width:calc(100vw - 44px); }
+    .diff-tray.open{ transform:translateY(0) scaleX(1); }
+  }
   /* Global search: Levels | Profiles result tabs + profile result cards. */
   .search-tabs{ display:flex; gap:4px; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:4px; width:max-content; margin-bottom:18px; }
   .search-tab{ background:none; border:none; border-radius:7px; color:var(--dim); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.09em; padding:9px 18px; cursor:pointer; transition:all .22s var(--spring); }
@@ -1147,14 +1215,17 @@
 
         <div class="dash-diff-bar">
           <div class="dash-sec-title" data-i18n="dashRankTitle">Level Rankings</div>
-          <button class="diff-dd-btn" id="diff-panel-btn" aria-haspopup="dialog" aria-expanded="false"></button>
+          <div class="diff-inline" id="diff-inline">
+            <button class="diff-dd-btn" id="diff-btn" aria-haspopup="listbox" aria-expanded="false"></button>
+            <div class="diff-tray" id="diff-tray" role="listbox" aria-label="Difficulty filter"></div>
+          </div>
         </div>
 
         <div id="dash-rankings">
-          <div class="dash-section"><div class="dash-sec-head"><span class="dash-sec-title" data-i18n="secPopularAll">Most Popular Levels — All Time</span></div><div class="rank-row" id="row-popular-all"></div></div>
-          <div class="dash-section"><div class="dash-sec-head"><span class="dash-sec-title" data-i18n="secTopToday">Top Rated Popular Levels — Today</span></div><div class="rank-row" id="row-top-today"></div></div>
-          <div class="dash-section"><div class="dash-sec-head"><span class="dash-sec-title" data-i18n="secPopularWeek">Popular Levels — This Week</span></div><div class="rank-row" id="row-popular-week"></div></div>
-          <div class="dash-section"><div class="dash-sec-head"><span class="dash-sec-title" data-i18n="secDiscussed">Most Discussed Levels</span></div><div class="rank-row" id="row-discussed"></div></div>
+          <div class="dash-section"><div class="sec-marquee" data-mq="secPopularAll" role="heading" aria-level="3"></div><div class="rank-row" id="row-popular-all"></div></div>
+          <div class="dash-section"><div class="sec-marquee" data-mq="secTopToday" role="heading" aria-level="3"></div><div class="rank-row" id="row-top-today"></div></div>
+          <div class="dash-section"><div class="sec-marquee" data-mq="secPopularWeek" role="heading" aria-level="3"></div><div class="rank-row" id="row-popular-week"></div></div>
+          <div class="dash-section"><div class="sec-marquee" data-mq="secDiscussed" role="heading" aria-level="3"></div><div class="rank-row" id="row-discussed"></div></div>
         </div>
 
         <div class="dash-section">
@@ -1179,6 +1250,7 @@
     <section class="screen" id="screen-level">
       <button class="back-btn" id="level-back">← <span data-i18n="backBtn">Back</span></button>
       <div class="level-hero" id="lvl-hero"></div>
+      <div class="lvl-walkthrough" id="lvl-walkthrough" hidden></div>
       <div class="level-stats-grid">
         <div class="level-avg-card">
           <div class="lvl-avg-num" id="lvl-avg">–</div>
@@ -1364,6 +1436,13 @@
     <section class="screen" id="screen-admin">
       <div class="profile-section-divider" data-i18n="adminQueueTitle">Walkthrough Submissions</div>
       <div id="admin-queue-content"></div>
+      <div class="profile-section-divider" style="margin-top:34px;" data-i18n="adminFwTitle">Forbidden Words</div>
+      <div class="modal-text" style="margin-bottom:14px;" data-i18n="adminFwSub">Blacklisted words are blocked in reviews, bios and usernames — on top of AI moderation. The built-in list already covers common slurs; add site-specific words here.</div>
+      <div class="admin-fw-add">
+        <input type="text" id="fw-input" class="modal-input" maxlength="100" data-i18n-ph="adminFwPlaceholder" placeholder="Add a forbidden word…">
+        <button class="save-btn small" id="fw-add-btn" data-i18n="adminFwAdd">Add Word</button>
+      </div>
+      <div class="admin-fw-list" id="fw-list"></div>
     </section>
 
     <section class="screen" id="screen-spin">
@@ -1519,16 +1598,6 @@
   <div class="pt-panel pt-b"></div>
   <div class="pt-mark">RANDOM<span>/</span>LEVEL</div>
 </div>
-<!-- Difficulty side panel: slides in from the right, lists every GD difficulty -->
-<div id="diff-panel-backdrop" aria-hidden="true"></div>
-<aside id="diff-panel" role="dialog" aria-modal="true" aria-label="Difficulty filter">
-  <div class="diff-panel-head">
-    <span class="diff-panel-title" data-i18n="diffPanelTitle">Select Difficulty</span>
-    <button class="diff-panel-close" id="diff-panel-close" aria-label="Close">&times;</button>
-  </div>
-  <div class="diff-panel-list" id="diff-panel-list" role="listbox" aria-label="Difficulty filter"></div>
-</aside>
-
 <script>
 'use strict';
 /* ================= UTILS ================= */
@@ -1577,6 +1646,7 @@ const i18n = {
     dashStatsTitle:'Global Statistics', statTotalReviews:'Total reviews & ratings', statTotalUsers:'Registered users',
     dashLbTitle:'Top Reviewers', dashLbSub:'Top 10 by total likes received', lbEmpty:'No reviewers yet',
     dashRankTitle:'Level Rankings', diffAll:'All Difficulties', diffNA:'NA', rankEmpty:'No levels here yet', rankReviews:'reviews',
+    mqPopularAllB:'Most Popular Levels —', mqPopularAllK:'All Time', mqTopTodayB:'Top Rated Popular —', mqTopTodayK:'Today', mqPopularWeekB:'Popular Levels —', mqPopularWeekK:'This Week', mqDiscussedB:'Most Discussed —', mqDiscussedK:'All Time',
     secPopularAll:'Most Popular Levels — All Time', secTopToday:'Top Rated Popular Levels — Today', secPopularWeek:'Popular Levels — This Week', secDiscussed:'Most Discussed Levels', secCommunity:'Global Statistics & Top Reviewers', secLatest:'Latest Reviews',
     spinBannerTitle:'Random Level', spinBannerSub:'Enter the spin room — a living wheel of levels picks your next one to play & review', spinBannerCta:'Enter →',
     spinEyebrow:'Random Level', spinTitle:'Spin the Wheel', spinBtn:'Spin', spinBtnBusy:'Spinning…', spinFDiff:'Difficulties', spinFCat:'Category', spinFLen:'Length', spinFMinDl:'Minimum downloads', spinFExtra:'Extras', spinFStarred:'Starred levels only', spinDlAny:'Any',
@@ -1589,7 +1659,7 @@ const i18n = {
     chipRecent:'Recent', chipPopular:'Popular', chipToday:'Top Today', chipWeek:'Top Week', chipAllTime:'All Time', chipDiscussed:'Most Discussed', chipBeautiful:'Most Beautiful', chipEasiest:'Easiest', chipHardest:'Hardest', diffAny:'Any difficulty',
     feedEmptyTitle:'Nothing here yet', feedEmptySub:'Be the first — write a review in the Create tab.',
     searchResults:'Search results', clearSearch:'Clear', noResultsTitle:'No results found', noResultsSub:'Try a different query — by level name or ID.', loading:'Loading…', readMore:'Read →',
-    searchTabLevels:'Levels', searchTabProfiles:'Profiles', noProfilesSub:'No users match this name.', diffPanelTitle:'Select Difficulty',
+    searchTabLevels:'Levels', searchTabProfiles:'Profiles', noProfilesSub:'No users match this name.',
     avgLabel:'Avg', revCount:'Reviews', beautyLabel:'Beauty',
     backBtn:'Back', lvlEyebrow:'Level', lvlReviews:'Reviews', lvlNoReviewsTitle:'No reviews yet', lvlNoReviewsSub:'Be the first to review this level.', lvlWrite:'Write a Review',
     sortRecent:'Newest', sortPopular:'Most liked', sortHighest:'Highest score', sortLowest:'Lowest score', sortNewest:'Newest first', sortOldest:'Oldest first',
@@ -1610,20 +1680,23 @@ const i18n = {
     btnPublish:'Publish Review', createFindFirst:'Search for a level first', published:'Review published!',
     modalDupTitle:'Level already reviewed', modalDupText:'You already have a review for this level. Overwrite it?', modalOverwrite:'Overwrite',
     navAdmin:'Admin', adminQueueTitle:'Walkthrough Submissions', adminEmptyTitle:'Queue is empty', adminEmptySub:'No pending walkthrough submissions.', adminLevel:'Level', adminBy:'by', adminApprove:'Approve', adminReject:'Reject', adminApproved:'Walkthrough approved', adminRejected:'Walkthrough rejected', adminRejectTitle:'Reject this walkthrough?', adminRejectText:'The video will not be shown on the level page.',
-    wtWatch:'Watch Walkthrough', wtSubmit:'Submit Walkthrough', wtModalTitle:'Submit Walkthrough', wtModalText:'Share a YouTube video showing how to beat this level. An admin will review it before it appears on the level page.', wtUrlLabel:'YouTube link', wtSubmitBtn:'Submit for Review', wtSubmitted:'Submitted! It will appear after admin approval.', wtUrlRequired:'Paste a YouTube link first',
-    err_invalid_youtube_url:'That does not look like a valid YouTube link', err_walkthrough_exists:'This video was already submitted for this level', err_admin_only:'Admin access required',
+    wtWatch:'Watch Walkthrough', wtSectionTitle:'Video Walkthrough', wtSubmit:'Submit Walkthrough', wtModalTitle:'Submit Walkthrough', wtModalText:'Share a YouTube video showing how to beat this level. An admin will review it before it appears on the level page.', wtUrlLabel:'YouTube link', wtSubmitBtn:'Submit for Review', wtSubmitted:'Submitted! It will appear after admin approval.', wtUrlRequired:'Paste a YouTube link first',
+    err_invalid_youtube_url:'That does not look like a valid YouTube link', err_walkthrough_exists:'This video was already submitted for this level', err_admin_only:'Admin access required', err_word_exists:'This word is already in the blacklist',
+    adminFwTitle:'Forbidden Words', adminFwSub:'Blacklisted words are blocked in reviews, bios and usernames — on top of AI moderation. The built-in list already covers common slurs; add site-specific words here.', adminFwAdd:'Add Word', adminFwPlaceholder:'Add a forbidden word…', adminFwEmpty:'No custom words yet — the built-in blacklist is active.', adminFwAdded:'Word added to the blacklist', adminFwRemoved:'Word removed',
+    adminDelReview:'Delete Review', adminDelReviewTitle:'Delete this review?', adminDelReviewText:'The review will be permanently removed for everyone. This is a moderation action and cannot be undone.', adminDeleted:'Review removed',
     changeAvatar:'Change Avatar', changeBanner:'Change Banner',
-    statsTitle:'Statistics', statReviews:'Reviews', statAvg:'Average Score', statLikes:'Likes Received', statSince:'Member Since',
+    statsTitle:'Statistics', statReviews:'Written Reviews', statRatings:'Levels Rated', statAvg:'Average Score', statLikes:'Likes Received', statSince:'Member Since',
     chartCat:'Category Profile', chartCatSub:'Average score for each rating axis', chartDist:'Score Distribution', chartDistSub:'Number of reviews in each score range',
     achBoardTitle:'Achievements Board', achBoardSub:'Milestones earned across GD Review', achDone:'Unlocked',
     achShowcaseTitle:'Achievement Showcase', achShowcaseSub:'Trophies earned on GD Review', achShowcaseEmpty:'No trophies on display yet', achOpenBoard:'Open Board', achCloseBoard:'Close Board', achProgressTitle:'Full Progress', achPublicPreview:'Public showcase — exactly how others see it', achUnlockedCount:'{n} of {total} unlocked', achTierCommon:'Common', achTierUncommon:'Uncommon', achTierRare:'Rare', achTierEpic:'Epic', achTierLegendary:'Legendary',
-    achRev10:'Seasoned Critic', achRev10D:'Publish 10 reviews', achRev50:'Archive Builder', achRev50D:'Publish 50 reviews', achRev100:'Century Critic', achRev100D:'Publish 100 reviews', achRev250:'Grand Archivist', achRev250D:'Publish 250 reviews',
-    achLikes25:'Appreciated', achLikes25D:'Receive 25 likes in total', achLikes100:'Crowd Favorite', achLikes100D:'Receive 100 likes in total', achLikes500:'Community Legend', achLikes500D:'Receive 500 likes in total',
+    achRate10:'First Steps', achRate10D:'Rate 10 levels', achRate50:'Level Judge', achRate50D:'Rate 50 levels', achRate150:'Score Machine', achRate150D:'Rate 150 levels', achRate400:'The Arbiter', achRate400D:'Rate 400 levels',
+    achRateDays30:'Consistent Critic', achRateDays30D:'Rate levels on 30 different days',
+    achRev10:'Seasoned Critic', achRev10D:'Write 10 reviews', achRev50:'Archive Builder', achRev50D:'Write 50 reviews', achRev100:'Century Critic', achRev100D:'Write 100 reviews', achRev250:'Grand Archivist', achRev250D:'Write 250 reviews',
+    achLikes25:'Appreciated', achLikes25D:'Receive 25 likes on your reviews', achLikes100:'Crowd Favorite', achLikes100D:'Receive 100 likes on your reviews', achLikes500:'Community Legend', achLikes500D:'Receive 500 likes on your reviews',
     achHelpful:'Helpful Review', achHelpfulD:'Collect 10 likes on a single review', achFeatured:'Featured Review', achFeaturedD:'Collect 25 likes on a single review', achBest50:'Exceptional Review', achBest50D:'Collect 50 likes on a single review', achTrusted:'Trusted Contributor', achTrustedD:'Have 10 reviews with 5+ likes each',
     achStarred:'Star Collector', achStarredD:'Review 25 star-rated levels', achDiffs8:'Cartographer', achDiffs8D:'Review levels of 8 different difficulties', achDemon25:'Demon Hunter', achDemon25D:'Review 25 demon levels', achExtreme5:'Apex Critic', achExtreme5D:'Review 5 extreme demons',
-    achHalfYear:'Half-Year Club', achHalfYearD:'Be a member for 180 days', achYear:'Veteran', achYearD:'Be a member for a full year', achTwoYear:'Two-Year Legacy', achTwoYearD:'Be a member for two full years',
-    achEssay:'Essayist', achEssayD:'Write 10 in-depth reviews of 300+ characters', achSpecialist:'Category Specialist', achSpecialistD:'Publish 25 reviews within a single difficulty',
-    achCatReviews:'Review Milestones', achCatCommunity:'Community', achCatHelpful:'Helpful Reviews', achCatExplorer:'Exploration', achCatAccount:'Account Milestones', achCatSpecial:'Special',
+    achEssay:'Essayist', achEssayD:'Write 10 in-depth reviews of 300+ characters', achSpecialist:'Category Specialist', achSpecialistD:'Write 25 reviews within a single difficulty',
+    achCatRating:'Rating Path', achCatReviews:'Review Path', achCatCommunity:'Community', achCatHelpful:'Helpful Reviews', achCatExplorer:'Exploration',
     archiveTitle:'My Reviews', archiveTheirTitle:'Reviews by {user}', archiveSearch:'Search by level name, title or ID…',
     emptyArchiveTitle:'No reviews yet', emptyArchiveSub:'Find a level in the Create tab and publish your first review.', emptyTheirArchive:'This user has no reviews yet.',
     emptyStatsTitle:'Nothing to analyze', emptyStatsSub:'Publish at least one review to see statistics.',
@@ -1639,7 +1712,7 @@ const i18n = {
     detailSummary:'Review', detailNoSummary:'No written summary provided.', madeBy:'made by', ok:'OK',
     reviewRules:'Review rules: no abusive insults, no advertising, no external links. Every submission is checked automatically before it is published.',
     modRejectedTitle:'Rejected by moderation', modRetryHint:'Edit the content and try publishing again.',
-    modReason_toxicity:'The text contains insults or toxic language.', modReason_links:'External links are not allowed.', modReason_advertising:'Advertising or self-promotion is not allowed.', modReason_image:'The image contains prohibited content.', modReason_unavailable:'The moderation service is temporarily unavailable — nothing was published.',
+    modReason_toxicity:'The text contains insults or toxic language.', modReason_forbidden_words:'The text contains words that are not allowed on this platform.', modReason_links:'External links are not allowed.', modReason_advertising:'Advertising or self-promotion is not allowed.', modReason_image:'The image contains prohibited content.', modReason_unavailable:'The moderation service is temporarily unavailable — nothing was published.',
     err_content_rejected:'Content rejected by automatic moderation', err_moderation_unavailable:'Moderation service unavailable — try again in a moment',
     justNow:'just now', minAgo:'m ago', hourAgo:'h ago', dayAgo:'d ago',
     cropTitle:'Adjust Image', cropHint:'Scroll to zoom · drag photo to move · drag corner to resize', cropApply:'Apply',
@@ -1660,6 +1733,7 @@ const i18n = {
     dashStatsTitle:'Глобальная статистика', statTotalReviews:'Всего рецензий и оценок', statTotalUsers:'Зарегистрировано пользователей',
     dashLbTitle:'Топ рецензентов', dashLbSub:'Топ-10 по полученным лайкам', lbEmpty:'Пока нет рецензентов',
     dashRankTitle:'Рейтинги уровней', diffAll:'Все сложности', diffNA:'NA', rankEmpty:'Здесь пока пусто', rankReviews:'рец.',
+    mqPopularAllB:'Самые популярные уровни —', mqPopularAllK:'За всё время', mqTopTodayB:'Лучшие среди популярных —', mqTopTodayK:'Сегодня', mqPopularWeekB:'Популярные уровни —', mqPopularWeekK:'За неделю', mqDiscussedB:'Самые обсуждаемые —', mqDiscussedK:'За всё время',
     secPopularAll:'Самые популярные уровни — за всё время', secTopToday:'Лучшие среди популярных — сегодня', secPopularWeek:'Популярные уровни — за неделю', secDiscussed:'Самые обсуждаемые уровни', secCommunity:'Статистика и топ рецензентов', secLatest:'Последние рецензии',
     spinBannerTitle:'Случайный уровень', spinBannerSub:'Войдите в спин-зал — живое колесо уровней выберет, что играть и оценивать дальше', spinBannerCta:'Войти →',
     spinEyebrow:'Случайный уровень', spinTitle:'Крутите колесо', spinBtn:'Крутить', spinBtnBusy:'Крутится…', spinFDiff:'Сложности', spinFCat:'Категория', spinFLen:'Длина', spinFMinDl:'Минимум скачиваний', spinFExtra:'Дополнительно', spinFStarred:'Только со звёздами', spinDlAny:'Любое',
@@ -1672,7 +1746,7 @@ const i18n = {
     chipRecent:'Недавние', chipPopular:'Популярные', chipToday:'Лучшие за день', chipWeek:'Лучшие за неделю', chipAllTime:'За всё время', chipDiscussed:'Обсуждаемые', chipBeautiful:'Самые красивые', chipEasiest:'Лёгкие', chipHardest:'Сложные', diffAny:'Любая сложность',
     feedEmptyTitle:'Пока пусто', feedEmptySub:'Станьте первым — напишите рецензию во вкладке «Создать».',
     searchResults:'Результаты поиска', clearSearch:'Сбросить', noResultsTitle:'Ничего не найдено', noResultsSub:'Попробуйте другой запрос — по названию или ID.', loading:'Загрузка…', readMore:'Читать →',
-    searchTabLevels:'Уровни', searchTabProfiles:'Профили', noProfilesSub:'Пользователи с таким именем не найдены.', diffPanelTitle:'Выбор сложности',
+    searchTabLevels:'Уровни', searchTabProfiles:'Профили', noProfilesSub:'Пользователи с таким именем не найдены.',
     avgLabel:'Средняя', revCount:'Рецензий', beautyLabel:'Красота',
     backBtn:'Назад', lvlEyebrow:'Уровень', lvlReviews:'Рецензии', lvlNoReviewsTitle:'Рецензий пока нет', lvlNoReviewsSub:'Станьте первым, кто оценит этот уровень.', lvlWrite:'Написать рецензию',
     sortRecent:'Сначала новые', sortPopular:'По лайкам', sortHighest:'Высокий балл', sortLowest:'Низкий балл', sortNewest:'Сначала новые', sortOldest:'Сначала старые',
@@ -1693,20 +1767,23 @@ const i18n = {
     btnPublish:'Опубликовать', createFindFirst:'Сначала найдите уровень', published:'Рецензия опубликована!',
     modalDupTitle:'Уровень уже оценён', modalDupText:'У вас уже есть рецензия на этот уровень. Заменить её?', modalOverwrite:'Заменить',
     navAdmin:'Админ', adminQueueTitle:'Заявки на прохождения', adminEmptyTitle:'Очередь пуста', adminEmptySub:'Нет заявок, ожидающих проверки.', adminLevel:'Уровень', adminBy:'от', adminApprove:'Одобрить', adminReject:'Отклонить', adminApproved:'Прохождение одобрено', adminRejected:'Прохождение отклонено', adminRejectTitle:'Отклонить это прохождение?', adminRejectText:'Видео не будет показано на странице уровня.',
-    wtWatch:'Смотреть прохождение', wtSubmit:'Предложить прохождение', wtModalTitle:'Предложить прохождение', wtModalText:'Поделитесь YouTube-видео с прохождением уровня. Админ проверит его перед публикацией на странице уровня.', wtUrlLabel:'Ссылка на YouTube', wtSubmitBtn:'Отправить на проверку', wtSubmitted:'Отправлено! Появится после одобрения админом.', wtUrlRequired:'Сначала вставьте ссылку на YouTube',
-    err_invalid_youtube_url:'Это не похоже на корректную ссылку YouTube', err_walkthrough_exists:'Это видео уже предложено для этого уровня', err_admin_only:'Требуются права администратора',
+    wtWatch:'Смотреть прохождение', wtSectionTitle:'Видеопрохождение', wtSubmit:'Предложить прохождение', wtModalTitle:'Предложить прохождение', wtModalText:'Поделитесь YouTube-видео с прохождением уровня. Админ проверит его перед публикацией на странице уровня.', wtUrlLabel:'Ссылка на YouTube', wtSubmitBtn:'Отправить на проверку', wtSubmitted:'Отправлено! Появится после одобрения админом.', wtUrlRequired:'Сначала вставьте ссылку на YouTube',
+    err_invalid_youtube_url:'Это не похоже на корректную ссылку YouTube', err_walkthrough_exists:'Это видео уже предложено для этого уровня', err_admin_only:'Требуются права администратора', err_word_exists:'Это слово уже в чёрном списке',
+    adminFwTitle:'Запрещённые слова', adminFwSub:'Слова из чёрного списка блокируются в рецензиях, описаниях и никнеймах — в дополнение к ИИ-модерации. Встроенный список уже покрывает распространённые оскорбления; здесь можно добавить свои.', adminFwAdd:'Добавить', adminFwPlaceholder:'Добавить запрещённое слово…', adminFwEmpty:'Своих слов пока нет — встроенный чёрный список активен.', adminFwAdded:'Слово добавлено в чёрный список', adminFwRemoved:'Слово удалено',
+    adminDelReview:'Удалить рецензию', adminDelReviewTitle:'Удалить эту рецензию?', adminDelReviewText:'Рецензия будет безвозвратно удалена для всех. Это модераторское действие, его нельзя отменить.', adminDeleted:'Рецензия удалена',
     changeAvatar:'Сменить аватар', changeBanner:'Сменить баннер',
-    statsTitle:'Статистика', statReviews:'Рецензий', statAvg:'Средний балл', statLikes:'Получено лайков', statSince:'На сайте с',
+    statsTitle:'Статистика', statReviews:'Написано рецензий', statRatings:'Оценено уровней', statAvg:'Средний балл', statLikes:'Получено лайков', statSince:'На сайте с',
     chartCat:'Профиль по категориям', chartCatSub:'Средний балл по каждой оси оценки', chartDist:'Распределение оценок', chartDistSub:'Сколько рецензий в каждом диапазоне',
     achBoardTitle:'Доска достижений', achBoardSub:'Ваши вехи на GD Review', achDone:'Получено',
     achShowcaseTitle:'Витрина достижений', achShowcaseSub:'Трофеи, заработанные на GD Review', achShowcaseEmpty:'Пока нет трофеев на витрине', achOpenBoard:'Открыть доску', achCloseBoard:'Закрыть доску', achProgressTitle:'Полный прогресс', achPublicPreview:'Публичная витрина — именно так её видят другие', achUnlockedCount:'Получено: {n} из {total}', achTierCommon:'Обычная', achTierUncommon:'Необычная', achTierRare:'Редкая', achTierEpic:'Эпическая', achTierLegendary:'Легендарная',
-    achRev10:'Опытный критик', achRev10D:'Опубликуйте 10 рецензий', achRev50:'Строитель архива', achRev50D:'Опубликуйте 50 рецензий', achRev100:'Критик столетия', achRev100D:'Опубликуйте 100 рецензий', achRev250:'Великий архивариус', achRev250D:'Опубликуйте 250 рецензий',
-    achLikes25:'Признание', achLikes25D:'Получите 25 лайков суммарно', achLikes100:'Любимец публики', achLikes100D:'Получите 100 лайков суммарно', achLikes500:'Легенда сообщества', achLikes500D:'Получите 500 лайков суммарно',
+    achRate10:'Первые шаги', achRate10D:'Оцените 10 уровней', achRate50:'Судья уровней', achRate50D:'Оцените 50 уровней', achRate150:'Машина оценок', achRate150D:'Оцените 150 уровней', achRate400:'Арбитр', achRate400D:'Оцените 400 уровней',
+    achRateDays30:'Постоянный критик', achRateDays30D:'Оценивайте уровни в 30 разных дней',
+    achRev10:'Опытный критик', achRev10D:'Напишите 10 рецензий', achRev50:'Строитель архива', achRev50D:'Напишите 50 рецензий', achRev100:'Критик столетия', achRev100D:'Напишите 100 рецензий', achRev250:'Великий архивариус', achRev250D:'Напишите 250 рецензий',
+    achLikes25:'Признание', achLikes25D:'Получите 25 лайков на рецензиях', achLikes100:'Любимец публики', achLikes100D:'Получите 100 лайков на рецензиях', achLikes500:'Легенда сообщества', achLikes500D:'Получите 500 лайков на рецензиях',
     achHelpful:'Полезная рецензия', achHelpfulD:'Соберите 10 лайков на одной рецензии', achFeatured:'Звёздная рецензия', achFeaturedD:'Соберите 25 лайков на одной рецензии', achBest50:'Выдающаяся рецензия', achBest50D:'Соберите 50 лайков на одной рецензии', achTrusted:'Надёжный автор', achTrustedD:'10 рецензий с 5+ лайками каждая',
-    achStarred:'Коллекционер звёзд', achStarredD:'Оцените 25 уровней со звёздами', achDiffs8:'Картограф', achDiffs8D:'Оцените уровни 8 разных сложностей', achDemon25:'Охотник на демонов', achDemon25D:'Оцените 25 демон-уровней', achExtreme5:'Вершина критики', achExtreme5D:'Оцените 5 экстрим-демонов',
-    achHalfYear:'Полгода с нами', achHalfYearD:'180 дней на сайте', achYear:'Ветеран', achYearD:'Целый год на сайте', achTwoYear:'Два года истории', achTwoYearD:'Два полных года на сайте',
-    achEssay:'Эссеист', achEssayD:'Напишите 10 подробных рецензий от 300 символов', achSpecialist:'Специалист категории', achSpecialistD:'Опубликуйте 25 рецензий в одной сложности',
-    achCatReviews:'Рецензии', achCatCommunity:'Сообщество', achCatHelpful:'Полезные рецензии', achCatExplorer:'Исследование', achCatAccount:'Аккаунт', achCatSpecial:'Особые',
+    achStarred:'Коллекционер звёзд', achStarredD:'Отрецензируйте 25 уровней со звёздами', achDiffs8:'Картограф', achDiffs8D:'Отрецензируйте уровни 8 разных сложностей', achDemon25:'Охотник на демонов', achDemon25D:'Отрецензируйте 25 демон-уровней', achExtreme5:'Вершина критики', achExtreme5D:'Отрецензируйте 5 экстрим-демонов',
+    achEssay:'Эссеист', achEssayD:'Напишите 10 подробных рецензий от 300 символов', achSpecialist:'Специалист категории', achSpecialistD:'Напишите 25 рецензий в одной сложности',
+    achCatRating:'Путь оценщика', achCatReviews:'Путь рецензента', achCatCommunity:'Сообщество', achCatHelpful:'Полезные рецензии', achCatExplorer:'Исследование',
     archiveTitle:'Мои рецензии', archiveTheirTitle:'Рецензии {user}', archiveSearch:'Поиск по названию, заголовку или ID…',
     emptyArchiveTitle:'Пока нет рецензий', emptyArchiveSub:'Найдите уровень во вкладке «Создать» и опубликуйте первую.', emptyTheirArchive:'У этого пользователя пока нет рецензий.',
     emptyStatsTitle:'Нечего анализировать', emptyStatsSub:'Опубликуйте хотя бы одну рецензию, чтобы увидеть статистику.',
@@ -1722,7 +1799,7 @@ const i18n = {
     detailSummary:'Рецензия', detailNoSummary:'Без текстового описания.', madeBy:'сделано', ok:'ОК',
     reviewRules:'Правила рецензий: без оскорблений, без рекламы, без внешних ссылок. Каждая публикация автоматически проверяется перед размещением.',
     modRejectedTitle:'Отклонено модерацией', modRetryHint:'Отредактируйте контент и попробуйте опубликовать снова.',
-    modReason_toxicity:'Текст содержит оскорбления или токсичные выражения.', modReason_links:'Внешние ссылки запрещены.', modReason_advertising:'Реклама и самопиар запрещены.', modReason_image:'Изображение содержит запрещённый контент.', modReason_unavailable:'Сервис модерации временно недоступен — ничего не опубликовано.',
+    modReason_toxicity:'Текст содержит оскорбления или токсичные выражения.', modReason_forbidden_words:'Текст содержит слова, запрещённые на платформе.', modReason_links:'Внешние ссылки запрещены.', modReason_advertising:'Реклама и самопиар запрещены.', modReason_image:'Изображение содержит запрещённый контент.', modReason_unavailable:'Сервис модерации временно недоступен — ничего не опубликовано.',
     err_content_rejected:'Контент отклонён автоматической модерацией', err_moderation_unavailable:'Сервис модерации недоступен — попробуйте ещё раз чуть позже',
     justNow:'только что', minAgo:' мин', hourAgo:' ч', dayAgo:' дн',
     cropTitle:'Настройка изображения', cropHint:'Колесо — зум · тяните фото · угол — размер', cropApply:'Применить',
@@ -1742,6 +1819,26 @@ function applyI18n(){
   qsa('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
   qsa('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.getAttribute('data-i18n-ph')); });
   updatePublishLabel();
+  buildSectionMarquees();
+}
+/* ---- Category marquee headers: "Base — KEYWORD • Base — KEYWORD • …" ----
+   Two identical groups tile inside the sliding track for a seamless loop;
+   the animation duration scales with the group width so every header moves
+   at the same speed. */
+function buildSectionMarquees(){
+  qsa('.sec-marquee').forEach(function(mq){
+    const key = mq.dataset.mq;
+    const unit = '<span class="mq-unit">'+escapeHTML(t('mq'+key.slice(3)+'B'))+'<em>'+escapeHTML(t('mq'+key.slice(3)+'K'))+'</em></span><span class="mq-dot" aria-hidden="true">•</span>';
+    let units = '';
+    for(let i = 0; i < 6; i++) units += unit;
+    mq.setAttribute('aria-label', t('mq'+key.slice(3)+'B')+' '+t('mq'+key.slice(3)+'K'));
+    mq.innerHTML = '<div class="mq-track" aria-hidden="true"><div class="mq-group">'+units+'</div><div class="mq-group">'+units+'</div></div>';
+    const group = mq.querySelector('.mq-group');
+    requestAnimationFrame(function(){
+      const w = group.getBoundingClientRect().width;
+      if(w > 0) mq.querySelector('.mq-track').style.setProperty('--mq-dur', Math.max(14, w / 52).toFixed(1)+'s');
+    });
+  });
 }
 function timeAgo(ds){ const dt = new Date(ds); const s = Math.floor((Date.now() - dt.getTime()) / 1000); if(!isFinite(s)) return ''; if(s < 60) return t('justNow'); const m = Math.floor(s/60); if(m < 60) return m + t('minAgo'); const h = Math.floor(m/60); if(h < 24) return h + t('hourAgo'); const d = Math.floor(h/24); if(d < 7) return d + t('dayAgo'); return dt.toLocaleDateString(lang==='ru'?'ru-RU':'en-US', {day:'numeric', month:'short'}); }
 
@@ -1861,6 +1958,11 @@ const SCREENS = ['home','level','create','profile','settings','admin','spin'];
 let currentScreen = 'home', navDepth = 0, transitionBusy = false;
 function applyScreen(name){
   const wasSpin = currentScreen === 'spin';
+  /* Leaving the level page removes any playing inline walkthrough iframe. */
+  if(currentScreen === 'level' && name !== 'level'){
+    const wtBox = $('lvl-walkthrough');
+    if(wtBox && wtBox.querySelector('iframe')){ wtBox.hidden = true; wtBox.innerHTML = ''; }
+  }
   currentScreen = name;
   SCREENS.forEach(function(s){ $('screen-'+s).classList.toggle('active', s===name); });
   qsa('nav.tabs .tab-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===name); });
@@ -1911,7 +2013,7 @@ function renderRoute(st){
       if(currentLevel){ showScreen('create'); return; }
       break;
     case 'settings': showScreen('settings'); fillSettings(); return;
-    case 'admin': showScreen('admin'); loadAdminQueue(); return;
+    case 'admin': showScreen('admin'); loadAdminQueue(); loadForbiddenWords(); return;
     case 'spin': showScreen('spin'); return;
   }
   showScreen('home'); ensureDashboard();
@@ -2136,7 +2238,9 @@ function renderReviewCard(r, i, opts){
     + (r.isRatingOnly
         ? '<p class="fc-text fc-rating-only"><span class="rating-only-badge">★ '+escapeHTML(t('ratingOnly'))+'</span></p>'
         : '<p class="fc-text">'+escapeHTML(r.text || t('detailNoSummary'))+'</p>')
-    + '<div class="fc-foot"><span class="bar-score" style="--score-color:'+sc.color+'">'+r.finalScore.toFixed(1)+'</span>'+likeBtnHTML(r)+'<span class="fc-open">'+t('readMore')+'</span></div>'
+    + '<div class="fc-foot"><span class="bar-score" style="--score-color:'+sc.color+'">'+r.finalScore.toFixed(1)+'</span>'+likeBtnHTML(r)
+    + (me && me.is_admin && me.username !== r.username ? '<button class="fc-admin-del" data-admin-del="'+r.uid+'">'+escapeHTML(t('adminDelReview'))+'</button>' : '')
+    + '<span class="fc-open">'+t('readMore')+'</span></div>'
     + '</article>';
 }
 function renderLevelCard(l, i){
@@ -2197,44 +2301,46 @@ const DIFF_OPTIONS = [
 let dashDiff = '', dashLoaded = false;
 function diffOptionLabel(o){ return o.i18n ? t(o.i18n) : o.label; }
 function diffOptionIcon(o){ return o.face ? '<img src="https://gdbrowser.com/assets/difficulties/'+o.face+'.png" alt="" loading="lazy">' : ''; }
-/* Difficulty side panel: the trigger button shows the current selection with
-   its colored GD icon; clicking it slides in a panel with every difficulty as
-   a large option. Selecting applies the filter and closes the panel. */
+/* Inline difficulty selector: the button shows the current selection with
+   its colored GD icon; clicking expands a tray of difficulty icons
+   horizontally to the right, attached to the button. Selecting applies the
+   filter, collapses the tray and transforms the button into
+   "[icon] Difficulty Name". Clicking outside closes the tray. */
 const DIFF_DD_ARROW = '<svg class="diff-dd-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>';
-function diffPanelOpen(){ return $('diff-panel').classList.contains('open'); }
-function openDiffPanel(){
-  $('diff-panel').classList.add('open'); $('diff-panel-backdrop').classList.add('open');
-  $('diff-panel-btn').setAttribute('aria-expanded','true');
-  /* Stagger the option entrance every time the panel opens. */
-  qsa('.diff-panel-item').forEach(function(it, i){ it.style.animation = 'none'; void it.offsetWidth; it.style.animation = ''; it.style.animationDelay = (0.05 + i * 0.022) + 's'; });
+function diffTrayOpen(){ return $('diff-tray').classList.contains('open'); }
+function openDiffTray(){
+  $('diff-tray').classList.add('open');
+  $('diff-btn').setAttribute('aria-expanded','true');
+  /* Stagger the icon entrance every time the tray opens. */
+  qsa('.diff-opt').forEach(function(it, i){ it.style.animation = 'none'; void it.offsetWidth; it.style.animation = ''; it.style.animationDelay = (0.03 + i * 0.016) + 's'; });
 }
-function closeDiffPanel(){
-  $('diff-panel').classList.remove('open'); $('diff-panel-backdrop').classList.remove('open');
-  $('diff-panel-btn').setAttribute('aria-expanded','false');
+function closeDiffTray(){
+  $('diff-tray').classList.remove('open');
+  $('diff-btn').setAttribute('aria-expanded','false');
 }
-function buildDiffPanel(){
+function buildDiffTray(){
   const sel = DIFF_OPTIONS.find(function(o){ return o.v === dashDiff; }) || DIFF_OPTIONS[0];
-  $('diff-panel-btn').innerHTML = diffOptionIcon(sel)+'<span>'+escapeHTML(diffOptionLabel(sel))+'</span>'+DIFF_DD_ARROW;
-  $('diff-panel-list').innerHTML = DIFF_OPTIONS.map(function(o){
+  $('diff-btn').innerHTML = diffOptionIcon(sel)+'<span>'+escapeHTML(diffOptionLabel(sel))+'</span>'+DIFF_DD_ARROW;
+  $('diff-tray').innerHTML = DIFF_OPTIONS.map(function(o){
     const icon = o.face ? diffOptionIcon(o) : '<span class="dpi-blank">✦</span>';
-    return '<button class="diff-panel-item'+(dashDiff === o.v ? ' active' : '')+'" role="option" aria-selected="'+(dashDiff === o.v)+'" data-diff="'+escapeHTML(o.v)+'">'+icon+'<span>'+escapeHTML(diffOptionLabel(o))+'</span></button>';
+    const label = escapeHTML(diffOptionLabel(o));
+    return '<button class="diff-opt'+(dashDiff === o.v ? ' active' : '')+'" role="option" aria-selected="'+(dashDiff === o.v)+'" data-diff="'+escapeHTML(o.v)+'" title="'+label+'" aria-label="'+label+'">'+icon+'</button>';
   }).join('');
 }
-$('diff-panel-btn').addEventListener('click', function(e){
+$('diff-btn').addEventListener('click', function(e){
   e.stopPropagation();
-  if(diffPanelOpen()) closeDiffPanel(); else openDiffPanel();
+  if(diffTrayOpen()) closeDiffTray(); else openDiffTray();
 });
-$('diff-panel-list').addEventListener('click', function(e){
-  const item = e.target.closest('.diff-panel-item'); if(!item || item.dataset.diff == null) return;
-  closeDiffPanel();
+$('diff-tray').addEventListener('click', function(e){
+  const item = e.target.closest('.diff-opt'); if(!item || item.dataset.diff == null) return;
+  closeDiffTray();
   if(item.dataset.diff === dashDiff) return;
   dashDiff = item.dataset.diff;
-  buildDiffPanel();
+  buildDiffTray();
   loadRankings();
 });
-$('diff-panel-close').addEventListener('click', closeDiffPanel);
-$('diff-panel-backdrop').addEventListener('click', closeDiffPanel);
-document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && diffPanelOpen()){ closeDiffPanel(); $('diff-panel-btn').focus(); } });
+document.addEventListener('click', function(e){ if(diffTrayOpen() && !e.target.closest('#diff-inline')) closeDiffTray(); });
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && diffTrayOpen()){ closeDiffTray(); $('diff-btn').focus(); } });
 
 /* ---- Rankings: 4 sections, updated together on difficulty change ---- */
 const RANK_ROWS = [ ['row-popular-all','popular_all'], ['row-top-today','top_today'], ['row-popular-week','popular_week'], ['row-discussed','discussed'] ];
@@ -2242,7 +2348,8 @@ function renderRankCard(l, i){
   const thumb = 'https://levelthumbs.prevter.me/thumbnail/'+encodeURIComponent(l.level_id)+'/small';
   // Prefer the server's Bayesian weighted rating; fall back to the raw mean.
   const score = (l.rating != null) ? l.rating : l.avg_score;
-  return '<div class="rank-card" data-level="'+escapeHTML(l.level_id)+'" style="animation-delay:'+(Math.min(i,10)*0.05)+'s">'
+  const podium = i < 3 ? ' rank-top rank-top-'+(i+1) : '';
+  return '<div class="rank-card'+podium+'" data-level="'+escapeHTML(l.level_id)+'" style="animation-delay:'+(Math.min(i,10)*0.05)+'s">'
     + '<div class="rank-thumb"><img class="rank-thumb-img" src="'+thumb+'" alt="" loading="lazy" decoding="async" onerror="this.remove()"><span class="rank-num">'+String(i+1).padStart(2,'0')+'</span>'
     + (l.difficulty_face ? '<img class="rank-face" src="https://gdbrowser.com/assets/difficulties/'+encodeURIComponent(l.difficulty_face)+'.png" alt="" loading="lazy">' : '')+'</div>'
     + '<div class="rank-info"><div class="rank-name">'+escapeHTML(l.level_name || ('#'+l.level_id))+'</div>'
@@ -2323,7 +2430,7 @@ function startLatestPolling(){
   }, LATEST_POLL_MS);
 }
 
-function loadDashboard(){ dashLoaded = true; buildDiffPanel(); loadCommunity(); loadRankings(); loadLatest(latestPage); startLatestPolling(); }
+function loadDashboard(){ dashLoaded = true; buildDiffTray(); loadCommunity(); loadRankings(); loadLatest(latestPage); startLatestPolling(); }
 function ensureDashboard(){ if(!dashLoaded) loadDashboard(); }
 
 /* Global home search: ID opens the level page directly; anything else searches
@@ -2422,12 +2529,26 @@ async function openLevelPage(id, push){
     + '<div class="level-content"><div class="eyebrow">'+t('lvlEyebrow')+' #'+escapeHTML(String(id))+'</div>'
     + '<div class="level-header-row"><div class="level-name">'+escapeHTML(name)+'</div>'+(face ? '<img class="diff-face show" src="https://gdbrowser.com/assets/difficulties/'+encodeURIComponent(face)+'.png" alt="">' : '')+'</div>'
     + '<div class="level-author">by <b>'+escapeHTML(author)+'</b>'+(stars ? '<span class="level-stars">★ '+stars+'</span>' : '')+(diff ? '<span class="level-stars">· '+escapeHTML(diff)+'</span>' : '')+'</div>'
-    + (levelPage.walkthrough ? '<button class="wt-icon-btn" id="lvl-wt-play" title="'+escapeHTML(t('wtWatch'))+'" aria-label="'+escapeHTML(t('wtWatch'))+'">'+YT_ICON+'</button>' : '')
     + (function(){ const d = (info && info.description) ? String(info.description).trim() : ''; return '<div class="level-desc"><div class="level-desc-label">'+t('lvlDescription')+'</div><div class="level-desc-text'+(d ? '' : ' empty')+'">'+escapeHTML(d || t('lvlNoDescription'))+'</div></div>'; })()
     + '</div>';
-  const wtPlay = $('lvl-wt-play');
-  if(wtPlay) wtPlay.addEventListener('click', function(){ openWalkthroughPlayer(levelPage.walkthrough); });
-  renderLevelStats(); renderLevelReviews();
+  renderLevelWalkthrough(); renderLevelStats(); renderLevelReviews();
+}
+/* Inline walkthrough player — a primary element of the level page. Shows the
+   video cover at full content width; the iframe is only created on demand. */
+const WT_PLAY_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+function renderLevelWalkthrough(){
+  const box = $('lvl-walkthrough');
+  const wt = levelPage.walkthrough;
+  const vid = wt ? ((wt.video_id && /^[A-Za-z0-9_-]{11}$/.test(wt.video_id)) ? wt.video_id : parseYouTubeIdClient(wt.youtube_url)) : null;
+  if(!vid){ box.hidden = true; box.innerHTML = ''; return; }
+  box.hidden = false;
+  box.innerHTML = '<div class="lvl-wt-head"><div class="section-label">'+escapeHTML(t('wtSectionTitle'))+'</div></div>'
+    + '<div class="lvl-wt-frame"><button class="lvl-wt-cover" id="lvl-wt-cover" aria-label="'+escapeHTML(t('wtWatch'))+'">'
+    + '<img src="https://i.ytimg.com/vi/'+encodeURIComponent(vid)+'/maxresdefault.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src=\'https://i.ytimg.com/vi/'+encodeURIComponent(vid)+'/hqdefault.jpg\';">'
+    + '<span class="lvl-wt-play">'+WT_PLAY_ICON+'</span></button></div>';
+  $('lvl-wt-cover').addEventListener('click', function(){
+    box.querySelector('.lvl-wt-frame').innerHTML = '<iframe src="https://www.youtube.com/embed/'+encodeURIComponent(vid)+'?autoplay=1&rel=0" title="Walkthrough" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';
+  });
 }
 function renderLevelStats(){
   const rs = levelPage.reviews;
@@ -2534,7 +2655,40 @@ async function loadAdminQueue(){
       + '<button class="admin-reject" data-wt-action="reject" data-wt-id="'+w.id+'">'+escapeHTML(t('adminReject'))+'</button></div></div>';
   }).join('')+'</div>';
 }
+/* ---- Admin: forbidden words blacklist ---- */
+async function loadForbiddenWords(){
+  const box = $('fw-list');
+  box.innerHTML = '<div class="feed-loading">'+t('loading')+'</div>';
+  const r = await api('/admin/forbidden-words');
+  if(!r.ok){ box.innerHTML = '<div class="fw-empty">'+escapeHTML(ERR(r.data.error))+'</div>'; return; }
+  box.innerHTML = r.data.length
+    ? r.data.map(function(w,i){ return '<span class="fw-chip" style="animation-delay:'+(Math.min(i,20)*0.02)+'s">'+escapeHTML(w.word)+'<button class="fw-chip-x" data-fw-id="'+w.id+'" aria-label="Remove">&times;</button></span>'; }).join('')
+    : '<div class="fw-empty">'+escapeHTML(t('adminFwEmpty'))+'</div>';
+}
+async function addForbiddenWord(){
+  const input = $('fw-input'), btn = $('fw-add-btn');
+  const word = input.value.trim();
+  if(word.length < 2) { input.focus(); return; }
+  setBusy(btn, true);
+  const r = await api('/admin/forbidden-words', { method:'POST', body:{ word: word } });
+  setBusy(btn, false);
+  if(!r.ok){ toast(ERR(r.data.error), 'error'); return; }
+  input.value = '';
+  toast(t('adminFwAdded'), 'ok');
+  loadForbiddenWords();
+}
+$('fw-add-btn').addEventListener('click', addForbiddenWord);
+$('fw-input').addEventListener('keydown', function(e){ if(e.key === 'Enter') addForbiddenWord(); });
 $('screen-admin').addEventListener('click', async function(e){
+  const fwX = e.target.closest('.fw-chip-x');
+  if(fwX && !fwX.disabled){
+    fwX.disabled = true;
+    const r = await api('/admin/forbidden-words/'+encodeURIComponent(fwX.dataset.fwId), { method:'DELETE' });
+    if(!r.ok){ fwX.disabled = false; toast(ERR(r.data.error), 'error'); return; }
+    toast(t('adminFwRemoved'), 'ok');
+    loadForbiddenWords();
+    return;
+  }
   const btn = e.target.closest('[data-wt-action]');
   if(!btn || btn.disabled) return;
   const id = btn.dataset.wtId, action = btn.dataset.wtAction;
@@ -2610,6 +2764,8 @@ document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && detai
 document.addEventListener('click', function(e){
   const del = e.target.closest('.delete-btn');
   if(del){ e.stopPropagation(); deleteReview(del.dataset.uid); return; }
+  const adel = e.target.closest('[data-admin-del]');
+  if(adel){ e.stopPropagation(); adminDeleteReview(adel.dataset.adminDel); return; }
   const like = e.target.closest('.like-btn');
   if(like && like.dataset.review){ e.stopPropagation(); toggleLike(like.dataset.review); return; }
   const usr = e.target.closest('[data-user]');
@@ -2754,32 +2910,33 @@ const FRAME_LABEL = { 'frame-default':'Default', 'frame-circle':'Circle', 'frame
    common / rare / epic / legendary — each with increasing collectible detail.
    No trivial one-action unlocks. */
 const ACHIEVEMENTS = [
-  /* Reviewer progression */
-  { cat:'achCatReviews', metric:'reviews', goal:10,  tier:'common',    icon:'✒', shape:'disc',  pal:'bronze',   color:'#c9855a', nameKey:'achRev10',  descKey:'achRev10D' },
-  { cat:'achCatReviews', metric:'reviews', goal:50,  tier:'rare',      icon:'✦', shape:'gem',   pal:'sapphire', color:'#4ea1ff', nameKey:'achRev50',  descKey:'achRev50D' },
-  { cat:'achCatReviews', metric:'reviews', goal:100, tier:'epic',      icon:'✦', shape:'cup',   pal:'gold',     color:'#ffcf4d', nameKey:'achRev100', descKey:'achRev100D' },
-  { cat:'achCatReviews', metric:'reviews', goal:250, tier:'legendary', icon:'♛', shape:'crown', pal:'prism',    color:'#c061ff', nameKey:'achRev250', descKey:'achRev250D' },
-  /* Community recognition */
-  { cat:'achCatCommunity', metric:'likes', goal:25,  tier:'common',    icon:'♥', shape:'disc',  pal:'silver', color:'#aeb6c2', nameKey:'achLikes25',  descKey:'achLikes25D' },
-  { cat:'achCatCommunity', metric:'likes', goal:100, tier:'rare',      icon:'♥', shape:'star',  pal:'ruby',   color:'#ff5f7a', nameKey:'achLikes100', descKey:'achLikes100D' },
-  { cat:'achCatCommunity', metric:'likes', goal:500, tier:'legendary', icon:'♥', shape:'crest', pal:'gold',   color:'#ffcf4d', nameKey:'achLikes500', descKey:'achLikes500D' },
-  /* Helpful reviews */
-  { cat:'achCatHelpful', metric:'best',    goal:10, tier:'rare', icon:'◆', shape:'shield', pal:'sapphire', color:'#4ea1ff', nameKey:'achHelpful',  descKey:'achHelpfulD' },
-  { cat:'achCatHelpful', metric:'best',    goal:25, tier:'rare',     icon:'★', shape:'star',   pal:'gold',     color:'#ffcf4d', nameKey:'achFeatured', descKey:'achFeaturedD' },
-  { cat:'achCatHelpful', metric:'best',    goal:50, tier:'epic',     icon:'◆', shape:'gem',    pal:'amethyst', color:'#c061ff', nameKey:'achBest50',   descKey:'achBest50D' },
-  { cat:'achCatHelpful', metric:'trusted', goal:10, tier:'epic',     icon:'✪', shape:'cup',    pal:'sapphire', color:'#4ea1ff', nameKey:'achTrusted',  descKey:'achTrustedD' },
-  /* Exploration */
-  { cat:'achCatExplorer', metric:'starred',  goal:25, tier:'rare',  icon:'★', shape:'disc',   pal:'sapphire', color:'#4ea1ff', nameKey:'achStarred',  descKey:'achStarredD' },
-  { cat:'achCatExplorer', metric:'diffs',    goal:8,  tier:'rare',      icon:'⚑', shape:'shield', pal:'amethyst', color:'#c061ff', nameKey:'achDiffs8',   descKey:'achDiffs8D' },
-  { cat:'achCatExplorer', metric:'demons',   goal:25, tier:'epic',      icon:'⚔', shape:'crest',  pal:'ruby',     color:'#e05555', nameKey:'achDemon25',  descKey:'achDemon25D' },
-  { cat:'achCatExplorer', metric:'extremes', goal:5,  tier:'legendary', icon:'⚡', shape:'star',   pal:'obsidian', color:'#8b93a3', nameKey:'achExtreme5', descKey:'achExtreme5D' },
-  /* Long-term progress */
-  { cat:'achCatAccount', metric:'days', goal:180, tier:'rare', icon:'◑', shape:'disc',   pal:'bronze', color:'#c9855a', nameKey:'achHalfYear', descKey:'achHalfYearD' },
-  { cat:'achCatAccount', metric:'days', goal:365, tier:'rare',     icon:'✠', shape:'shield', pal:'gold',   color:'#ffcf4d', nameKey:'achYear',     descKey:'achYearD' },
-  { cat:'achCatAccount', metric:'days', goal:730, tier:'epic',     icon:'⧗', shape:'hex',    pal:'gold',   color:'#ffcf4d', nameKey:'achTwoYear',  descKey:'achTwoYearD' },
-  /* Special */
-  { cat:'achCatSpecial', metric:'essays',     goal:10, tier:'rare', icon:'¶', shape:'disc', pal:'emerald', color:'#3ddc84', nameKey:'achEssay',      descKey:'achEssayD' },
-  { cat:'achCatSpecial', metric:'specialist', goal:25, tier:'rare',     icon:'❖', shape:'hex',  pal:'emerald', color:'#3ddc84', nameKey:'achSpecialist', descKey:'achSpecialistD' }
+  /* Rating path — earned through rating activity (any published rating) */
+  { cat:'achCatRating', metric:'ratings', goal:10,  tier:'common',    art:'cube', pal:'bronze',  color:'#c9855a', nameKey:'achRate10',  descKey:'achRate10D' },
+  { cat:'achCatRating', metric:'ratings', goal:50,  tier:'rare',      art:'cube', pal:'silver',  color:'#aeb6c2', nameKey:'achRate50',  descKey:'achRate50D' },
+  { cat:'achCatRating', metric:'ratings', goal:150, tier:'epic',      art:'cube', pal:'gold',    color:'#ffcf4d', nameKey:'achRate150', descKey:'achRate150D' },
+  { cat:'achCatRating', metric:'ratings', goal:400, tier:'legendary', art:'cube', pal:'prism',   color:'#c061ff', nameKey:'achRate400', descKey:'achRate400D' },
+  { cat:'achCatRating', metric:'ratingDays', goal:30, tier:'epic',    art:'orb',  pal:'emerald', color:'#3ddc84', nameKey:'achRateDays30', descKey:'achRateDays30D' },
+  /* Review path — written reviews only; rating-only submissions never count */
+  { cat:'achCatReviews', metric:'reviews', goal:10,  tier:'common',    art:'coin', pal:'bronze',   color:'#c9855a', nameKey:'achRev10',  descKey:'achRev10D' },
+  { cat:'achCatReviews', metric:'reviews', goal:50,  tier:'rare',      art:'coin', pal:'sapphire', color:'#4ea1ff', nameKey:'achRev50',  descKey:'achRev50D' },
+  { cat:'achCatReviews', metric:'reviews', goal:100, tier:'epic',      art:'coin', pal:'gold',     color:'#ffcf4d', nameKey:'achRev100', descKey:'achRev100D' },
+  { cat:'achCatReviews', metric:'reviews', goal:250, tier:'legendary', art:'coin', pal:'prism',    color:'#c061ff', nameKey:'achRev250', descKey:'achRev250D' },
+  { cat:'achCatReviews', metric:'essays',     goal:10, tier:'rare', art:'coin', pal:'amethyst', color:'#c061ff', nameKey:'achEssay',      descKey:'achEssayD' },
+  { cat:'achCatReviews', metric:'specialist', goal:25, tier:'rare', art:'key',  pal:'emerald',  color:'#3ddc84', nameKey:'achSpecialist', descKey:'achSpecialistD' },
+  /* Community recognition — likes received on written reviews */
+  { cat:'achCatCommunity', metric:'likes', goal:25,  tier:'common',    art:'orb', pal:'silver', color:'#aeb6c2', nameKey:'achLikes25',  descKey:'achLikes25D' },
+  { cat:'achCatCommunity', metric:'likes', goal:100, tier:'rare',      art:'orb', pal:'ruby',   color:'#ff5f7a', nameKey:'achLikes100', descKey:'achLikes100D' },
+  { cat:'achCatCommunity', metric:'likes', goal:500, tier:'legendary', art:'orb', pal:'gold',   color:'#ffcf4d', nameKey:'achLikes500', descKey:'achLikes500D' },
+  /* Helpful reviews — single-review recognition */
+  { cat:'achCatHelpful', metric:'best',    goal:10, tier:'rare', art:'shard', pal:'sapphire', color:'#4ea1ff', nameKey:'achHelpful',  descKey:'achHelpfulD' },
+  { cat:'achCatHelpful', metric:'best',    goal:25, tier:'rare', art:'shard', pal:'gold',     color:'#ffcf4d', nameKey:'achFeatured', descKey:'achFeaturedD' },
+  { cat:'achCatHelpful', metric:'best',    goal:50, tier:'epic', art:'shard', pal:'amethyst', color:'#c061ff', nameKey:'achBest50',   descKey:'achBest50D' },
+  { cat:'achCatHelpful', metric:'trusted', goal:10, tier:'epic', art:'key',   pal:'sapphire', color:'#4ea1ff', nameKey:'achTrusted',  descKey:'achTrustedD' },
+  /* Exploration — reviewing across the difficulty spectrum */
+  { cat:'achCatExplorer', metric:'starred',  goal:25, tier:'rare',      art:'star',  pal:'gold',     color:'#ffcf4d', nameKey:'achStarred',  descKey:'achStarredD' },
+  { cat:'achCatExplorer', metric:'diffs',    goal:8,  tier:'rare',      art:'star',  pal:'amethyst', color:'#c061ff', nameKey:'achDiffs8',   descKey:'achDiffs8D' },
+  { cat:'achCatExplorer', metric:'demons',   goal:25, tier:'epic',      art:'sigil', pal:'ruby',     color:'#e05555', nameKey:'achDemon25',  descKey:'achDemon25D' },
+  { cat:'achCatExplorer', metric:'extremes', goal:5,  tier:'legendary', art:'sigil', pal:'obsidian', color:'#8b93a3', nameKey:'achExtreme5', descKey:'achExtreme5D' }
 ];
 
 /* ================= SOCIALS ================= */
@@ -2866,52 +3023,56 @@ function buildHistogram(reviews){ const buckets=[{label:'0–2',min:0,max:2},{la
 /* Exact registration date — full "Day Month Year" format. */
 function memberSinceLabel(user){ if(!(user && user.created_at)) return '—'; return new Date(user.created_at).toLocaleDateString(lang==='ru'?'ru-RU':'en-US', { day:'numeric', month:'long', year:'numeric' }); }
 function achievementValues(reviews, user){
-  const likes = (user && user.likes_received != null) ? user.likes_received : reviews.reduce(function(a,r){ return a + (r.likes||0); }, 0);
+  /* Rating achievements count every published rating; review achievements
+     only ever count WRITTEN reviews. */
+  const written = reviews.filter(function(r){ return !r.isRatingOnly; });
+  const likes = (user && user.likes_received != null) ? user.likes_received : written.reduce(function(a,r){ return a + (r.likes||0); }, 0);
   const diffCounts = {};
-  reviews.forEach(function(r){ const d = String(r.difficulty||'').toLowerCase(); if(d) diffCounts[d] = (diffCounts[d]||0) + 1; });
+  written.forEach(function(r){ const d = String(r.difficulty||'').toLowerCase(); if(d) diffCounts[d] = (diffCounts[d]||0) + 1; });
+  const rateDays = {};
+  reviews.forEach(function(r){ if(r.savedAt) rateDays[String(r.savedAt).slice(0,10)] = 1; });
   return {
-    reviews: reviews.length,
+    ratings: reviews.length,
+    ratingDays: Object.keys(rateDays).length,
+    reviews: written.length,
     likes: likes,
-    best: reviews.reduce(function(a,r){ return Math.max(a, r.likes||0); }, 0),
-    trusted: reviews.filter(function(r){ return (r.likes||0) >= 5; }).length,
+    best: written.reduce(function(a,r){ return Math.max(a, r.likes||0); }, 0),
+    trusted: written.filter(function(r){ return (r.likes||0) >= 5; }).length,
     diffs: Object.keys(diffCounts).length,
     specialist: Object.keys(diffCounts).reduce(function(m,k){ return Math.max(m, diffCounts[k]); }, 0),
-    days: (user && user.created_at) ? Math.max(0, Math.floor((Date.now() - new Date(user.created_at).getTime()) / 86400000)) : 0,
-    demons: reviews.filter(function(r){ return String(r.difficulty||'').toLowerCase().indexOf('demon') !== -1; }).length,
-    extremes: reviews.filter(function(r){ return String(r.difficulty||'').toLowerCase() === 'extreme demon'; }).length,
-    essays: reviews.filter(function(r){ return (r.text||'').length >= 300; }).length,
-    starred: reviews.filter(function(r){ return Number(r.stars||0) > 0; }).length
+    demons: written.filter(function(r){ return String(r.difficulty||'').toLowerCase().indexOf('demon') !== -1; }).length,
+    extremes: written.filter(function(r){ return String(r.difficulty||'').toLowerCase() === 'extreme demon'; }).length,
+    essays: written.filter(function(r){ return (r.text||'').length >= 300; }).length,
+    starred: written.filter(function(r){ return Number(r.stars||0) > 0; }).length
   };
 }
-/* Layered pseudo-3D reward object: shaped back plate + material face + glyph +
-   cursor-driven gloss. Clean at rest — halo and shine only appear on hover.
-   Epic adds facets; legendary adds a metallic mount ring and richest detail. */
-function achievementMotif(a){
+/* GD ARTIFACT rewards: each achievement is a 3D collectible object inspired
+   by the Geometry Dash universe — icon cubes, user coins, orbs, crystal
+   shards, creator keys and demon sigils — extruded into depth slices with a
+   lit material face and an engraved glyph. See the matching CSS. */
+function relicGlyph(a){
   const cube = '<rect class="motif-fill" x="13" y="13" width="38" height="38" rx="3"/><rect class="motif-cut" x="20" y="21" width="8" height="8"/><rect class="motif-cut" x="36" y="21" width="8" height="8"/><path class="motif-cut" d="M21 38h22v6H21z"/>';
-  const heartOrb = '<circle class="motif-line" cx="32" cy="32" r="23"/><path class="motif-fill" d="M32 48S15 38 15 26c0-10 13-13 17-4 4-9 17-6 17 4 0 12-17 22-17 22z"/>';
+  const coin = '<circle class="motif-line" cx="32" cy="32" r="22"/><path class="motif-fill" d="m32 16 5 11 12 1-9 8 3 12-11-6-11 6 3-12-9-8 12-1z"/>';
+  const orb = '<circle class="motif-line" cx="32" cy="32" r="22"/><circle class="motif-fill" cx="32" cy="32" r="9"/><path class="motif-line" d="M32 4v8M32 52v8M4 32h8M52 32h8"/>';
+  const shard = '<path class="motif-line" d="M32 8 18 28l14 28 14-28z"/><path class="motif-line" d="M18 28h28M32 8v48"/>';
   const star = '<path class="motif-fill" d="m32 7 7 16 18 2-14 12 4 18-15-9-15 9 4-18L7 25l18-2z"/><circle class="motif-cut" cx="32" cy="32" r="7"/>';
-  const wave = '<path class="motif-line" d="M8 43 22 21l8 17 10-24 16 29"/><path class="motif-fill" d="m25 38 8-8 7 8-7 8z"/>';
-  const demon = '<path class="motif-fill" d="M9 18 23 8l9 10L41 8l14 10-5 33H14z"/><path class="motif-cut" d="m18 27 10 5-12 4zm28 0-10 5 12 4zM22 43h20l-4 7H26z"/>';
-  const clock = '<circle class="motif-line" cx="32" cy="32" r="23"/><path class="motif-line" d="M32 18v15l11 7"/><path class="motif-fill" d="M28 5h8v7h-8z"/>';
-  const coin = '<circle class="motif-fill" cx="32" cy="32" r="24"/><circle class="motif-cut" cx="32" cy="32" r="16"/><path class="motif-fill" d="M25 21h14v7H25zm0 15h14v7H25z"/>';
-  const ship = '<path class="motif-fill" d="M7 37 48 14l9 25-23-4-12 15-2-12z"/><circle class="motif-cut" cx="39" cy="27" r="5"/><path class="motif-line" d="m8 47 12-9"/>';
-  let art = cube;
-  if(a.metric === 'likes') art = heartOrb;
-  else if(a.metric === 'best' || a.metric === 'trusted') art = star;
-  else if(a.metric === 'diffs' || a.metric === 'starred' || a.metric === 'specialist') art = ship;
-  else if(a.metric === 'demons' || a.metric === 'extremes') art = demon;
-  else if(a.metric === 'days') art = clock;
-  else if(a.metric === 'essays') art = coin;
-  else if(a.goal >= 100) art = wave;
-  return '<svg viewBox="0 0 64 64" aria-hidden="true">'+art+'</svg>';
+  const sigil = '<path class="motif-fill" d="M9 18 23 8l9 10L41 8l14 10-5 33H14z"/><path class="motif-cut" d="m18 27 10 5-12 4zm28 0-10 5 12 4zM22 43h20l-4 7H26z"/>';
+  const key = '<circle class="motif-line" cx="32" cy="18" r="10"/><path class="motif-fill" d="M29 27h6v18l6 5-6 4v4h-6z"/>';
+  const bolt = '<path class="motif-fill" d="M36 4 14 36h12l-4 24 24-34H32z"/>';
+  const map = { cube: cube, coin: coin, orb: orb, shard: shard, star: star, sigil: sigil, key: key, prism: bolt };
+  return '<svg viewBox="0 0 64 64" aria-hidden="true">'+(map[a.art] || cube)+'</svg>';
 }
-function medalHTML(a){
-  const hoverFx = (a.tier === 'epic' || a.tier === 'legendary') ? '<span class="medal-halo"></span><span class="trophy-shine"></span>' : '';
-  return '<div class="trophy-medal medal-'+a.shape+' pal-'+a.pal+' mtier-'+a.tier+'">'
-    + '<span class="medal-back"></span><span class="medal-face"></span>'
-    + (a.tier === 'legendary' ? '<span class="medal-ring"></span>' : '')
-    + '<span class="medal-glyph">'+achievementMotif(a)+'</span><span class="medal-gloss"></span>'
-    + hoverFx + '</div>';
+function relicHTML(a){
+  return '<div class="relic art-'+a.art+' pal-'+a.pal+' rtier-'+a.tier+'">'
+    + '<div class="relic-obj">'
+    + '<span class="relic-d relic-d3"></span><span class="relic-d relic-d2"></span><span class="relic-d relic-d1"></span>'
+    + '<span class="relic-face"></span>'
+    + (a.tier === 'legendary' ? '<span class="relic-ring"></span>' : '')
+    + '<span class="relic-glyph">'+relicGlyph(a)+'</span>'
+    + '<span class="relic-spec"></span><span class="relic-sheen"></span>'
+    + '</div>'
+    + '<span class="relic-halo"></span>'
+    + '</div>';
 }
 function buildAchievementsBoard(reviews, user){
   const vals = achievementValues(reviews, user);
@@ -2922,7 +3083,7 @@ function buildAchievementsBoard(reviews, user){
       const v = Math.min(vals[a.metric]||0, a.goal);
       const done = v >= a.goal;
       return '<div class="ach-card'+(done?' unlocked':'')+'" style="--ach-color:'+a.color+';animation-delay:'+(Math.min(i,12)*0.04)+'s">'
-        + '<div class="ach-head"><div class="ach-medal">'+medalHTML(a)+'</div><div class="ach-name">'+escapeHTML(t(a.nameKey))+'</div></div>'
+        + '<div class="ach-head"><div class="ach-medal">'+relicHTML(a)+'</div><div class="ach-name">'+escapeHTML(t(a.nameKey))+'</div></div>'
         + '<div class="ach-desc">'+escapeHTML(t(a.descKey))+'</div>'
         + '<div class="ach-progress"><div class="ach-bar"><div class="ach-fill" style="width:'+((v/a.goal)*100).toFixed(1)+'%"></div></div><span class="ach-count">'+(done ? '✓ '+escapeHTML(t('achDone')) : v+' / '+a.goal)+'</span></div>'
         + '</div>';
@@ -2943,7 +3104,7 @@ function buildShowcaseBoard(reviews, user){
   const inner = earned.length
     ? '<div class="trophy-row">'+earned.map(function(a,i){
         return '<div class="trophy trophy-'+a.tier+' pal-'+a.pal+'" style="animation-delay:'+(Math.min(i,12)*0.07)+'s" title="'+escapeHTML(t(a.descKey))+'">'
-          + medalHTML(a)
+          + relicHTML(a)
           + '<div class="trophy-name">'+escapeHTML(t(a.nameKey))+'</div>'
           + '<div class="trophy-tier">'+escapeHTML(achTierLabel(a.tier))+'</div>'
           + '</div>';
@@ -2958,24 +3119,25 @@ function buildShowcaseBoard(reviews, user){
   if(matchMedia('(hover: none)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   let active = null;
   function resetTilt(el){
-    const m = el.querySelector('.trophy-medal');
-    if(m){ m.style.transform = ''; m.style.setProperty('--lx','50%'); m.style.setProperty('--ly','38%'); }
+    const m = el.querySelector('.relic');
+    if(m){ m.style.removeProperty('--rx'); m.style.removeProperty('--ry'); m.style.setProperty('--lx','50%'); m.style.setProperty('--ly','38%'); }
   }
   document.addEventListener('pointermove', function(e){
-    const tr = e.target.closest('.trophy');
+    const tr = e.target.closest('.trophy, .ach-card');
     if(active && active !== tr){ resetTilt(active); active = null; }
     if(!tr) return;
-    const m = tr.querySelector('.trophy-medal'); if(!m) return;
+    const m = tr.querySelector('.relic'); if(!m) return;
     active = tr;
     const r = tr.getBoundingClientRect();
     const px = Math.max(-0.5, Math.min(0.5, (e.clientX - r.left) / r.width - 0.5));
     const py = Math.max(-0.5, Math.min(0.5, (e.clientY - r.top) / r.height - 0.5));
-    m.style.transform = 'translateZ(12px) rotateX('+(-py * 30).toFixed(1)+'deg) rotateY('+(px * 30).toFixed(1)+'deg)';
+    m.style.setProperty('--rx', (-py * 32).toFixed(1)+'deg');
+    m.style.setProperty('--ry', (px * 36).toFixed(1)+'deg');
     m.style.setProperty('--lx', (50 + px * 90).toFixed(1)+'%');
     m.style.setProperty('--ly', (42 + py * 80).toFixed(1)+'%');
   }, { passive:true });
   document.addEventListener('pointerout', function(e){
-    if(active && (!e.relatedTarget || !e.relatedTarget.closest || !e.relatedTarget.closest('.trophy'))){ resetTilt(active); active = null; }
+    if(active && (!e.relatedTarget || !e.relatedTarget.closest || !e.relatedTarget.closest('.trophy, .ach-card'))){ resetTilt(active); active = null; }
   });
 })();
 /* Owner-only board expander with a premium unfold reveal. */
@@ -3040,14 +3202,18 @@ function renderStatsFor(reviews, user){
       + '</div></div>'
     : '<div class="chart-card wide" style="animation-delay:.22s">'+buildShowcaseBoard(reviews, user)+'</div>';
   if(!reviews.length){ content.innerHTML = emptyState(t('emptyStatsTitle'), t('emptyStatsSub')) + '<div class="charts-grid" style="margin-top:20px;">'+achCard+'</div>'; bindAchBoard(); return; }
+  /* Written reviews and ratings are separate: the review counter only counts
+     real written reviews, while charts cover every published rating. */
   const total = reviews.length;
+  const writtenCount = reviews.filter(function(r){ return !r.isRatingOnly; }).length;
   const avg = reviews.reduce(function(a,r){ return a + r.finalScore; }, 0) / total;
   const likes = (user && user.likes_received != null) ? user.likes_received : reviews.reduce(function(a,r){ return a + (r.likes||0); }, 0);
   const categoryAverages = CATEGORIES.map(function(c){ return { label: t(c.i18nKey), avg: reviews.reduce(function(a,r){ return a + (r.ratings[c.key]||0); }, 0) / total }; });
   content.innerHTML = '<div class="stats-hero">'
-    + '<div class="stat-card" style="animation-delay:.02s"><div class="stat-head"><div class="stat-label">'+t('statReviews')+'</div><span class="stat-icon">'+STAT_ICONS.reviews+'</span></div><div class="stat-number">'+total+'</div></div>'
-    + '<div class="stat-card" style="animation-delay:.06s"><div class="stat-head"><div class="stat-label">'+t('statAvg')+'</div><span class="stat-icon">'+STAT_ICONS.score+'</span></div><div class="stat-number">'+avg.toFixed(1)+'<small>/10</small></div>'+buildScoreTrend(reviews)+'</div>'
-    + '<div class="stat-card" style="animation-delay:.10s"><div class="stat-head"><div class="stat-label">'+t('statLikes')+'</div><span class="stat-icon">'+STAT_ICONS.likes+'</span></div><div class="stat-number">'+likes+'</div></div>'
+    + '<div class="stat-card" style="animation-delay:.02s"><div class="stat-head"><div class="stat-label">'+t('statReviews')+'</div><span class="stat-icon">'+STAT_ICONS.reviews+'</span></div><div class="stat-number">'+writtenCount+'</div></div>'
+    + '<div class="stat-card" style="animation-delay:.05s"><div class="stat-head"><div class="stat-label">'+t('statRatings')+'</div><span class="stat-icon">'+STAT_ICONS.score+'</span></div><div class="stat-number">'+total+'</div></div>'
+    + '<div class="stat-card" style="animation-delay:.08s"><div class="stat-head"><div class="stat-label">'+t('statAvg')+'</div><span class="stat-icon">'+STAT_ICONS.score+'</span></div><div class="stat-number">'+avg.toFixed(1)+'<small>/10</small></div>'+buildScoreTrend(reviews)+'</div>'
+    + '<div class="stat-card" style="animation-delay:.11s"><div class="stat-head"><div class="stat-label">'+t('statLikes')+'</div><span class="stat-icon">'+STAT_ICONS.likes+'</span></div><div class="stat-number">'+likes+'</div></div>'
     + '<div class="stat-card" style="animation-delay:.14s"><div class="stat-head"><div class="stat-label">'+t('statSince')+'</div><span class="stat-icon">'+STAT_ICONS.since+'</span></div><div class="stat-number stat-date">'+escapeHTML(memberSinceLabel(user))+'</div></div>'
     + '</div><div class="charts-grid">'
     + '<div class="chart-card" style="animation-delay:.10s"><div class="chart-title">'+t('chartCat')+'</div><div class="chart-sub">'+t('chartCatSub')+'</div>'+buildCategoryRadar(categoryAverages)+'</div>'
@@ -3091,13 +3257,35 @@ function renderArchive(){
       + '<div class="bar-content"><div class="bar-icon">'+(r.difficultyFace ? diffFaceImg(r.difficultyFace) : '<div class="diff-fallback"></div>')+'</div>'
       + '<div class="bar-mid"><div class="bar-title-row"><div class="bar-title">'+escapeHTML(r.name || ('#'+r.id))+'</div><div class="bar-score">'+r.finalScore.toFixed(1)+'</div></div>'
       + '<div class="bar-meta">'+(r.title ? '<b>'+escapeHTML(r.title)+'</b> · ' : (r.isRatingOnly ? '<span class="rating-only-badge">★ '+escapeHTML(t('ratingOnly'))+'</span> · ' : ''))+'#'+escapeHTML(r.id)+(r.stars ? ' · ★ '+r.stars : '')+' · ♥ '+(r.likes||0)+'</div></div>'
-      + '<div class="bar-right">'+(own ? '<button class="delete-btn" data-uid="'+r.uid+'">'+t('deleteBtn')+'</button>' : '<span class="fc-time">'+timeAgo(r.savedAt)+'</span>')+'</div>'
+      + '<div class="bar-right">'+(own ? '<button class="delete-btn" data-uid="'+r.uid+'">'+t('deleteBtn')+'</button>' : ((me && me.is_admin) ? '<button class="fc-admin-del" data-admin-del="'+r.uid+'">'+t('deleteBtn')+'</button>' : '<span class="fc-time">'+timeAgo(r.savedAt)+'</span>'))+'</div>'
       + '</div></div>';
   }).join('')+'</div>';
 }
 /* Searching or re-sorting starts back at the first page. */
 $('archive-search').addEventListener('input', function(){ archivePage = 1; renderArchive(); });
 $('archive-sort').addEventListener('change', function(){ archivePage = 1; renderArchive(); });
+/* Admin moderation: remove any user's review after explicit confirmation.
+   The server re-checks the admin flag; the UI updates every open surface. */
+let adminDelBusy = false;
+async function adminDeleteReview(uid){
+  if(adminDelBusy || !(me && me.is_admin)) return;
+  const ok = await confirmDialog({ title: t('adminDelReviewTitle'), text: t('adminDelReviewText'), okLabel: t('adminDelReview'), danger:true });
+  if(!ok) return;
+  adminDelBusy = true;
+  const r = await api('/reviews/'+encodeURIComponent(uid), { method:'DELETE' });
+  adminDelBusy = false;
+  if(!r.ok){ toast(ERR(r.data.error), 'error'); return; }
+  toast(t('adminDeleted'), 'ok');
+  if(detailModalEl.classList.contains('show')) closeModalOverlay(detailModalEl);
+  /* Refresh whichever surface is showing the deleted review. */
+  levelPage.reviews = (levelPage.reviews || []).filter(function(x){ return x.uid !== String(uid); });
+  if(currentScreen === 'level'){ renderLevelStats(); renderLevelReviews(); }
+  if(currentScreen === 'home') loadLatest(latestPage, { silent:false });
+  if(currentScreen === 'profile' && !profileView.own){
+    profileView.reviews = (profileView.reviews || []).filter(function(x){ return x.uid !== String(uid); });
+    renderProfile();
+  }
+}
 async function deleteReview(uid){
   const ok = await confirmDialog({ title: t('deleteBtn'), text: t('deleteConfirm'), okLabel: t('deleteBtn'), danger:true });
   if(!ok) return;
@@ -4071,25 +4259,65 @@ function stopSpinPage(){
   if(wheel.anim || wheel.spinning){ wheel.anim = null; wheel.spinning = false; $('spin-filters').classList.remove('locked'); $('spin-custom').classList.remove('locked'); updateSpinButton(); }
 }
 
-/* ================= CAROUSELS: drag, inertia, wheel, snap, auto-drift ================= */
-/* Each level row gets: drag-to-scroll with momentum, horizontal mouse-wheel
-   scrolling, a gentle snap to the nearest card, a custom slim scrollbar, and
-   a very slow independent auto-drift that pauses while the user interacts. */
+/* ================= CAROUSELS: infinite loop, drag, snap ================= */
+/* Every level row is an endless loop: the cards are cloned until the strip
+   can wrap invisibly, and the scroll position jumps by exactly one period
+   whenever it drifts out of the middle copy — the user never sees a start
+   or an end. Movement is fully manual: drag with momentum (the cursor is
+   hidden while dragging), the slim scrollbar, or native touch scrolling.
+   Mouse-wheel horizontal scrolling is intentionally not supported. */
 (function(){
   const CARD_STEP = 244; /* card width 230 + 14 gap */
 
   function setupCarousel(row){
     let raf = 0, vel = 0;
     let down = false, dragged = false, startX = 0, startScroll = 0, pid = null, lastX = 0, lastT = 0;
-    let hovered = false, idleUntil = 0;
-    /* Randomized, independent drift per row. */
-    const drift = { dir: Math.random() < 0.5 ? -1 : 1, speed: 0.1 + Math.random() * 0.14, acc: 0 };
-    let driftAt = performance.now() + 1500 + Math.random() * 3000;
+    let period = 0, building = false;
+    const glide = { on:false, target:0 };
 
     function maxScroll(){ return Math.max(0, row.scrollWidth - row.clientWidth); }
-    function pause(ms){ idleUntil = Math.max(idleUntil, performance.now() + (ms || 2400)); }
 
-    /* ---- custom scrollbar ---- */
+    /* ---- infinite loop construction ---- */
+    function originals(){ return Array.prototype.filter.call(row.children, function(el){ return !el.hasAttribute('data-clone'); }); }
+    function rebuildLoop(){
+      if(building) return;
+      building = true;
+      qsa('[data-clone]', row).forEach(function(el){ el.remove(); });
+      period = 0;
+      const os = originals();
+      if(os.length && os[0].classList.contains('rank-card')){
+        const track = os.length * CARD_STEP;
+        /* Only loop when the strip is wider than the viewport — otherwise
+           cloning would show the same level twice on screen. */
+        if(track > row.clientWidth){
+          period = track;
+          const sets = Math.max(2, Math.ceil((row.clientWidth * 2) / period) + 1);
+          const frag = document.createDocumentFragment();
+          for(let k = 0; k < sets; k++){
+            os.forEach(function(el){
+              const c = el.cloneNode(true);
+              c.setAttribute('data-clone', '');
+              c.style.animation = 'none';
+              frag.appendChild(c);
+            });
+          }
+          row.appendChild(frag);
+          row.scrollLeft = period;
+        }
+      }
+      building = false;
+      syncBar();
+    }
+    /* Wrap the scroll position back into the middle copy. A jump of exactly
+       one period is pixel-identical, so the loop is seamless. */
+    function wrap(){
+      if(!period) return;
+      const lo = period * 0.5, hi = period * 1.5;
+      if(row.scrollLeft < lo){ row.scrollLeft += period; startScroll += period; if(glide.on) glide.target += period; }
+      else if(row.scrollLeft > hi){ row.scrollLeft -= period; startScroll -= period; if(glide.on) glide.target -= period; }
+    }
+
+    /* ---- custom slim scrollbar (loop-aware: shows progress in one copy) ---- */
     const bar = document.createElement('div');
     bar.className = 'row-scroll';
     bar.innerHTML = '<div class="row-scroll-thumb"></div>';
@@ -4097,33 +4325,47 @@ function stopSpinPage(){
     const thumb = bar.firstChild;
     let barTO = 0;
     function syncBar(){
-      const max = maxScroll();
-      if(max <= 4){ bar.classList.add('hidden'); return; }
+      const span = period || maxScroll();
+      if(span <= 4){ bar.classList.add('hidden'); return; }
       bar.classList.remove('hidden');
-      const w = Math.max(10, row.clientWidth / row.scrollWidth * 100);
+      const w = Math.max(10, Math.min(90, row.clientWidth / (period || row.scrollWidth) * 100));
       thumb.style.width = w + '%';
-      thumb.style.left = (row.scrollLeft / max) * (100 - w) + '%';
+      const f = period ? ((row.scrollLeft % period) / period) : (row.scrollLeft / span);
+      thumb.style.left = (f * (100 - w)) + '%';
     }
     row.addEventListener('scroll', function(){
+      if(!down && !glide.on && !raf) wrap();
       syncBar();
       bar.classList.add('active');
       clearTimeout(barTO); barTO = setTimeout(function(){ bar.classList.remove('active'); }, 900);
     }, { passive: true });
-    window.addEventListener('resize', syncBar);
-    new MutationObserver(syncBar).observe(row, { childList: true });
+    let resizeTO = 0;
+    window.addEventListener('resize', function(){ clearTimeout(resizeTO); resizeTO = setTimeout(rebuildLoop, 180); });
+    /* Rebuild the loop whenever the row is re-rendered from outside. */
+    new MutationObserver(function(muts){
+      if(building) return;
+      for(const m of muts){
+        for(const n of m.addedNodes){ if(n.nodeType === 1 && !n.hasAttribute('data-clone')){ rebuildLoop(); return; } }
+        for(const n of m.removedNodes){ if(n.nodeType === 1 && !n.hasAttribute('data-clone')){ rebuildLoop(); return; } }
+      }
+    }).observe(row, { childList: true });
     bar.addEventListener('pointerdown', function(e){
-      const max = maxScroll(); if(max <= 0) return;
+      const span = period || maxScroll(); if(span <= 0) return;
       e.preventDefault();
       bar.classList.add('scrubbing'); try{ bar.setPointerCapture(e.pointerId); }catch(err){}
-      pause(2600); cancelAnimationFrame(raf);
+      stopAnim();
       const rect = bar.getBoundingClientRect(), tw = thumb.getBoundingClientRect().width;
-      const move = function(x){ row.scrollLeft = Math.max(0, Math.min(1, (x - rect.left - tw / 2) / (rect.width - tw))) * max; };
+      const move = function(x){
+        const f = Math.max(0, Math.min(1, (x - rect.left - tw / 2) / (rect.width - tw)));
+        row.scrollLeft = period ? (period + f * period) : (f * span);
+        wrap();
+      };
       move(e.clientX);
       const onMove = function(ev){ move(ev.clientX); };
       const onUp = function(){
         bar.classList.remove('scrubbing');
         bar.removeEventListener('pointermove', onMove); bar.removeEventListener('pointerup', onUp); bar.removeEventListener('pointercancel', onUp);
-        glideTo(snapTarget(row.scrollLeft)); pause(2000);
+        glideTo(snapTarget(row.scrollLeft));
       };
       bar.addEventListener('pointermove', onMove);
       bar.addEventListener('pointerup', onUp);
@@ -4131,53 +4373,65 @@ function stopSpinPage(){
     });
 
     /* ---- easing helpers ---- */
-    function snapTarget(from){ return Math.max(0, Math.min(maxScroll(), Math.round(from / CARD_STEP) * CARD_STEP)); }
+    function stopAnim(){ cancelAnimationFrame(raf); raf = 0; glide.on = false; }
+    function snapTarget(from){
+      const target = Math.round(from / CARD_STEP) * CARD_STEP;
+      return period ? target : Math.max(0, Math.min(maxScroll(), target));
+    }
     function glideTo(target){
-      cancelAnimationFrame(raf);
-      const start = row.scrollLeft, dist = target - start;
-      if(Math.abs(dist) < 1) return;
-      const t0 = performance.now(), dur = Math.min(700, 280 + Math.abs(dist) * 0.55);
-      const step = function(now){
-        pause(900);
-        const p = Math.min(1, (now - t0) / dur);
-        row.scrollLeft = start + dist * (1 - Math.pow(1 - p, 3)); /* ease-out cubic */
-        if(p < 1) raf = requestAnimationFrame(step);
+      stopAnim();
+      glide.on = true; glide.target = target;
+      const step = function(){
+        if(!glide.on) return;
+        const dist = glide.target - row.scrollLeft;
+        if(Math.abs(dist) < 0.7){ row.scrollLeft = glide.target; wrap(); glide.on = false; raf = 0; return; }
+        row.scrollLeft += dist * 0.16;
+        wrap();
+        raf = requestAnimationFrame(step);
       };
       raf = requestAnimationFrame(step);
     }
     /* Momentum: keep gliding with decaying velocity, then settle on a card.
        Time-based so it feels identical at 30, 60 or 144 fps. */
     function momentum(){
-      cancelAnimationFrame(raf);
+      stopAnim();
       let prev = performance.now();
       const step = function(now){
-        pause(900);
         const dt = Math.min(3, (now - prev) / 16.67) || 1; prev = now;
         row.scrollLeft += vel * dt;
+        wrap();
         vel *= Math.pow(0.94, dt);
         const max = maxScroll();
-        if(Math.abs(vel) > 0.5 && row.scrollLeft > 0 && row.scrollLeft < max){
+        const blocked = !period && (row.scrollLeft <= 0 || row.scrollLeft >= max);
+        if(Math.abs(vel) > 0.5 && !blocked){
           raf = requestAnimationFrame(step);
         } else {
+          raf = 0;
           glideTo(snapTarget(row.scrollLeft + vel * 6));
         }
       };
       raf = requestAnimationFrame(step);
     }
 
-    /* ---- drag with velocity tracking ---- */
+    /* ---- drag with velocity tracking; cursor hidden while dragging ---- */
     row.addEventListener('pointerdown', function(e){
       if(e.pointerType !== 'mouse' || e.button !== 0) return;
       down = true; dragged = false; startX = e.clientX; startScroll = row.scrollLeft; pid = e.pointerId;
       lastX = e.clientX; lastT = performance.now(); vel = 0;
-      cancelAnimationFrame(raf); pause(2600);
+      stopAnim();
     });
     row.addEventListener('pointermove', function(e){
       if(!down) return;
       const dx = e.clientX - startX;
-      if(!dragged && Math.abs(dx) > 6){ dragged = true; row.classList.add('dragging'); try{ row.setPointerCapture(pid); }catch(err){} }
+      if(!dragged && Math.abs(dx) > 6){
+        dragged = true;
+        row.classList.add('dragging');
+        document.body.classList.add('carousel-drag');
+        try{ row.setPointerCapture(pid); }catch(err){}
+      }
       if(dragged){
         row.scrollLeft = startScroll - dx;
+        wrap();
         const now = performance.now(), dt = now - lastT;
         if(dt > 0){ vel = -(e.clientX - lastX) / dt * 15; lastX = e.clientX; lastT = now; }
       }
@@ -4187,32 +4441,19 @@ function stopSpinPage(){
       down = false;
       if(dragged){
         row.classList.remove('dragging');
+        document.body.classList.remove('carousel-drag');
         setTimeout(function(){ dragged = false; }, 0);
         vel = Math.max(-70, Math.min(70, vel));
         momentum();
       }
-      pause(2600);
     }
     row.addEventListener('pointerup', release);
     row.addEventListener('pointercancel', release);
     row.addEventListener('click', function(e){ if(dragged){ e.stopPropagation(); e.preventDefault(); } }, true);
 
-    /* ---- mouse wheel → smooth horizontal glide ---- */
-    row.addEventListener('wheel', function(e){
-      let d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-      if(e.deltaMode === 1) d *= 16;
-      const max = maxScroll(); if(max <= 0) return;
-      /* At the edges let the page keep scrolling vertically. */
-      if((row.scrollLeft <= 0 && d < 0) || (row.scrollLeft >= max && d > 0)) return;
-      e.preventDefault();
-      pause(2200);
-      vel = Math.max(-80, Math.min(80, vel + d * 0.3));
-      momentum();
-    }, { passive: false });
-
-    /* ---- touch: native scroll, then a gentle snap once it settles ---- */
+    /* ---- touch: native scroll (wrapped live), then a gentle snap ---- */
     let settleIV = 0;
-    row.addEventListener('touchstart', function(){ pause(2800); cancelAnimationFrame(raf); clearInterval(settleIV); }, { passive: true });
+    row.addEventListener('touchstart', function(){ stopAnim(); clearInterval(settleIV); }, { passive: true });
     row.addEventListener('touchend', function(){
       let last = row.scrollLeft;
       clearInterval(settleIV);
@@ -4222,27 +4463,7 @@ function stopSpinPage(){
       }, 140);
     }, { passive: true });
 
-    /* Hovering counts as interacting — the drift waits for you. */
-    row.addEventListener('pointerenter', function(e){ if(e.pointerType === 'mouse') hovered = true; });
-    row.addEventListener('pointerleave', function(e){ if(e.pointerType === 'mouse'){ hovered = false; pause(1600); } });
-
-    /* ---- very slow independent auto-drift ---- */
-    let prevTick = performance.now();
-    function tick(now){
-      requestAnimationFrame(tick);
-      const dt = Math.min(100, now - prevTick); prevTick = now;
-      if(document.hidden || hovered || down || now < idleUntil || now < driftAt) return;
-      const max = maxScroll(); if(max <= 0) return;
-      drift.acc += drift.speed * (dt / 16.67);
-      if(drift.acc < 1) return;
-      const px = Math.floor(drift.acc); drift.acc -= px;
-      let next = row.scrollLeft + drift.dir * px;
-      if(next <= 0){ next = 0; drift.dir = 1; driftAt = now + 1200 + Math.random() * 2400; }
-      else if(next >= max){ next = max; drift.dir = -1; driftAt = now + 1200 + Math.random() * 2400; }
-      row.scrollLeft = next;
-    }
-    requestAnimationFrame(tick);
-    syncBar();
+    rebuildLoop();
   }
 
   qsa('.rank-row').forEach(setupCarousel);
