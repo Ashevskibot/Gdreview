@@ -726,24 +726,33 @@ app.post('/api/reviews', authenticateToken, async (req, res) => {
         if (!(score >= 0 && score <= 10)) return fail(res, 400, 'invalid_payload');
         const safeTitle = String(title || '').trim();
         const safeText = String(text || '').trim();
-        if (!safeTitle) return fail(res, 400, 'review_title_required');
-        if (safeTitle.length > 30) return fail(res, 400, 'review_title_too_long');
-        if (safeText.length < 50) return fail(res, 400, 'review_text_too_short');
-        if (safeText.length > 2000) return fail(res, 400, 'review_text_too_long');
+        /* Rating-only submissions: when neither a title nor a text was written,
+           the user is publishing just their category scores. Text validation and
+           moderation are skipped and NULLs are stored, so the database cleanly
+           distinguishes rating-only entries from full written reviews. */
+        const isWritten = !!(safeTitle || safeText);
+        if (isWritten) {
+            if (!safeTitle) return fail(res, 400, 'review_title_required');
+            if (safeTitle.length > 30) return fail(res, 400, 'review_title_too_long');
+            if (safeText.length < 50) return fail(res, 400, 'review_text_too_short');
+            if (safeText.length > 2000) return fail(res, 400, 'review_text_too_long');
 
-        // Automatic moderation BEFORE the review is published (or updated).
-        const verdict = await moderateText(`${safeTitle}\n${safeText}`);
-        if (!verdict.ok) return rejectContent(res, verdict, 'review');
+            // Automatic moderation BEFORE the review is published (or updated).
+            const verdict = await moderateText(`${safeTitle}\n${safeText}`);
+            if (!verdict.ok) return rejectContent(res, verdict, 'review');
+        }
+        const dbTitle = isWritten ? safeTitle : null;
+        const dbText = isWritten ? safeText : null;
 
         const existing = await pool.query('SELECT id FROM reviews WHERE user_id = $1 AND level_id = $2', [req.user.userId, String(level_id)]);
         if (existing.rows.length > 0) {
             await pool.query(`UPDATE reviews SET gameplay=$1, sync_rhythm=$2, design_deco=$3, creativity=$4, optimization=$5, final_score=$6, title=$7, review_text=$8, saved_at=CURRENT_TIMESTAMP WHERE id=$9`,
-                [ratings.gameplay, ratings.sync, ratings.design, ratings.creativity, ratings.optimization, score, safeTitle, safeText, existing.rows[0].id]);
+                [ratings.gameplay, ratings.sync, ratings.design, ratings.creativity, ratings.optimization, score, dbTitle, dbText, existing.rows[0].id]);
             return res.json({ message: 'review_updated', id: existing.rows[0].id });
         }
         const ins = await pool.query(`INSERT INTO reviews (user_id, level_id, level_name, level_author, difficulty, difficulty_face, stars, gameplay, sync_rhythm, design_deco, creativity, optimization, final_score, title, review_text)
             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING id`,
-            [req.user.userId, String(level_id), level_name, level_author, difficulty, difficulty_face, stars || 0, ratings.gameplay, ratings.sync, ratings.design, ratings.creativity, ratings.optimization, score, safeTitle, safeText]);
+            [req.user.userId, String(level_id), level_name, level_author, difficulty, difficulty_face, stars || 0, ratings.gameplay, ratings.sync, ratings.design, ratings.creativity, ratings.optimization, score, dbTitle, dbText]);
         res.json({ message: 'review_saved', id: ins.rows[0].id });
     } catch (err) { console.error(err); fail(res, 500, 'server_error'); }
 });
@@ -777,18 +786,25 @@ app.post('/api/reviews/:id/like', authenticateToken, async (req, res) => {
 });
 
 /* ============ FEED ============ */
+/* Paginated review feed: 10 reviews per page plus a total count, so the
+   client can build real pagination. `page` is 0-based. */
+const FEED_PAGE_SIZE = 10;
 app.get('/api/feed/reviews', optionalAuth, async (req, res) => {
     try {
         const sort = String(req.query.sort || 'recent');
         const viewerId = req.user ? req.user.userId : null;
+        const page = Math.max(0, parseInt(req.query.page, 10) || 0);
         let where = '';
         let order = 'r.saved_at DESC';
         if (sort === 'popular') order = 'likes DESC, r.saved_at DESC';
         else if (sort === 'top_today') { where = `WHERE r.saved_at > NOW() - INTERVAL '1 day'`; order = 'r.final_score DESC, likes DESC'; }
         else if (sort === 'top_week') { where = `WHERE r.saved_at > NOW() - INTERVAL '7 days'`; order = 'r.final_score DESC, likes DESC'; }
         else if (sort === 'top_all') order = 'r.final_score DESC, likes DESC';
-        const result = await pool.query(`${REVIEW_WITH_USER} ${where} GROUP BY r.id, u.id ORDER BY ${order} LIMIT 40`, [viewerId]);
-        res.json(result.rows);
+        const [result, count] = await Promise.all([
+            pool.query(`${REVIEW_WITH_USER} ${where} GROUP BY r.id, u.id ORDER BY ${order} LIMIT ${FEED_PAGE_SIZE} OFFSET ${page * FEED_PAGE_SIZE}`, [viewerId]),
+            pool.query(`SELECT COUNT(*)::int AS c FROM reviews r ${where}`),
+        ]);
+        res.json({ reviews: result.rows, total: count.rows[0].c, page, per_page: FEED_PAGE_SIZE });
     } catch (err) { console.error(err); fail(res, 500, 'server_error'); }
 });
 
