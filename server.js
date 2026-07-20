@@ -13,6 +13,9 @@ const { moderateText, moderateImage } = require('./moderation');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key';
+if (!process.env.JWT_SECRET) {
+    console.error('⚠️  SECURITY: JWT_SECRET is not set — using an insecure fallback. Set JWT_SECRET in production!');
+}
 
 // Railway (and most PaaS providers) terminate TLS at a reverse proxy and
 // forward the real client IP via X-Forwarded-For. Trusting the proxy makes
@@ -247,8 +250,24 @@ async function loadForbiddenWords() {
 
 initDb().then(loadForbiddenWords).catch(err => console.error('❌ DB init error:', err.stack));
 
-app.use(express.json({ limit: '20mb' }));
-app.use(express.static(path.join(__dirname, 'public')));
+/* Body parsing: the only endpoint that legitimately receives large payloads
+   is POST /api/profile (base64 avatar/banner before cloud upload). Everything
+   else is plain JSON and gets a tight 1 MB cap, which shrinks the surface for
+   memory-exhaustion attacks. */
+const jsonSmall = express.json({ limit: '1mb' });
+const jsonLarge = express.json({ limit: '8mb' });
+app.use((req, res, next) => {
+    if (req.method === 'POST' && req.path === '/api/profile') return jsonLarge(req, res, next);
+    return jsonSmall(req, res, next);
+});
+/* Static assets are immutable between deploys — let browsers cache them.
+   index.html itself is always revalidated so releases show up immediately. */
+app.use(express.static(path.join(__dirname, 'public'), {
+    maxAge: '7d',
+    setHeaders(res, filePath) {
+        if (filePath.endsWith('index.html')) res.setHeader('Cache-Control', 'no-cache');
+    },
+}));
 
 /* ============ HELPERS ============ */
 const fail = (res, status, code) => res.status(status).json({ error: code });
@@ -343,17 +362,43 @@ function parseYouTubeId(raw) {
 
 /* Simple in-memory rate limiter for sensitive endpoints */
 const rlStore = new Map();
+const RL_MAX_KEYS = 50000; // hard cap so a spoofed-IP flood cannot exhaust memory
 function rateLimit(max, windowMs) {
     return (req, res, next) => {
         const key = `${req.ip}:${req.path}`;
         const now = Date.now();
         const hits = (rlStore.get(key) || []).filter(t => now - t < windowMs);
-        if (hits.length >= max) return fail(res, 429, 'too_many_requests');
+        if (hits.length >= max) {
+            res.setHeader('Retry-After', Math.ceil(windowMs / 1000));
+            return fail(res, 429, 'too_many_requests');
+        }
+        if (!rlStore.has(key) && rlStore.size >= RL_MAX_KEYS) {
+            // Evict the oldest entry instead of growing without bound.
+            rlStore.delete(rlStore.keys().next().value);
+        }
         hits.push(now); rlStore.set(key, hits);
         next();
     };
 }
 setInterval(() => { const now = Date.now(); for (const [k, v] of rlStore) { const f = v.filter(t => now - t < 900000); if (f.length) rlStore.set(k, f); else rlStore.delete(k); } }, 300000).unref();
+
+/* Global API rate limit: a generous per-IP ceiling (all endpoints combined)
+   that normal browsing never reaches but that blunts scripted floods and
+   basic DoS attempts. Sensitive endpoints keep their own much stricter
+   limits on top of this. */
+const GLOBAL_RL_MAX = Math.max(60, parseInt(process.env.GLOBAL_RATE_LIMIT, 10) || 300);
+app.use('/api', (req, res, next) => {
+    const now = Date.now();
+    const key = `${req.ip}:*`;
+    const hits = (rlStore.get(key) || []).filter(t => now - t < 60000);
+    if (hits.length >= GLOBAL_RL_MAX) {
+        res.setHeader('Retry-After', 60);
+        return fail(res, 429, 'too_many_requests');
+    }
+    if (!rlStore.has(key) && rlStore.size >= RL_MAX_KEYS) rlStore.delete(rlStore.keys().next().value);
+    hits.push(now); rlStore.set(key, hits);
+    next();
+});
 
 function sendEmail(to, subject, text, html) {
     const payload = html ? { from: EMAIL_FROM, to, subject, text, html } : { from: EMAIL_FROM, to, subject, text };
@@ -1245,11 +1290,16 @@ app.post('/api/support/tickets/:ref/messages', authenticateToken, rateLimit(20, 
 /* ============ ADMIN: SUPPORT TICKETS ============ */
 app.get('/api/admin/tickets', authenticateToken, requireAdmin, async (req, res) => {
     try {
-        const status = TICKET_STATUSES.includes(String(req.query.status)) ? String(req.query.status) : null;
+        const rawStatus = String(req.query.status || '');
+        const status = TICKET_STATUSES.includes(rawStatus) ? rawStatus : null;
         const q = String(req.query.q || '').trim();
         const params = [];
         const where = [];
         if (status) { params.push(status); where.push(`st.status = $${params.length}`); }
+        /* Completed tickets are archived: they only appear when explicitly
+           requested (status=completed → the Archive view, or status=all).
+           The default view stays clean with active tickets only. */
+        else if (rawStatus !== 'all') { where.push(`st.status <> 'completed'`); }
         if (q) {
             params.push('%' + q.replace(/[\\%_]/g, '\\$&') + '%');
             where.push(`(st.ref ILIKE $${params.length} OR st.subject ILIKE $${params.length} OR u.username ILIKE $${params.length})`);
@@ -1302,5 +1352,25 @@ app.get('/api/admin/verified-users', authenticateToken, requireAdmin, async (req
     } catch (err) { fail(res, 500, 'server_error'); }
 });
 
+/* Unknown API routes return a JSON 404 instead of the SPA shell. */
+app.use('/api', (req, res) => fail(res, 404, 'not_found'));
 app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
+
+/* Final safety net: malformed JSON, oversized payloads and unexpected
+   middleware errors become clean JSON responses. No stack traces or
+   internal details ever reach the client. */
+app.use((err, req, res, next) => {
+    if (res.headersSent) return next(err);
+    if (err && err.type === 'entity.too.large') return fail(res, 413, 'payload_too_large');
+    if (err && err.type === 'entity.parse.failed') return fail(res, 400, 'invalid_payload');
+    if (err instanceof SyntaxError) return fail(res, 400, 'invalid_payload');
+    console.error('Unhandled error:', err && err.message ? err.message : err);
+    fail(res, 500, 'server_error');
+});
+
+/* A rejected promise outside a route must never kill the process. */
+process.on('unhandledRejection', (reason) => {
+    console.error('Unhandled rejection:', reason && reason.message ? reason.message : reason);
+});
+
 app.listen(PORT, () => { console.log(`🚀 Server running on port ${PORT}`); });
