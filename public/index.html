@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="referrer" content="no-referrer">
 <title>GD REVIEW / Level Critic</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://gdbrowser.com" crossorigin>
+<link rel="preconnect" href="https://levelthumbs.prevter.me" crossorigin>
+<link rel="preconnect" href="https://i.ytimg.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -25,9 +30,9 @@
   }
   a,button,input,textarea,select{font-family:inherit;}
   ::selection{background:var(--white);color:var(--black);}
-  @media (hover:none){ body{cursor:auto;} #cursor-dot,#cursor-ring{display:none;} }
+  @media (hover:none){ body{cursor:auto;} #cursor-gd,#cursor-ring{display:none !important;} }
   @media (prefers-reduced-motion:reduce){ *{animation-duration:0.001s !important;animation-iteration-count:1 !important;transition-duration:0.001s !important;scroll-behavior:auto !important;} }
-  @media (hover: hover) { * { cursor: none !important; } .modal-input, .archive-search-row input, #review-text, #review-title, #home-search-input, .field input { cursor: text !important; } }
+  @media (hover: hover) { *, input, textarea { cursor: none !important; } }
 
   #bg-glow{ position:fixed; top:0;left:0; width:100vw;height:100vh; pointer-events:none; z-index:0; background:radial-gradient(600px circle at 50% 50%, rgba(255,255,255,0.06), transparent 70%); transition:background .05s linear; }
   #bg-grid{ position:fixed; inset:0; z-index:0; pointer-events:none; background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px); background-size:48px 48px; -webkit-mask-image:radial-gradient(1200px circle at 50% 0%, #000 40%, transparent 90%); mask-image:radial-gradient(1200px circle at 50% 0%, #000 40%, transparent 90%); }
@@ -39,12 +44,22 @@
   #bg-shapes span.diamond{width:30px;height:30px;background:var(--white);transform:rotate(45deg);border-radius:5px;}
   @keyframes drift{ 0%{transform:translate(0,0) rotate(0deg);} 50%{transform:translate(30px,-40px) rotate(180deg);} 100%{transform:translate(0,0) rotate(360deg);} }
 
-  #cursor-dot{ position:fixed; top:0;left:0; width:8px;height:8px; background:var(--white); border-radius:50%; pointer-events:none !important; z-index:999999; transform:translate(-50%,-50%); box-shadow:0 0 10px rgba(255,255,255,0.65); transition:width .18s var(--ease), height .18s var(--ease), background .18s ease; }
-  #cursor-ring{ position:fixed; top:0;left:0; width:36px;height:36px; border:1px solid rgba(255,255,255,0.3); border-radius:50%; pointer-events:none !important; z-index:999998; transform:translate(-50%,-50%); transition:width .25s var(--ease), height .25s var(--ease), border-color .25s ease, background .25s ease; }
-  .cursor-hover #cursor-dot{width:14px;height:14px;background:var(--black);box-shadow:0 0 16px rgba(255,255,255,0.9);}
-  .cursor-hover #cursor-ring{width:56px;height:56px;background:rgba(255,255,255,0.85);border-color:transparent;}
+  /* ---------- CUSTOM CURSOR: GD-inspired monochrome arrow ---------- */
+  #cursor-gd{ position:fixed; top:0; left:0; width:30px; height:30px; pointer-events:none !important; z-index:999999; will-change:transform; }
+  #cursor-gd svg{ position:absolute; inset:0; width:100%; height:100%; display:block; transform-origin:6px 4px; transition:transform .22s var(--spring), opacity .16s ease, filter .25s ease; }
+  #cursor-gd .cur-arrow{ filter:drop-shadow(0 1px 4px rgba(0,0,0,0.7)); }
+  #cursor-gd .cur-ibeam{ opacity:0; transform:scale(0.6); transform-origin:center; filter:drop-shadow(0 0 6px rgba(255,255,255,0.35)); }
+  #cursor-ring{ position:fixed; top:0;left:0; width:34px;height:34px; border:1px solid rgba(255,255,255,0.28); border-radius:9px; pointer-events:none !important; z-index:999998; transform:translate(-50%,-50%) rotate(45deg); transition:width .25s var(--ease), height .25s var(--ease), border-color .25s ease, background .25s ease, border-radius .25s ease, opacity .2s ease; opacity:0; }
+  .cursor-hover #cursor-gd .cur-arrow{ transform:scale(1.16) rotate(-9deg); filter:drop-shadow(0 0 10px rgba(255,255,255,0.55)); }
+  .cursor-hover #cursor-ring{ opacity:1; width:46px; height:46px; border-color:rgba(255,255,255,0.75); background:rgba(255,255,255,0.06); }
+  .cursor-down #cursor-gd .cur-arrow{ transform:scale(0.84); }
+  .cursor-down #cursor-ring{ width:34px; height:34px; }
+  .cursor-text #cursor-gd .cur-arrow{ opacity:0; transform:scale(0.5); }
+  .cursor-text #cursor-gd .cur-ibeam{ opacity:1; transform:scale(1); }
+  .cursor-text #cursor-ring{ opacity:0; }
 
   #global-loader { position: fixed; inset: 0; z-index: 9999999; background: var(--black); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); }
+  .loader-logo{ width:72px; height:72px; border-radius:18px; background:#f4f4f4; padding:6px; box-sizing:border-box; margin-bottom:18px; animation:pulse 1.5s infinite; }
   .loader-brand { font-family: 'Archivo Black', sans-serif; font-size: 32px; color: var(--white); letter-spacing: 2px; margin-bottom: 20px; animation: pulse 1.5s infinite; } .loader-brand span { color: var(--dim2); }
   .loader-progress { width: 150px; height: 2px; background: var(--line); position: relative; overflow: hidden; } .loader-progress::after { content: ''; position: absolute; left: -50%; top: 0; height: 100%; width: 50%; background: var(--white); animation: loadSweep 1.5s infinite var(--ease); }
   @keyframes loadSweep { to { left: 150%; } } @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
@@ -55,6 +70,9 @@
   @keyframes fadeDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
   .brand-area { display: flex; align-items: center; gap: 24px; }
   /* The logo doubles as the Home button — standard website behavior. */
+  .brand{ display:inline-flex; align-items:center; gap:11px; }
+  .brand-logo{ width:34px; height:34px; border-radius:9px; background:#f4f4f4; padding:3px; box-sizing:border-box; display:block; transition:transform .25s var(--spring); }
+  .brand:hover .brand-logo{ transform:rotate(-6deg) scale(1.06); }
   .brand{ font-family:'Archivo Black',sans-serif; font-size:20px; letter-spacing:-0.02em; text-transform:uppercase; color:var(--white); background:none; border:none; padding:0; cursor:pointer; transition:text-shadow .25s var(--ease), transform .18s var(--spring); }
   .brand span{color:var(--dim2); transition:color .25s var(--ease);}
   .brand:hover{ text-shadow:0 0 18px rgba(255,255,255,0.35); transform:translateY(-1px); }
@@ -81,9 +99,9 @@
   .user-dd-item:hover, .user-dd-item:focus-visible{ background:rgba(255,255,255,0.06); color:var(--white); outline:none; transform:translateX(2px); }
   .user-dd-item.danger:hover, .user-dd-item.danger:focus-visible{ color:#f0b9b9; background:rgba(224,85,85,0.1); }
   .user-dd-sep{ height:1px; background:var(--line); margin:6px 8px; }
-  .screen{display:none;animation:screenIn .45s var(--ease);}
+  .screen{display:none;animation:screenIn .55s var(--ease);}
   .screen.active{display:block;}
-  @keyframes screenIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes screenIn{from{opacity:0;transform:translateY(14px) scale(0.998);filter:blur(2px);}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0);}}
   @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 
   .level-block{ margin-bottom:40px; position:relative; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:40px 32px; display:none; overflow:hidden; }
@@ -107,21 +125,12 @@
   .wt-icon-btn:hover{ background:var(--white); color:#0a0a0a; transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,255,255,0.18); }
   .wt-icon-btn[hidden]{ display:none; }
   /* Embedded YouTube player modal */
-  .wt-player-box{ max-width:min(1240px, 96vw); width:100%; padding:56px 18px 18px; background:var(--black2); }
+  .wt-player-box{ max-width:min(1400px, 96vw); width:100%; padding:56px 18px 18px; background:var(--black2); }
+  #wt-player-modal .modal-box{ transform:translateY(28px) scale(0.93); transition:transform .42s var(--spring), opacity .32s var(--ease); }
+  #wt-player-modal.show .modal-box{ transform:none; }
+  .wt-video-wrap{ max-height:82vh; margin:0 auto; aspect-ratio:16/9; }
   /* Inline walkthrough player — a primary visual element of the level page.
      Full content width, 16:9, lazy: shows the video cover until clicked. */
-  .lvl-walkthrough{ margin-bottom:20px; }
-  .lvl-wt-head{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
-  .lvl-wt-frame{ position:relative; width:100%; aspect-ratio:16/9; background:#000; border:1px solid var(--line); border-radius:14px; overflow:hidden; box-shadow:0 24px 60px -28px rgba(0,0,0,0.85); }
-  .lvl-wt-frame iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
-  .lvl-wt-cover{ position:absolute; inset:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:var(--black2); border:0; cursor:pointer; padding:0; }
-  .lvl-wt-cover img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .5s var(--ease), filter .35s var(--ease); }
-  .lvl-wt-cover::after{ content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.45)); transition:opacity .3s ease; }
-  .lvl-wt-cover:hover img{ transform:scale(1.035); filter:brightness(1.08); }
-  .lvl-wt-play{ position:relative; z-index:2; width:clamp(64px,8vw,86px); height:clamp(64px,8vw,86px); display:flex; align-items:center; justify-content:center; border-radius:50%; background:rgba(10,10,10,0.72); border:1px solid rgba(255,255,255,0.35); backdrop-filter:blur(6px); transition:transform .25s var(--spring), background .2s ease, border-color .2s ease; }
-  .lvl-wt-cover:hover .lvl-wt-play{ transform:scale(1.08); background:var(--white); border-color:var(--white); }
-  .lvl-wt-play svg{ width:38%; height:38%; fill:var(--white); margin-left:4px; transition:fill .2s ease; }
-  .lvl-wt-cover:hover .lvl-wt-play svg{ fill:#0a0a0a; }
   .wt-video-wrap{ position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:10px; overflow:hidden; border:1px solid var(--line); }
   .wt-video-wrap iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
   .submit-walkthrough-btn{ background:transparent; border:1px solid var(--line); color:var(--dim); border-radius:8px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; padding:12px 18px; cursor:pointer; transition:all .22s var(--spring); }
@@ -143,7 +152,8 @@
   .rating-section{display:none;} .rating-section.show{display:block;animation:fadeIn .5s ease;}
   .section-label{ font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--dim); margin-bottom:24px; }
   .grid-ratings{ display:grid; grid-template-columns:1fr 1fr; gap:32px 48px; margin-bottom:48px; }
-  @media(max-width:640px){.grid-ratings{grid-template-columns:1fr;}}
+  .rate-item:nth-child(odd):last-child{ grid-column:1 / -1; }
+  @media(max-width:640px){.grid-ratings{grid-template-columns:1fr;gap:26px;}}
   .rate-item{ opacity:0; animation:riseIn .5s var(--ease) forwards; }
   .rate-item:nth-child(1){animation-delay:.03s;} .rate-item:nth-child(2){animation-delay:.08s;} .rate-item:nth-child(3){animation-delay:.13s;}
   .rate-item:nth-child(4){animation-delay:.18s;} .rate-item:nth-child(5){animation-delay:.23s;} .rate-item:nth-child(6){animation-delay:.28s;}
@@ -152,15 +162,20 @@
   .rate-item .val { font-family:'Space Mono',monospace; font-size:18px; color:var(--white); font-weight:700; transition:all 0.2s; }
   .val-pop { animation: valPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
   @keyframes valPop { 0% { transform: scale(1); } 40% { transform: scale(1.4); color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.6); } 100% { transform: scale(1); } }
-  .segbar { display: flex; gap: 6px; padding: 12px 0; user-select: none; }
-  .segbar .seg { flex: 1; height: 28px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 3px; transform: skewX(-14deg) scaleY(1); transition: all 0.4s; position: relative; overflow: hidden; box-shadow: 0 0 0 2px var(--panel) inset !important; }
-  .segbar .seg::after { content: ''; position: absolute; left: -100%; top: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); transition: left 0.3s; }
-  .segbar .seg.filled { background: var(--white); border-color: var(--white); transform: skewX(-14deg) scaleY(1.2); box-shadow: 0 0 6px rgba(255, 255, 255, 0.15); }
-  .segbar .seg.preview { background: rgba(255, 255, 255, 0.15); border-color: rgba(255, 255, 255, 0.4); transform: skewX(-14deg) scaleY(1.1); }
-  .segbar .seg:hover { transform: skewX(-14deg) scaleY(1.3) scaleX(1.1) translateY(-2px) !important; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3), 0 0 0 2px var(--panel) inset !important; background: var(--white) !important; z-index: 10 !important; }
-  .segbar .seg:hover::after { left: 100%; transition: left 0.6s ease; }
-  .seg.pop { animation: popSeg 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-  @keyframes popSeg { 0% { transform: skewX(-14deg) scale(1.2); } 40% { transform: skewX(-14deg) scale(1.4); box-shadow: 0 0 16px rgba(255,255,255,0.5); background: #fff; } 100% { transform: skewX(-14deg) scale(1.2); } }
+  /* Premium rating control: a sculpted 10-notch power bar — angled facets on a
+     recessed track with a glowing progress edge and a floating value chip. */
+  .segbar { position:relative; display:flex; gap:5px; padding:14px 10px; margin:0 -10px; user-select:none; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0.004)); border:1px solid var(--line); transition:border-color .25s var(--ease), box-shadow .3s var(--ease); }
+  .segbar:hover{ border-color:var(--line2); box-shadow:0 10px 30px -16px rgba(255,255,255,0.18); }
+  .segbar .seg { position:relative; flex:1; height:30px; background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)); border:1px solid rgba(255,255,255,0.09); border-radius:6px; clip-path:polygon(22% 0, 100% 0, 78% 100%, 0 100%); transform:scaleY(0.82); overflow:hidden; transition:transform .3s var(--spring), background .25s var(--ease), border-color .25s var(--ease), box-shadow .3s var(--ease); }
+  .segbar .seg::before{ content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(255,255,255,0.35), transparent 46%); opacity:0; transition:opacity .25s ease; }
+  .segbar .seg::after { content: ''; position: absolute; left: -100%; top: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent); transition: left 0.3s; }
+  .segbar .seg.filled { background: linear-gradient(180deg, #ffffff, #cfcfcf); border-color: var(--white); transform:scaleY(1); box-shadow: 0 0 10px rgba(255,255,255,0.28), 0 3px 8px -3px rgba(255,255,255,0.4); }
+  .segbar .seg.filled::before{ opacity:1; }
+  .segbar .seg.preview { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.45); transform:scaleY(0.94); }
+  .segbar .seg:hover { transform:scaleY(1.12) !important; background:var(--white) !important; border-color:var(--white) !important; box-shadow:0 6px 18px rgba(255,255,255,0.35) !important; z-index:2; }
+  .segbar .seg:hover::after { left: 100%; transition: left 0.5s ease; }
+  .seg.pop { animation: popSeg 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+  @keyframes popSeg { 0% { transform: scaleY(1.05); } 40% { transform: scaleY(1.3); box-shadow: 0 0 20px rgba(255,255,255,0.6); } 100% { transform: scaleY(1); } }
 
   /* ---------- CRITERIA GUIDE ---------- */
   .criteria-guide{ margin:-16px 0 44px; border:1px solid var(--line); border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.005)); overflow:hidden; transition:border-color .25s var(--ease), box-shadow .25s var(--ease); }
@@ -266,9 +281,9 @@
   .empty-state .em-sub{ font-size:13px; }
   .feed-loading{ padding:60px 20px; text-align:center; font-family:'Space Mono',monospace; font-size:12px; color:var(--dim2); text-transform:uppercase; letter-spacing:0.15em; animation:pulse 1.4s infinite; }
 
-  .modal-overlay{ position:fixed; inset:0; z-index:100000; display:flex; align-items:center; justify-content:center; padding:24px; background:rgba(6,6,6,0.7); backdrop-filter:blur(6px); opacity:0; pointer-events:none; transition:opacity .25s var(--ease); }
+  .modal-overlay{ position:fixed; inset:0; z-index:100000; display:flex; align-items:center; justify-content:center; padding:24px; background:rgba(6,6,6,0.7); backdrop-filter:blur(6px); opacity:0; pointer-events:none; transition:opacity .3s var(--ease); }
   .modal-overlay.show{opacity:1;pointer-events:auto;}
-  .modal-box{ position:relative; width:100%; max-width:400px; background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:36px 32px 28px; text-align:center; box-shadow:0 30px 80px -20px rgba(0,0,0,0.7), 0 0 40px rgba(255,255,255,0.04); transform:translateY(16px) scale(0.96); opacity:0; transition:transform .32s var(--spring), opacity .3s var(--ease); }
+  .modal-box{ position:relative; width:100%; max-width:400px; background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:36px 32px 28px; text-align:center; box-shadow:0 30px 80px -20px rgba(0,0,0,0.7), 0 0 40px rgba(255,255,255,0.04); transform:translateY(20px) scale(0.95); opacity:0; transition:transform .4s var(--spring), opacity .32s var(--ease); }
   .modal-overlay.show .modal-box{transform:translateY(0) scale(1);opacity:1;}
   .modal-box-tall{ max-height:82vh; display:flex; flex-direction:column; padding-bottom:24px; overscroll-behavior:contain; }
   .modal-scroll-body{ overflow-y:auto; overscroll-behavior:contain; padding-right:6px; margin-right:-6px; flex:1 1 auto; min-height:0; text-align:left; }
@@ -330,27 +345,6 @@
   .limited-field.limit-near .char-count{ color:var(--dim); }
   .limited-field.limit-invalid .char-count{ color:#e05555; }
   .limited-field.limit-invalid input, .limited-field.limit-invalid textarea{ border-color:#e05555; }
-  .ach-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(210px, 1fr)); gap:12px; }
-  .ach-card{ position:relative; display:flex; flex-direction:column; gap:8px; background:var(--black2); border:1px solid var(--line); border-radius:12px; padding:16px; opacity:0; transform:translateY(10px); animation:barIn .5s var(--ease) forwards; transition:transform .22s var(--ease), border-color .22s var(--ease), box-shadow .25s var(--ease); }
-  .ach-card:hover{ transform:translateY(-3px); border-color:var(--line2); }
-  .ach-card.unlocked{ border-color:var(--ach-color, var(--line2)); box-shadow:0 0 18px -6px var(--ach-color, transparent); }
-  .ach-head{ display:flex; align-items:center; gap:10px; min-width:0; }
-  .ach-medal{ flex-shrink:0; }
-  .ach-medal .relic{ width:38px; height:38px; }
-  .ach-medal .relic-halo{ inset:-6px; }
-  .ach-card{ perspective:420px; }
-  .ach-card:not(.unlocked) .relic{ filter:grayscale(1) brightness(0.55); opacity:0.75; }
-  .ach-cat-label{ font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--dim2); margin:18px 0 10px; display:flex; align-items:center; gap:12px; }
-  .ach-cat-label::after{ content:''; flex:1; height:1px; background:var(--line); }
-  .ach-name{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--dim); word-break:break-word; }
-  .ach-card.unlocked .ach-name{ color:var(--white); }
-  .ach-desc{ font-size:11.5px; color:var(--dim2); line-height:1.5; }
-  .ach-progress{ margin-top:auto; display:flex; align-items:center; gap:10px; }
-  .ach-bar{ flex:1; height:5px; background:var(--black); border:1px solid var(--line); border-radius:999px; overflow:hidden; }
-  .ach-fill{ height:100%; background:var(--ach-color, var(--white)); border-radius:999px; }
-  .ach-count{ font-family:'Space Mono',monospace; font-size:10px; color:var(--dim); white-space:nowrap; }
-  .ach-card.unlocked .ach-count{ color:var(--ach-color, var(--white)); }
-
   /* ---------- ADMIN: FORBIDDEN WORDS ---------- */
   .admin-fw-add{ display:flex; gap:10px; margin-bottom:16px; max-width:520px; }
   .admin-fw-add .modal-input{ flex:1; margin:0; }
@@ -364,105 +358,6 @@
   .fc-admin-del:hover{ background:var(--red); border-color:var(--red); color:#fff; }
   .fc-foot .fc-admin-del{ margin-left:0; }
 
-  /* ---------- ACHIEVEMENT SHOWCASE (public trophy board) ---------- */
-  .showcase-board{ position:relative; border:1px solid var(--line2); border-radius:14px; padding:22px 22px 24px; overflow:hidden;
-    background:
-      repeating-linear-gradient(135deg, rgba(255,255,255,0.016) 0 2px, transparent 2px 9px),
-      radial-gradient(120% 90% at 50% -10%, rgba(255,255,255,0.06), transparent 55%),
-      linear-gradient(180deg, #171717, #0d0d0d);
-    box-shadow:inset 0 1px 0 rgba(255,255,255,0.07), inset 0 0 60px rgba(0,0,0,0.55), 0 18px 44px -20px rgba(0,0,0,0.8); }
-  .showcase-board::after{ content:''; position:absolute; inset:6px; border:1px dashed rgba(255,255,255,0.07); border-radius:10px; pointer-events:none; }
-  .showcase-head{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
-  .showcase-title{ font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:15px; letter-spacing:0.04em; color:var(--white); }
-  .showcase-sub{ font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--dim2); }
-  .trophy-row{ display:grid; grid-template-columns:repeat(auto-fill, minmax(108px, 1fr)); gap:14px; }
-  .trophy{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:9px; padding:14px 8px 12px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0.004)); border:1px solid var(--line); opacity:0; transform:translateY(12px) scale(.92); animation:trophyIn .55s var(--spring) forwards; transition:border-color .25s ease, box-shadow .3s ease; perspective:420px; }
-  .trophy:hover{ border-color:var(--line2); box-shadow:0 14px 30px -12px var(--mglow, rgba(255,255,255,0.18)); }
-  @keyframes trophyIn{ to{ opacity:1; transform:none; } }
-  /* ---- GD ARTIFACTS: 3D collectible reward objects ----
-     Every reward is a small CSS-3D construction inspired by the Geometry
-     Dash universe (icon cubes, user coins, orbs, shards, keys, demon
-     sigils): stacked depth slices extrude the silhouette into a solid,
-     the face carries a lit material + engraved glyph, and a cursor-driven
-     specular moves across the surface. Clean at rest — rim light, halo and
-     sheen only appear while inspecting (hover). */
-  .relic{ position:relative; width:62px; height:62px; --lx:50%; --ly:38%; --rx:-8deg; --ry:14deg; perspective:340px; }
-  .relic-obj{ position:absolute; inset:0; transform-style:preserve-3d; transform:rotateX(var(--rx)) rotateY(var(--ry)); transition:transform .55s var(--spring); }
-  .trophy:hover .relic-obj, .ach-card:hover .relic-obj{ transition:transform .12s ease-out; }
-  /* Depth slices — the extrusion that turns the silhouette into an object */
-  .relic-d{ position:absolute; inset:0; background:linear-gradient(160deg, var(--m2), var(--m3)); }
-  .relic-d1{ transform:translateZ(-3px); filter:brightness(0.55); }
-  .relic-d2{ transform:translateZ(-6px); filter:brightness(0.4); }
-  .relic-d3{ transform:translateZ(-9px); filter:brightness(0.26); }
-  .relic-face{ position:absolute; inset:0; transform:translateZ(0.1px); background:radial-gradient(circle at var(--lx) var(--ly), rgba(255,255,255,0.5), rgba(255,255,255,0.06) 44%, transparent 64%), linear-gradient(160deg, var(--m1), var(--m2) 55%, var(--m3)); box-shadow:inset 0 2px 3px rgba(255,255,255,0.5), inset 0 -6px 10px rgba(0,0,0,0.52); }
-  .relic-glyph{ position:absolute; inset:0; z-index:4; display:flex; align-items:center; justify-content:center; color:#fff; transform:translateZ(10px); filter:drop-shadow(0 2px 2px rgba(0,0,0,0.7)); }
-  .relic-glyph svg{ display:block; width:62%; height:62%; overflow:visible; }
-  .relic-glyph .motif-fill{ fill:currentColor; }
-  .relic-glyph .motif-cut{ fill:var(--m3); }
-  .relic-glyph .motif-line{ fill:none; stroke:currentColor; stroke-width:4; stroke-linecap:square; stroke-linejoin:miter; }
-  /* Cursor-driven specular highlight */
-  .relic-spec{ position:absolute; inset:0; z-index:3; transform:translateZ(1px); background:radial-gradient(48px circle at var(--lx) var(--ly), rgba(255,255,255,0.5), rgba(255,255,255,0.08) 45%, transparent 66%); mix-blend-mode:screen; pointer-events:none; }
-  /* Hover-only inspection effects — never active at rest */
-  .relic-halo{ position:absolute; inset:-12px; z-index:0; border-radius:50%; background:radial-gradient(circle, transparent 50%, var(--mglow) 68%, transparent 82%); opacity:0; transition:opacity .3s ease; pointer-events:none; }
-  .trophy:hover .relic-halo, .ach-card.unlocked:hover .relic-halo{ opacity:1; animation:haloPulse 2.2s ease-in-out infinite; }
-  @keyframes haloPulse{ 0%,100%{ opacity:.5; transform:scale(1); } 50%{ opacity:.95; transform:scale(1.07); } }
-  .relic-sheen{ position:absolute; inset:0; z-index:5; transform:translateZ(2px) translateX(-120%); background:linear-gradient(115deg, transparent 32%, rgba(255,255,255,0.5) 50%, transparent 68%); pointer-events:none; }
-  .trophy:hover .relic-sheen, .ach-card.unlocked:hover .relic-sheen{ animation:relicSheen 1.15s var(--ease); }
-  @keyframes relicSheen{ from{ transform:translateZ(2px) translateX(-120%); } to{ transform:translateZ(2px) translateX(120%); } }
-  /* ---- Silhouettes (applied to every stacked plane so the object is solid) ---- */
-  .art-cube .relic-face, .art-cube .relic-d, .art-cube .relic-spec, .art-cube .relic-sheen{ clip-path:inset(5% round 16%); }
-  .art-coin .relic-face, .art-coin .relic-d, .art-coin .relic-spec, .art-coin .relic-sheen{ border-radius:50%; }
-  .art-coin .relic-face::after{ content:''; position:absolute; inset:9%; border-radius:50%; box-shadow:inset 0 0 0 2px rgba(0,0,0,0.3), inset 0 0 0 3px rgba(255,255,255,0.22); }
-  .art-orb .relic-face, .art-orb .relic-d, .art-orb .relic-spec, .art-orb .relic-sheen{ border-radius:50%; }
-  .art-orb .relic-face{ background:radial-gradient(circle at var(--lx) var(--ly), rgba(255,255,255,0.75), rgba(255,255,255,0.1) 34%, transparent 58%), radial-gradient(circle at 50% 58%, var(--m1) 0%, var(--m2) 46%, var(--m3) 88%); box-shadow:inset 0 3px 5px rgba(255,255,255,0.5), inset 0 -8px 14px rgba(0,0,0,0.6); }
-  .art-shard .relic-face, .art-shard .relic-d, .art-shard .relic-spec, .art-shard .relic-sheen{ clip-path:polygon(50% 0, 86% 26%, 74% 100%, 26% 100%, 14% 26%); }
-  .art-shard .relic-face::after{ content:''; position:absolute; inset:0; background:linear-gradient(118deg, transparent 30%, rgba(255,255,255,0.16) 30.5%, transparent 31.5%), linear-gradient(64deg, transparent 55%, rgba(0,0,0,0.22) 55.5%, transparent 57%), linear-gradient(150deg, transparent 68%, rgba(255,255,255,0.12) 68.5%, transparent 70%); }
-  .art-star .relic-face, .art-star .relic-d, .art-star .relic-spec, .art-star .relic-sheen{ clip-path:polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
-  .art-sigil .relic-face, .art-sigil .relic-d, .art-sigil .relic-spec, .art-sigil .relic-sheen{ clip-path:polygon(8% 4%, 30% 22%, 50% 8%, 70% 22%, 92% 4%, 86% 62%, 50% 100%, 14% 62%); }
-  .art-key .relic-face, .art-key .relic-d, .art-key .relic-spec, .art-key .relic-sheen{ clip-path:polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
-  .art-prism .relic-face, .art-prism .relic-d, .art-prism .relic-spec, .art-prism .relic-sheen{ clip-path:polygon(50% 0, 100% 42%, 78% 100%, 22% 100%, 0 42%); }
-  /* ---- Rarity detailing: geometry & material complexity, not glow ---- */
-  .rtier-common .relic-d3{ display:none; }
-  .rtier-rare .relic-face{ box-shadow:inset 0 2px 3px rgba(255,255,255,0.5), inset 0 -6px 10px rgba(0,0,0,0.52), inset 0 0 0 1px rgba(255,255,255,0.24); }
-  .rtier-epic .relic-face{ box-shadow:inset 0 2px 4px rgba(255,255,255,0.55), inset 0 -6px 10px rgba(0,0,0,0.52), inset 0 0 0 2px rgba(255,255,255,0.26), inset 0 0 0 5px rgba(0,0,0,0.26); }
-  .rtier-epic .relic-face::before, .rtier-legendary .relic-face::before{ content:''; position:absolute; inset:0; background:conic-gradient(from 0deg, rgba(255,255,255,0.15) 0 12deg, transparent 12deg 45deg, rgba(255,255,255,0.1) 45deg 58deg, transparent 58deg 120deg, rgba(255,255,255,0.15) 120deg 132deg, transparent 132deg 205deg, rgba(255,255,255,0.1) 205deg 218deg, transparent 218deg 300deg, rgba(255,255,255,0.12) 300deg 312deg, transparent 312deg); opacity:.72; mix-blend-mode:overlay; }
-  .rtier-legendary .relic-face{ box-shadow:inset 0 2px 5px rgba(255,255,255,0.65), inset 0 -7px 12px rgba(0,0,0,0.58), inset 0 0 0 2px rgba(255,255,255,0.35), inset 0 0 0 6px rgba(0,0,0,0.3), inset 0 0 0 7px rgba(255,255,255,0.18); }
-  .rtier-legendary .relic-glyph svg{ width:68%; height:68%; }
-  /* Legendary mount ring — solid metal geometry, not a glow */
-  .relic-ring{ position:absolute; inset:-6px; z-index:1; border-radius:50%; border:2px solid transparent; background:linear-gradient(140deg, var(--m1), var(--m3) 45%, var(--m1) 70%, var(--m3)) border-box; -webkit-mask:linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask-composite:exclude; transform:translateZ(-4px) rotateZ(8deg); pointer-events:none; }
-  /* Materials */
-  .pal-bronze{ --m1:#f2b27e; --m2:#a05a2c; --m3:#5a2f14; --mglow:rgba(240,160,90,0.45); }
-  .pal-silver{ --m1:#f4f6f8; --m2:#9aa5b1; --m3:#4d565f; --mglow:rgba(200,215,230,0.45); }
-  .pal-gold{ --m1:#ffe9a3; --m2:#e0a92f; --m3:#8a5a12; --mglow:rgba(255,205,90,0.55); }
-  .pal-emerald{ --m1:#9ff3c0; --m2:#20b26b; --m3:#0c5a37; --mglow:rgba(60,220,140,0.5); }
-  .pal-sapphire{ --m1:#a9d2ff; --m2:#2f6fd0; --m3:#123a7a; --mglow:rgba(90,160,255,0.5); }
-  .pal-ruby{ --m1:#ffb0b8; --m2:#d03a52; --m3:#701528; --mglow:rgba(255,90,110,0.5); }
-  .pal-amethyst{ --m1:#e2c2ff; --m2:#9a4fd8; --m3:#4a1a78; --mglow:rgba(190,110,255,0.55); }
-  .pal-obsidian{ --m1:#8b93a3; --m2:#2c313c; --m3:#0b0d12; --mglow:rgba(140,160,200,0.4); }
-  .pal-prism{ --m1:#ffd76a; --m2:#7db4ff; --m3:#5a2f8a; --mglow:rgba(200,170,255,0.6); }
-  .pal-prism .relic-face{ background:radial-gradient(circle at var(--lx) var(--ly), rgba(255,255,255,0.6), rgba(255,255,255,0.08) 42%, transparent 62%), conic-gradient(from 210deg, #f6d365, #62e3a4, #6fb3ff, #c78bff, #ff8fa0, #f6d365); }
-  .trophy:hover .pal-prism .relic-face, .ach-card.unlocked:hover .pal-prism .relic-face{ animation:prismHue 5s linear infinite; }
-  @keyframes prismHue{ to{ filter:hue-rotate(360deg); } }
-  .trophy-name{ font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--white); line-height:1.35; word-break:break-word; }
-  .trophy-tier{ font-family:'Space Mono',monospace; font-size:8.5px; letter-spacing:0.18em; text-transform:uppercase; color:var(--dim2); border:1px solid var(--line); border-radius:999px; padding:2px 8px; }
-  .trophy-rare .trophy-tier{ color:#a8ccff; border-color:rgba(110,165,255,0.4); }
-  .trophy-epic .trophy-tier{ color:#dcb8ff; border-color:rgba(190,120,255,0.45); }
-  .trophy-legendary .trophy-tier{ color:#ffe19a; border-color:rgba(255,205,110,0.5); }
-  .showcase-empty{ padding:26px 12px; text-align:center; font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--dim2); }
-  /* ---------- OWNER BOARD: expand / cinematic reveal ---------- */
-  .ach-board-head{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; }
-  .ach-expand-btn{ background:transparent; border:1px solid var(--line2); border-radius:999px; color:var(--white); font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; padding:11px 22px; cursor:pointer; transition:all .22s var(--spring); }
-  .ach-expand-btn:hover{ background:var(--white); color:#0a0a0a; border-color:var(--white); transform:translateY(-1px); box-shadow:0 6px 20px rgba(255,255,255,0.18); }
-  .ach-expand-btn:active{ transform:scale(0.95); }
-  .ach-expand-btn.open{ background:var(--white); color:#0a0a0a; border-color:var(--white); }
-  .ach-board-body{ margin-top:20px; }
-  .ach-board-body[hidden]{ display:none; }
-  .ach-board-body.board-open{ animation:boardUnfold .7s var(--ease) both; transform-origin:top center; }
-  @keyframes boardUnfold{ 0%{ opacity:0; transform:rotateX(-14deg) translateY(-14px) scale(.985); filter:blur(4px); } 60%{ opacity:1; filter:blur(0); } 100%{ opacity:1; transform:none; } }
-  .ach-board-body.board-close{ animation:boardFold .32s var(--ease) both; transform-origin:top center; }
-  @keyframes boardFold{ to{ opacity:0; transform:rotateX(-10deg) translateY(-10px) scale(.985); } }
-  .ach-sec-label{ font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--dim); margin-bottom:12px; display:flex; align-items:center; gap:12px; }
-  .ach-sec-label::after{ content:''; flex:1; height:1px; background:var(--line); }
   /* ---------- PROFILE STAT ICONS & SCORE TREND ---------- */
   .stat-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
   .stat-icon{ flex-shrink:0; width:26px; height:26px; display:flex; align-items:center; justify-content:center; border:1px solid var(--line); border-radius:8px; color:var(--dim); background:rgba(255,255,255,0.03); transition:color .22s ease, border-color .22s ease; }
@@ -478,6 +373,8 @@
 
   footer{ margin-top:50px; padding-top:24px; border-top:1px solid var(--line); font-family:'Space Mono',monospace; font-size:11px; color:var(--dim2); letter-spacing:0.05em; text-transform:uppercase; min-height:1px; text-align:center; }
   .site-copyright strong{ color:var(--dim); font-weight:700; }
+  .footer-support-link{ margin-top:10px; background:none; border:none; color:var(--dim); font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; text-decoration:underline; text-underline-offset:3px; cursor:pointer; transition:color .2s ease; }
+  .footer-support-link:hover{ color:var(--white); }
 
   .archive-search-row{ display:flex; gap:12px; margin-bottom:20px; }
   .archive-search-row input{ flex:1; background:var(--panel); border:1px solid var(--line); border-radius:8px; color:var(--white); font-size:14px; padding:14px 18px; letter-spacing:0.02em; outline:none; transition:border-color .25s var(--ease), box-shadow .25s var(--ease); }
@@ -509,6 +406,7 @@
   #stars-canvas{position:absolute;inset:0;width:100%;height:100%;}
   .auth-box { position:relative; z-index:2; width: 100%; max-width: 400px; padding: 42px 34px 28px; background: rgba(17,17,17,0.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 30px 80px rgba(0,0,0,0.75); text-align: center; animation:authIn .8s var(--spring); }
   @keyframes authIn{from{opacity:0;transform:translateY(26px) scale(.965);}to{opacity:1;transform:none;}}
+  .auth-logo{ width:58px; height:58px; border-radius:14px; background:#f4f4f4; padding:5px; box-sizing:border-box; margin:0 auto 12px; display:block; box-shadow:0 8px 26px rgba(0,0,0,0.55); }
   .auth-box .brand { margin-bottom: 8px; font-size: 24px; font-family: 'Archivo Black', sans-serif; color: var(--white); }
   .auth-sub{ font-family:'Space Mono',monospace; font-size:10.5px; color:var(--dim); text-transform:uppercase; letter-spacing:0.18em; margin-bottom:26px; min-height:14px; }
   .auth-tabs { display: flex; gap: 4px; background: var(--black2); padding: 4px; border-radius: 8px; margin-bottom: 22px; }
@@ -569,7 +467,7 @@
   .lb-name{ font-weight:700; font-size:13px; color:var(--white); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .lb-likes{ font-family:'Space Mono',monospace; font-size:12px; font-weight:700; color:var(--white); flex-shrink:0; }
   .lb-reviews{ font-family:'Space Mono',monospace; font-size:11px; color:var(--dim2); flex-shrink:0; }
-  .dash-diff-bar{ position:relative; z-index:5; display:flex; flex-direction:column; gap:14px; border-top:1px solid var(--line); padding-top:30px; }
+  .dash-diff-bar{ position:relative; z-index:5; display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px; border-top:1px solid var(--line); padding-top:30px; }
   #dash-rankings{ display:flex; flex-direction:column; gap:32px; transition:opacity .3s var(--ease), transform .3s var(--ease); }
   #dash-rankings.dash-fade{ opacity:0.2; transform:translateY(5px); pointer-events:none; }
   .dash-sec-head{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
@@ -588,12 +486,12 @@
   /* Full-bleed carousels: rows escape the shell and run across the viewport,
      with wide soft fades instead of hard clipping so neighboring cards stay
      partially visible and it's obvious there is more to scroll. */
-  .rank-row{ --edge:calc(50vw - 50% + 20px); display:grid; grid-auto-flow:column; grid-auto-columns:230px; gap:14px; overflow-x:auto; overflow-y:hidden; padding:10px var(--edge) 16px; margin:0 calc(50% - 50vw); scrollbar-width:none; -ms-overflow-style:none; -webkit-mask-image:linear-gradient(to right, transparent 0, #000 clamp(36px,7vw,110px), #000 calc(100% - clamp(36px,7vw,110px)), transparent 100%); mask-image:linear-gradient(to right, transparent 0, #000 clamp(36px,7vw,110px), #000 calc(100% - clamp(36px,7vw,110px)), transparent 100%); user-select:none; -webkit-user-select:none; overscroll-behavior-x:contain; touch-action:pan-x pan-y; }
+  .rank-row{ --edge:calc(50vw - 50% + 20px); display:grid; grid-auto-flow:column; grid-auto-columns:230px; gap:14px; overflow-x:auto; overflow-y:hidden; padding:10px var(--edge) 16px; margin:0 calc(50% - 50vw); scrollbar-width:none; -ms-overflow-style:none; -webkit-mask-image:linear-gradient(to right, transparent 0, #000 clamp(36px,7vw,110px), #000 calc(100% - clamp(36px,7vw,110px)), transparent 100%); mask-image:linear-gradient(to right, transparent 0, #000 clamp(36px,7vw,110px), #000 calc(100% - clamp(36px,7vw,110px)), transparent 100%); user-select:none; -webkit-user-select:none; overscroll-behavior-x:contain; touch-action:pan-x pan-y; overflow-anchor:none; scroll-behavior:auto; }
   .rank-row::-webkit-scrollbar{ display:none; }
   .rank-row.dragging .rank-card{ pointer-events:none; }
   /* While dragging a carousel the cursor disappears completely — both the
      custom dot/ring and (belt-and-braces) the native cursor. */
-  body.carousel-drag #cursor-dot, body.carousel-drag #cursor-ring{ opacity:0; }
+  body.carousel-drag #cursor-gd, body.carousel-drag #cursor-ring{ opacity:0 !important; }
   body.carousel-drag, body.carousel-drag *{ cursor:none !important; }
   /* Custom slim scrollbar: appears while the row is hovered or scrolling. */
   .row-scroll{ position:relative; height:4px; margin:-6px auto 10px; max-width:min(100%, 560px); border-radius:999px; background:rgba(255,255,255,0.06); opacity:0; transition:opacity .35s var(--ease); pointer-events:none; }
@@ -854,36 +752,30 @@
 
   @media(max-width:640px){ .wheel-stage{ height:300px; } .spin-btn{ width:100%; } .cw-name{ max-width:32%; } .cw-thumb{ width:52px; height:30px; } }
 
-  /* ---------- DIFFICULTY NAVIGATOR (home ranking chips) ---------- */
-  /* ---- Difficulty dropdown (homepage rankings filter) ----
-     Icons keep their original Geometry Dash colors for instant recognition. */
-  /* Difficulty selector: trigger button + side panel that slides in from the right. */
-  .diff-dd-btn{ align-self:flex-start; display:inline-flex; align-items:center; gap:9px; padding:10px 14px; background:linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.008)), var(--panel); border:1px solid var(--line); border-radius:12px; color:var(--white); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; cursor:pointer; transition:border-color .22s var(--ease), transform .18s var(--spring), box-shadow .22s var(--ease); }
+  /* ---------- DIFFICULTY SELECTOR (homepage rankings filter) ----------
+     The button transforms in place: clicking it expands the same container
+     into a row of colored GD difficulty icons; selecting one collapses it
+     back to "[icon] Difficulty Name". No side panels, no layout jumps. */
+  .diff-inline{ position:relative; display:flex; justify-content:center; }
+  .diff-dd-btn{ display:inline-flex; align-items:center; gap:9px; padding:11px 16px; background:linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.008)), var(--panel); border:1px solid var(--line); border-radius:12px; color:var(--white); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; cursor:pointer; transition:border-color .22s var(--ease), transform .18s var(--spring), box-shadow .22s var(--ease), opacity .2s var(--ease); }
   .diff-dd-btn:hover{ border-color:var(--line2); transform:translateY(-1px); box-shadow:0 4px 14px rgba(0,0,0,0.35); }
   .diff-dd-btn:active{ transform:scale(0.97); }
   .diff-dd-btn img{ width:20px; height:20px; object-fit:contain; }
   .diff-dd-arrow{ width:16px; height:16px; fill:var(--dim); transition:transform .25s var(--ease); }
-  .diff-dd-btn[aria-expanded="true"] .diff-dd-arrow{ transform:rotate(-90deg); }
-  /* Inline difficulty tray: expands horizontally to the right of the button,
-     anchored to it (absolute — the page layout never moves). */
-  .diff-inline{ position:relative; align-self:flex-start; display:flex; align-items:center; }
-  .diff-tray{ position:absolute; left:calc(100% + 10px); top:50%; z-index:60; display:flex; align-items:center; gap:5px; padding:6px 8px; background:linear-gradient(200deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01) 45%), var(--panel2); border:1px solid var(--line2); border-radius:12px; box-shadow:0 14px 38px -10px rgba(0,0,0,0.7); max-width:min(58vw, 640px); overflow-x:auto; scrollbar-width:none; opacity:0; visibility:hidden; transform:translateY(-50%) translateX(-10px) scaleX(0.86); transform-origin:left center; transition:opacity .28s var(--ease), transform .34s var(--spring), visibility 0s linear .28s; }
+  .diff-inline.open .diff-dd-btn{ opacity:0; transform:scale(0.9); pointer-events:none; position:absolute; }
+  .diff-tray{ display:flex; align-items:center; justify-content:center; gap:5px; padding:6px 8px; background:linear-gradient(200deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01) 45%), var(--panel2); border:1px solid var(--line2); border-radius:12px; box-shadow:0 14px 38px -10px rgba(0,0,0,0.7); max-width:min(92vw, 680px); overflow-x:auto; scrollbar-width:none; opacity:0; visibility:hidden; transform:scaleX(0.4); transform-origin:center; transition:opacity .24s var(--ease), transform .34s var(--spring), visibility 0s linear .24s; position:absolute; top:0; }
   .diff-tray::-webkit-scrollbar{ display:none; }
-  .diff-tray.open{ opacity:1; visibility:visible; transform:translateY(-50%) translateX(0) scaleX(1); transition:opacity .22s var(--ease), transform .34s var(--spring); }
-  .diff-opt{ flex-shrink:0; width:40px; height:40px; display:flex; align-items:center; justify-content:center; background:transparent; border:1px solid transparent; border-radius:9px; cursor:pointer; opacity:0; transform:translateX(-8px); transition:background .18s ease, border-color .18s ease, transform .22s var(--spring); }
-  .diff-tray.open .diff-opt{ animation:diffOptIn .3s var(--ease) forwards; }
+  .diff-inline.open .diff-tray{ position:relative; opacity:1; visibility:visible; transform:scaleX(1); transition:opacity .22s var(--ease), transform .34s var(--spring); }
+  .diff-opt{ flex-shrink:0; width:42px; height:42px; display:flex; align-items:center; justify-content:center; background:transparent; border:1px solid transparent; border-radius:9px; cursor:pointer; opacity:0; transform:translateY(6px); transition:background .18s ease, border-color .18s ease, transform .22s var(--spring); }
+  .diff-inline.open .diff-opt{ animation:diffOptIn .3s var(--ease) forwards; }
   @keyframes diffOptIn{ to{ opacity:1; transform:none; } }
-  .diff-opt img{ width:26px; height:26px; object-fit:contain; filter:drop-shadow(0 2px 5px rgba(0,0,0,0.6)); transition:transform .2s var(--spring); }
+  .diff-opt img{ width:27px; height:27px; object-fit:contain; filter:drop-shadow(0 2px 5px rgba(0,0,0,0.6)); transition:transform .2s var(--spring); }
   .diff-opt .dpi-blank{ font-family:'Space Mono',monospace; font-size:14px; color:var(--dim); }
   .diff-opt:hover{ background:rgba(255,255,255,0.07); border-color:var(--line2); }
   .diff-opt:hover img{ transform:scale(1.16); }
   .diff-opt:active{ transform:scale(0.9); }
   .diff-opt.active{ background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.4); }
   .diff-opt.active .dpi-blank{ color:var(--white); }
-  @media (max-width: 760px){
-    .diff-tray{ left:0; top:calc(100% + 8px); transform:translateY(-6px) scaleX(0.94); transform-origin:left top; max-width:calc(100vw - 44px); }
-    .diff-tray.open{ transform:translateY(0) scaleX(1); }
-  }
   /* Global search: Levels | Profiles result tabs + profile result cards. */
   .search-tabs{ display:flex; gap:4px; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:4px; width:max-content; margin-bottom:18px; }
   .search-tab{ background:none; border:none; border-radius:7px; color:var(--dim); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.09em; padding:9px 18px; cursor:pointer; transition:all .22s var(--spring); }
@@ -1052,6 +944,63 @@
   .social-field-error { display: none; font-size: 10.5px; color: var(--red); font-family: 'Space Mono', monospace; letter-spacing: 0.02em; margin-bottom: 8px; }
   .social-field.has-error .social-field-error { display: block; }
 
+  /* ---------- SUPPORT CENTER ---------- */
+  .support-head{ text-align:center; margin-bottom:30px; }
+  .support-grid{ display:grid; grid-template-columns:1.15fr 1fr; gap:20px; align-items:start; }
+  @media(max-width:860px){ .support-grid{ grid-template-columns:1fr; } }
+  .support-card{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:26px; opacity:0; transform:translateY(14px); animation:barIn .5s var(--ease) forwards; }
+  .support-card:nth-child(2){ animation-delay:.08s; }
+  .support-cats{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:18px; }
+  @media(max-width:480px){ .support-cats{ grid-template-columns:1fr; } }
+  .support-cat{ display:flex; align-items:center; gap:10px; padding:12px 14px; background:rgba(255,255,255,0.02); border:1px solid var(--line); border-radius:10px; color:var(--dim); font-size:12px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; cursor:pointer; transition:all .22s var(--spring); text-align:left; }
+  .support-cat svg{ width:16px; height:16px; fill:currentColor; flex-shrink:0; }
+  .support-cat:hover{ color:var(--white); border-color:var(--line2); transform:translateY(-1px); }
+  .support-cat.on{ background:var(--white); color:#0a0a0a; border-color:var(--white); box-shadow:0 0 16px rgba(255,255,255,0.18); }
+  .support-textarea{ width:100%; background:var(--black); border:1px solid var(--line2); border-radius:8px; color:var(--white); font-size:13px; line-height:1.6; padding:12px; min-height:110px; resize:vertical; outline:none; transition:border-color .2s ease, box-shadow .2s ease; margin-bottom:0; }
+  .support-textarea:focus{ border-color:var(--white); box-shadow:0 0 0 3px rgba(255,255,255,0.08); }
+  .ticket-row{ display:flex; align-items:center; gap:12px; padding:13px 14px; background:rgba(255,255,255,0.02); border:1px solid var(--line); border-radius:12px; cursor:pointer; margin-bottom:8px; animation:barInF .4s var(--ease) backwards; transition:border-color .2s ease, transform .2s var(--ease); }
+  .ticket-row:hover{ border-color:var(--line2); transform:translateX(3px); }
+  .ticket-row-main{ flex:1; min-width:0; }
+  .ticket-row-subject{ font-weight:700; font-size:13px; color:var(--white); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ticket-row-meta{ font-family:'Space Mono',monospace; font-size:10.5px; color:var(--dim2); margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ticket-status-chip{ flex-shrink:0; font-family:'Space Mono',monospace; font-size:9.5px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; border-radius:999px; padding:5px 11px; border:1px solid; white-space:nowrap; }
+  .ts-open{ color:#7fd6a4; border-color:rgba(61,220,132,0.45); background:rgba(61,220,132,0.07); }
+  .ts-in_progress{ color:#ffd479; border-color:rgba(255,200,90,0.45); background:rgba(255,200,90,0.07); }
+  .ts-completed{ color:var(--dim); border-color:var(--line2); background:rgba(255,255,255,0.03); }
+  .ticket-empty{ padding:26px 12px; text-align:center; border:1px dashed var(--line); border-radius:12px; font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--dim2); }
+  /* Ticket modal (conversation) */
+  .ticket-box{ max-width:640px; text-align:left; padding:30px 28px 22px; }
+  .ticket-head{ display:flex; align-items:center; gap:12px; margin-bottom:10px; padding-right:44px; }
+  .ticket-ref{ font-family:'Space Mono',monospace; font-size:12px; font-weight:700; letter-spacing:0.1em; color:var(--dim); background:var(--black2); border:1px solid var(--line); border-radius:7px; padding:5px 10px; }
+  .ticket-meta{ font-size:11.5px; color:var(--dim2); margin-bottom:16px; }
+  .ticket-meta b{ color:var(--dim); }
+  .ticket-thread{ display:flex; flex-direction:column; gap:10px; padding:14px 2px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); max-height:44vh; }
+  .tk-msg{ max-width:88%; padding:11px 14px; border-radius:12px; font-size:13px; line-height:1.6; white-space:pre-wrap; word-break:break-word; animation:fadeSlideIn .3s var(--ease) backwards; }
+  .tk-msg.user{ align-self:flex-start; background:var(--black2); border:1px solid var(--line); color:var(--white); border-bottom-left-radius:4px; }
+  .tk-msg.admin{ align-self:flex-end; background:rgba(255,255,255,0.09); border:1px solid var(--line2); color:var(--white); border-bottom-right-radius:4px; }
+  .tk-msg-head{ display:flex; align-items:baseline; gap:8px; margin-bottom:5px; }
+  .tk-msg-author{ font-size:10.5px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim); }
+  .tk-msg.admin .tk-msg-author{ color:#a8ccff; }
+  .tk-msg-time{ font-family:'Space Mono',monospace; font-size:9.5px; color:var(--dim2); }
+  .ticket-reply-row{ display:flex; gap:10px; align-items:flex-end; margin-top:14px; }
+  .ticket-reply-row .support-textarea{ min-height:52px; }
+  .ticket-admin-tools{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding-top:14px; }
+  .ticket-admin-tools[hidden]{ display:none; }
+  .ticket-status-row{ display:flex; gap:6px; flex-wrap:wrap; }
+  .tk-status-opt{ background:var(--black2); border:1px solid var(--line); border-radius:999px; color:var(--dim); font-size:10px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:8px 14px; cursor:pointer; transition:all .2s var(--spring); }
+  .tk-status-opt:hover{ color:var(--white); border-color:var(--line2); }
+  .tk-status-opt.on{ background:var(--white); color:#0a0a0a; border-color:var(--white); }
+  #tk-verify-btn{ width:auto; padding:10px 16px; font-size:10.5px; }
+  /* Admin ticket list */
+  .admin-ticket-controls{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:16px; }
+  .admin-ticket-row{ display:flex; align-items:center; gap:14px; padding:14px 16px; background:var(--panel); border:1px solid var(--line); border-radius:12px; cursor:pointer; margin-bottom:8px; animation:barInF .4s var(--ease) backwards; transition:border-color .2s ease, transform .2s var(--ease), box-shadow .25s ease; }
+  .admin-ticket-row:hover{ border-color:var(--line2); transform:translateY(-2px); box-shadow:0 10px 26px -12px rgba(255,255,255,0.14); }
+  .admin-ticket-row .fc-ava{ flex-shrink:0; }
+  .at-cat{ flex-shrink:0; font-family:'Space Mono',monospace; font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--dim); background:var(--black2); border:1px solid var(--line); border-radius:6px; padding:4px 9px; }
+  /* Verified badge */
+  .vbadge{ display:inline-flex; align-items:center; justify-content:center; width:1.05em; height:1.05em; vertical-align:-0.14em; margin-left:5px; flex-shrink:0; }
+  .vbadge svg{ width:100%; height:100%; display:block; filter:drop-shadow(0 1px 4px rgba(45,136,255,0.45)); }
+  .profile-name .vbadge{ width:0.72em; height:0.72em; margin-left:8px; vertical-align:0.02em; }
   /* ---------- TOASTS / CONFIRM ---------- */
   #toasts{ position:fixed; bottom:24px; right:24px; z-index:1000002; display:flex; flex-direction:column; gap:10px; pointer-events:none; }
   .toast{ background:var(--panel2); border:1px solid var(--line2); border-radius:10px; color:var(--white); font-size:13px; padding:14px 18px; min-width:220px; max-width:340px; box-shadow:0 16px 40px rgba(0,0,0,0.5); opacity:0; transform:translateY(12px) scale(.97); transition:all .38s var(--spring); }
@@ -1084,12 +1033,61 @@
   .fx-particle{ position:fixed; border-radius:50%; z-index:99998; pointer-events:none; animation:fxParticleBurst cubic-bezier(.16,.84,.44,1) forwards; } @keyframes fxParticleBurst{ 0%{transform:translate(0,0) scale(1);opacity:1;} 100%{transform:translate(var(--p-x,0),var(--p-y,0)) scale(0);opacity:0;} }
   .fx-score-pulse{animation:fxScorePulse 1s var(--ease);} @keyframes fxScorePulse{ 0%{text-shadow:none;transform:scale(1);} 30%{text-shadow:0 0 20px #fff, 0 0 44px #fff, 0 0 70px rgba(255,214,120,0.85);transform:scale(1.35);} 100%{text-shadow:none;transform:scale(1);} }
 
-  @media(max-width:760px){ header.top{justify-content:center;} .nav-area{flex-wrap:wrap;justify-content:center;} nav.tabs{flex-wrap:wrap;justify-content:center;} .profile-info-bar{padding:0 20px 24px;} .home-search button{padding:14px 18px;} }
+  /* ---------- LOCALIZATION-STABLE LAYOUT ----------
+     Text length varies between languages: every label lives in a flexible
+     container that ellipsizes or wraps instead of pushing the layout around. */
+  .tab-btn, .chip, .sf-seg-opt, .spin-mode-opt, .search-tab, .support-cat, .tk-status-opt{ white-space:nowrap; }
+  .dash-sec-title, .set-title, .chart-title, .spin-title, .modal-title{ overflow-wrap:anywhere; min-width:0; }
+  .diff-dd-btn span{ max-width:52vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .save-btn, .modal-btn, .google-btn{ min-width:0; overflow-wrap:anywhere; }
+  .feed-controls .chips{ min-width:0; }
+  .level-reviews-head{ row-gap:10px; }
+  .level-reviews-head .archive-sort{ max-width:180px; }
+
+  /* ---------- MOBILE ADAPTATION ---------- */
+  @media(max-width:760px){
+    header.top{justify-content:center;} .nav-area{flex-wrap:wrap;justify-content:center;} nav.tabs{flex-wrap:wrap;justify-content:center;}
+    .profile-info-bar{padding:0 20px 24px;} .home-search button{padding:14px 18px;}
+    .shell{ padding:24px 18px 90px; }
+    .level-hero, .level-block{ padding:28px 20px; }
+    .level-banner{ width:100%; opacity:0.3; }
+    .home-search{ padding:6px 6px 6px 14px; } .home-search input{ font-size:15px; }
+    .modal-box{ padding:30px 20px 22px; }
+    .detail-box, .ticket-box{ padding:26px 18px 18px; }
+    .wt-player-box{ padding:52px 10px 10px; }
+    .final-score-row{ padding:26px 0; gap:18px; }
+    .stats-hero{ gap:10px; } .stat-card{ padding:20px 16px; }
+    .charts-grid{ gap:12px; }
+    .admin-wt-card{ flex-direction:column; } .admin-wt-thumb{ width:100%; }
+    .admin-wt-actions{ flex-direction:row; }
+    .support-card{ padding:20px 16px; }
+    .ticket-reply-row{ flex-direction:column; align-items:stretch; }
+    .dash-community{ gap:12px; }
+    .sr-hero{ height:190px; }
+    .diff-tray{ flex-wrap:wrap; justify-content:center; max-width:92vw; }
+    .fc-time{ font-size:10px; }
+    footer{ padding-bottom:14px; }
+  }
+  @media(max-width:480px){
+    .shell{ padding:18px 12px 80px; }
+    .level-name{ font-size:clamp(28px,9vw,40px); }
+    .tab-btn{ padding:9px 12px; font-size:11px; }
+    .rank-row{ grid-auto-columns:200px; }
+    .bar-icon{ flex:0 0 60px; } .bar-icon img{ width:40px; height:40px; }
+    .bar-mid{ padding:14px 14px; } .bar-title{ font-size:17px; }
+    .profile-banner{ height:140px; }
+    .profile-avatar-wrap{ width:92px; height:92px; }
+    .toast{ max-width:calc(100vw - 32px); min-width:0; }
+    #toasts{ right:16px; left:16px; bottom:16px; align-items:stretch; }
+  }
+  /* Prevent any accidental horizontal overflow on small screens. */
+  @media(max-width:760px){ body{ overflow-x:hidden; } .shell{ max-width:100vw; } }
 </style>
 </head>
 <body>
 
 <div id="global-loader">
+  <img class="loader-logo" src="/logo.png" alt="" width="72" height="72">
   <div class="loader-brand">GD<span>/</span>REVIEW</div>
   <div class="loader-progress"></div>
 </div>
@@ -1098,6 +1096,7 @@
   <canvas id="stars-canvas"></canvas>
   <div class="auth-box" id="auth-box">
     <button class="modal-close" id="auth-close" aria-label="Close">&times;</button>
+    <img class="auth-logo" src="/logo.png" alt="" width="58" height="58">
     <div class="brand">GD<span>/</span>REVIEW</div>
     <div class="auth-sub" id="auth-sub" data-i18n="authTagline">Rate. Review. Share.</div>
 
@@ -1171,7 +1170,7 @@
   <div class="shell">
     <header class="top">
       <div class="brand-area">
-        <button class="brand" id="brand-home" aria-label="Go to homepage">GD<span>/</span>REVIEW</button>
+        <button class="brand" id="brand-home" aria-label="Go to homepage"><img class="brand-logo" src="/logo.png" alt="" width="34" height="34"><span class="brand-text">GD<span>/</span>REVIEW</span></button>
       </div>
       <div class="nav-area">
         <nav class="tabs">
@@ -1249,8 +1248,10 @@
 
     <section class="screen" id="screen-level">
       <button class="back-btn" id="level-back">← <span data-i18n="backBtn">Back</span></button>
-      <div class="level-hero" id="lvl-hero"></div>
-      <div class="lvl-walkthrough" id="lvl-walkthrough" hidden></div>
+      <div class="level-hero" id="lvl-hero">
+        <button class="wt-icon-btn" id="lvl-wt-play" hidden aria-label="Watch Walkthrough" title="Watch Walkthrough"></button>
+        <div id="lvl-hero-body"></div>
+      </div>
       <div class="level-stats-grid">
         <div class="level-avg-card">
           <div class="lvl-avg-num" id="lvl-avg">–</div>
@@ -1434,7 +1435,20 @@
     </section>
 
     <section class="screen" id="screen-admin">
-      <div class="profile-section-divider" data-i18n="adminQueueTitle">Walkthrough Submissions</div>
+      <div class="profile-section-divider" data-i18n="adminTicketsTitle">Support Tickets</div>
+      <div class="admin-ticket-controls">
+        <div class="chips" id="at-status-chips"></div>
+        <input type="text" id="at-search" class="modal-input" style="max-width:260px;margin:0;" data-i18n-ph="adminTicketSearchPh">
+      </div>
+      <div id="admin-tickets"></div>
+      <div class="profile-section-divider" style="margin-top:34px;" data-i18n="adminVerifyTitle">Verified Users</div>
+      <div class="modal-text" style="margin-bottom:14px;" data-i18n="adminVerifySub">Grant or remove the blue verification badge. The badge appears everywhere the username is shown.</div>
+      <div class="admin-fw-add">
+        <input type="text" id="verify-input" class="modal-input" maxlength="20" data-i18n-ph="adminVerifyPh">
+        <button class="save-btn small" id="verify-grant-btn" data-i18n="adminVerifyGrant">Verify</button>
+      </div>
+      <div class="admin-fw-list" id="verified-list"></div>
+      <div class="profile-section-divider" style="margin-top:34px;" data-i18n="adminQueueTitle">Walkthrough Submissions</div>
       <div id="admin-queue-content"></div>
       <div class="profile-section-divider" style="margin-top:34px;" data-i18n="adminFwTitle">Forbidden Words</div>
       <div class="modal-text" style="margin-bottom:14px;" data-i18n="adminFwSub">Blacklisted words are blocked in reviews, bios and usernames — on top of AI moderation. The built-in list already covers common slurs; add site-specific words here.</div>
@@ -1512,13 +1526,52 @@
       </div>
     </section>
 
+    <section class="screen" id="screen-support">
+      <button class="back-btn" id="support-back">← <span data-i18n="backBtn">Back</span></button>
+      <div class="support-head">
+        <div class="spin-eyebrow" data-i18n="supportEyebrow">Support Center</div>
+        <h2 class="spin-title" data-i18n="supportTitle">How can we help?</h2>
+        <div class="spin-sub" data-i18n="supportSub">Report bugs, account problems or request verification — we reply right here.</div>
+      </div>
+      <div class="support-grid">
+        <div class="support-card">
+          <div class="set-title" data-i18n="supportNewTicket">New Request</div>
+          <div class="set-sub" data-i18n="supportNewSub">Describe the problem — the more detail, the faster we can help.</div>
+          <label class="modal-input-label" data-i18n="supportCategory">Category</label>
+          <div class="support-cats" id="support-cats"></div>
+          <label class="modal-input-label" data-i18n="supportSubject">Subject</label>
+          <div class="limited-field">
+            <input type="text" id="ticket-subject" class="modal-input" maxlength="120" aria-describedby="ticket-subject-count">
+            <span class="char-count" id="ticket-subject-count" aria-live="polite">0 / 120</span>
+          </div>
+          <label class="modal-input-label" data-i18n="supportMessage">Message</label>
+          <div class="limited-field">
+            <textarea id="ticket-message" class="support-textarea" minlength="10" maxlength="3000" aria-describedby="ticket-message-count"></textarea>
+            <span class="char-count" id="ticket-message-count" aria-live="polite">0 / 3000</span>
+          </div>
+          <label class="modal-input-label" data-i18n="supportExtra">Additional information (optional)</label>
+          <input type="text" id="ticket-extra" class="modal-input" maxlength="1000" data-i18n-ph="supportExtraPh">
+          <button class="save-btn" id="ticket-submit" style="width:100%;" data-i18n="supportSubmit">Send Request</button>
+        </div>
+        <div class="support-card">
+          <div class="set-title" data-i18n="supportMyTickets">My Requests</div>
+          <div class="set-sub" data-i18n="supportMySub">Your open and past support requests. Click one to read the reply.</div>
+          <div id="my-tickets"></div>
+        </div>
+      </div>
+    </section>
+
     <footer>
       <div class="site-copyright">© <span id="footer-year"></span> GD Review — <span data-i18n="madeBy">made by</span> <strong>Crxz</strong></div>
+      <button class="footer-support-link" id="footer-support" data-i18n="footerSupport">Report a problem</button>
     </footer>
   </div>
 </div>
 
-<div id="cursor-dot"></div>
+<div id="cursor-gd" aria-hidden="true">
+  <svg class="cur-arrow" viewBox="0 0 30 30"><path d="M6 3 L24 15.5 L15.6 17.2 L11.4 25.5 Z" fill="#f4f4f4" stroke="#0a0a0a" stroke-width="1.6" stroke-linejoin="miter"/></svg>
+  <svg class="cur-ibeam" viewBox="0 0 30 30"><path d="M11 4h8M11 26h8M15 4v22" fill="none" stroke="#f4f4f4" stroke-width="2.4" stroke-linecap="square"/></svg>
+</div>
 <div id="cursor-ring"></div>
 <div id="toasts"></div>
 
@@ -1586,6 +1639,27 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="ticket-modal">
+  <div class="modal-box modal-box-tall ticket-box">
+    <button class="modal-close" id="ticket-close" aria-label="Close">&times;</button>
+    <div class="ticket-head">
+      <div class="ticket-ref" id="tk-ref"></div>
+      <div class="ticket-status-chip" id="tk-status"></div>
+    </div>
+    <div class="detail-title" id="tk-subject" style="font-size:20px;margin-bottom:4px;"></div>
+    <div class="ticket-meta" id="tk-meta"></div>
+    <div class="modal-scroll-body ticket-thread" id="tk-thread"></div>
+    <div class="ticket-admin-tools" id="tk-admin-tools" hidden>
+      <div class="ticket-status-row" id="tk-status-row"></div>
+      <button class="modal-btn ghost" id="tk-verify-btn" hidden></button>
+    </div>
+    <div class="ticket-reply-row">
+      <textarea id="tk-reply" class="support-textarea" maxlength="3000" rows="2" data-i18n-ph="supportReplyPh"></textarea>
+      <button class="save-btn small" id="tk-reply-btn" data-i18n="supportReply">Reply</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="wt-player-modal">
   <div class="modal-box wt-player-box">
     <button class="modal-close" id="wt-player-close" aria-label="Close">&times;</button>
@@ -1623,12 +1697,18 @@ function refreshTextCounters(){
   updateTextCounter($('review-title'), $('review-title-count'), 0, TEXT_LIMITS.reviewTitle);
   updateTextCounter($('review-text'), $('review-text-count'), TEXT_LIMITS.reviewMin, TEXT_LIMITS.reviewMax);
   updateTextCounter($('inp-set-desc'), $('profile-desc-count'), 0, TEXT_LIMITS.description);
+  updateTextCounter($('ticket-subject'), $('ticket-subject-count'), 3, 120);
+  updateTextCounter($('ticket-message'), $('ticket-message-count'), 10, 3000);
 }
-['review-title','review-text','inp-set-desc'].forEach(function(id){ const el=$(id); if(el) el.addEventListener('input', refreshTextCounters); });
+['review-title','review-text','inp-set-desc','ticket-subject','ticket-message'].forEach(function(id){ const el=$(id); if(el) el.addEventListener('input', refreshTextCounters); });
 refreshTextCounters();
 const HEART = '<svg viewBox="0 0 24 24" width="14" height="14"><path d="M12 21s-7.6-4.7-10.1-9.3C.3 8.6 2.3 5 5.7 5c2 0 3.4 1.1 4.3 2.6h4C14.9 6.1 16.3 5 18.3 5c3.4 0 5.4 3.6 3.8 6.7C19.6 16.3 12 21 12 21z" fill="currentColor"/></svg>';
 /* Monochrome YouTube glyph — inherits currentColor from the button. */
 const YT_ICON = '<svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4L15.8 12z"/></svg>';
+/* Blue verification badge — shown everywhere a username appears. */
+const VBADGE = '<span class="vbadge" title="__VT__"><svg viewBox="0 0 24 24" aria-label="__VT__" role="img"><path fill="#2d88ff" d="M12 1.5 15 4l3.9-.4 1 3.8 3.3 2.1-1.7 3.5 1.7 3.5-3.3 2.1-1 3.8L15 22l-3 2.5L9 22l-3.9.4-1-3.8L.8 16.5 2.5 13 .8 9.5 4.1 7.4l1-3.8L9 4z"/><path fill="#fff" d="m10.6 15.9-3-3 1.4-1.4 1.6 1.6 4.4-4.4 1.4 1.4z"/></svg></span>';
+function vBadge(flag){ return flag ? VBADGE.split('__VT__').join(escapeHTML(t('verifiedBadgeTitle'))) : ''; }
+function userNameHTML(name, verified){ return escapeHTML(name || '') + vBadge(verified); }
 function scoreColors(score){ if(score >= 8.5) return {color:'#ffffff', glow:'rgba(255,255,255,0.5)'}; if(score >= 7) return {color:'#e4e4e4', glow:'rgba(255,255,255,0.4)'}; if(score >= 5) return {color:'#b8b8b8', glow:'rgba(255,255,255,0.25)'}; if(score >= 3) return {color:'#8a8a8a', glow:'rgba(255,255,255,0.12)'}; return {color:'#5a5a5a', glow:'rgba(255,255,255,0.05)'}; }
 
 /* ================= I18N ================= */
@@ -1642,7 +1722,7 @@ const i18n = {
     forgotTitle:'Password recovery', forgotText:'Enter your account email and we will send you a reset code.', btnSendCode:'Send Code', backLogin:'Back to login',
     resetTitle:'New password', btnResetTxt:'Reset Password', resetOk:'Password changed! You can log in now.', codeSent:'Code sent to your email',
     vEmail:'Enter a valid email', vPassLen:'At least 8 characters', vPassMatch:'Passwords do not match', vUserLen:'3–20 characters (letters, digits, _ - .)', vRequired:'Required field', vCode:'Enter the 6-digit code', vTitleReq:'Add a title for your review',
-    searchPlaceholder:'Search levels by name or ID…', searchBtn:'Search',
+    searchPlaceholder:'Search levels or profiles…', searchBtn:'Search',
     dashStatsTitle:'Global Statistics', statTotalReviews:'Total reviews & ratings', statTotalUsers:'Registered users',
     dashLbTitle:'Top Reviewers', dashLbSub:'Top 10 by total likes received', lbEmpty:'No reviewers yet',
     dashRankTitle:'Level Rankings', diffAll:'All Difficulties', diffNA:'NA', rankEmpty:'No levels here yet', rankReviews:'reviews',
@@ -1687,16 +1767,6 @@ const i18n = {
     changeAvatar:'Change Avatar', changeBanner:'Change Banner',
     statsTitle:'Statistics', statReviews:'Written Reviews', statRatings:'Levels Rated', statAvg:'Average Score', statLikes:'Likes Received', statSince:'Member Since',
     chartCat:'Category Profile', chartCatSub:'Average score for each rating axis', chartDist:'Score Distribution', chartDistSub:'Number of reviews in each score range',
-    achBoardTitle:'Achievements Board', achBoardSub:'Milestones earned across GD Review', achDone:'Unlocked',
-    achShowcaseTitle:'Achievement Showcase', achShowcaseSub:'Trophies earned on GD Review', achShowcaseEmpty:'No trophies on display yet', achOpenBoard:'Open Board', achCloseBoard:'Close Board', achProgressTitle:'Full Progress', achPublicPreview:'Public showcase — exactly how others see it', achUnlockedCount:'{n} of {total} unlocked', achTierCommon:'Common', achTierUncommon:'Uncommon', achTierRare:'Rare', achTierEpic:'Epic', achTierLegendary:'Legendary',
-    achRate10:'First Steps', achRate10D:'Rate 10 levels', achRate50:'Level Judge', achRate50D:'Rate 50 levels', achRate150:'Score Machine', achRate150D:'Rate 150 levels', achRate400:'The Arbiter', achRate400D:'Rate 400 levels',
-    achRateDays30:'Consistent Critic', achRateDays30D:'Rate levels on 30 different days',
-    achRev10:'Seasoned Critic', achRev10D:'Write 10 reviews', achRev50:'Archive Builder', achRev50D:'Write 50 reviews', achRev100:'Century Critic', achRev100D:'Write 100 reviews', achRev250:'Grand Archivist', achRev250D:'Write 250 reviews',
-    achLikes25:'Appreciated', achLikes25D:'Receive 25 likes on your reviews', achLikes100:'Crowd Favorite', achLikes100D:'Receive 100 likes on your reviews', achLikes500:'Community Legend', achLikes500D:'Receive 500 likes on your reviews',
-    achHelpful:'Helpful Review', achHelpfulD:'Collect 10 likes on a single review', achFeatured:'Featured Review', achFeaturedD:'Collect 25 likes on a single review', achBest50:'Exceptional Review', achBest50D:'Collect 50 likes on a single review', achTrusted:'Trusted Contributor', achTrustedD:'Have 10 reviews with 5+ likes each',
-    achStarred:'Star Collector', achStarredD:'Review 25 star-rated levels', achDiffs8:'Cartographer', achDiffs8D:'Review levels of 8 different difficulties', achDemon25:'Demon Hunter', achDemon25D:'Review 25 demon levels', achExtreme5:'Apex Critic', achExtreme5D:'Review 5 extreme demons',
-    achEssay:'Essayist', achEssayD:'Write 10 in-depth reviews of 300+ characters', achSpecialist:'Category Specialist', achSpecialistD:'Write 25 reviews within a single difficulty',
-    achCatRating:'Rating Path', achCatReviews:'Review Path', achCatCommunity:'Community', achCatHelpful:'Helpful Reviews', achCatExplorer:'Exploration',
     archiveTitle:'My Reviews', archiveTheirTitle:'Reviews by {user}', archiveSearch:'Search by level name, title or ID…',
     emptyArchiveTitle:'No reviews yet', emptyArchiveSub:'Find a level in the Create tab and publish your first review.', emptyTheirArchive:'This user has no reviews yet.',
     emptyStatsTitle:'Nothing to analyze', emptyStatsSub:'Publish at least one review to see statistics.',
@@ -1709,6 +1779,23 @@ const i18n = {
     setPass:'Password', setPassSub:'At least 8 characters.', newPass:'New password', btnUpdatePass:'Update Password', passChanged:'Password updated',
     btnLogout:'Log Out', logoutText:'Are you sure you want to log out?',
     setDanger:'Danger Zone', setDangerSub:'Deleting your account removes all your reviews permanently.', btnDeleteAcc:'Delete Account', deleteTitle:'Delete account?', deleteText:'This action is permanent. All your reviews will be removed. Enter your password to confirm.', accDeleted:'Account deleted',
+    footerSupport:'Report a problem',
+    supportEyebrow:'Support Center', supportTitle:'How can we help?', supportSub:'Report bugs, account problems or request verification — we reply right here.',
+    supportNewTicket:'New Request', supportNewSub:'Describe the problem — the more detail, the faster we can help.',
+    supportCategory:'Category', supportSubject:'Subject', supportMessage:'Message', supportExtra:'Additional information (optional)', supportExtraPh:'Device, browser, level ID — anything that helps',
+    supportSubmit:'Send Request', supportSent:'Request sent! We will reply here in Support.',
+    supportMyTickets:'My Requests', supportMySub:'Your open and past support requests. Click one to read the reply.',
+    supportEmpty:'No requests yet', supportLoginFirst:'Log in so we can link the request to your account.',
+    supportReply:'Reply', supportReplyPh:'Write a reply…', supportReplySent:'Reply sent',
+    catBug:'Bug report', catAccount:'Account problem', catVerification:'Verification request', catOther:'Other',
+    tsOpen:'Open', tsInProgress:'In Progress', tsCompleted:'Completed',
+    ticketReplies:'{n} replies', ticketBy:'by', ticketOpened:'Opened',
+    vSubjectLen:'Subject must be 3–120 characters', vMessageLen:'Message must be at least 10 characters',
+    err_ticket_subject_invalid:'Subject must be 3–120 characters', err_ticket_message_invalid:'Message must be 10–3000 characters',
+    adminTicketsTitle:'Support Tickets', adminTicketSearchPh:'Search by ticket, subject or user…', adminTicketsEmpty:'No tickets here', adminTicketStatusChanged:'Ticket status updated',
+    atAll:'All', adminVerifyTitle:'Verified Users', adminVerifySub:'Grant or remove the blue verification badge. The badge appears everywhere the username is shown.',
+    adminVerifyPh:'Username…', adminVerifyGrant:'Verify', adminVerifyGranted:'Verification granted', adminVerifyRevoked:'Verification removed', adminVerifyEmpty:'No verified users yet',
+    adminVerifyGrantBtn:'Grant verification', adminVerifyRevokeBtn:'Remove verification', verifiedBadgeTitle:'Verified',
     detailSummary:'Review', detailNoSummary:'No written summary provided.', madeBy:'made by', ok:'OK',
     reviewRules:'Review rules: no abusive insults, no advertising, no external links. Every submission is checked automatically before it is published.',
     modRejectedTitle:'Rejected by moderation', modRetryHint:'Edit the content and try publishing again.',
@@ -1729,7 +1816,7 @@ const i18n = {
     forgotTitle:'Восстановление пароля', forgotText:'Введите почту аккаунта — мы пришлём код для сброса.', btnSendCode:'Выслать код', backLogin:'Вернуться ко входу',
     resetTitle:'Новый пароль', btnResetTxt:'Сбросить пароль', resetOk:'Пароль изменён! Теперь можно войти.', codeSent:'Код отправлен на почту',
     vEmail:'Введите корректный email', vPassLen:'Минимум 8 символов', vPassMatch:'Пароли не совпадают', vUserLen:'3–20 символов (буквы, цифры, _ - .)', vRequired:'Обязательное поле', vCode:'Введите 6-значный код', vTitleReq:'Добавьте заголовок рецензии',
-    searchPlaceholder:'Поиск уровней по названию или ID…', searchBtn:'Поиск',
+    searchPlaceholder:'Поиск уровней или профилей…', searchBtn:'Поиск',
     dashStatsTitle:'Глобальная статистика', statTotalReviews:'Всего рецензий и оценок', statTotalUsers:'Зарегистрировано пользователей',
     dashLbTitle:'Топ рецензентов', dashLbSub:'Топ-10 по полученным лайкам', lbEmpty:'Пока нет рецензентов',
     dashRankTitle:'Рейтинги уровней', diffAll:'Все сложности', diffNA:'NA', rankEmpty:'Здесь пока пусто', rankReviews:'рец.',
@@ -1774,16 +1861,6 @@ const i18n = {
     changeAvatar:'Сменить аватар', changeBanner:'Сменить баннер',
     statsTitle:'Статистика', statReviews:'Написано рецензий', statRatings:'Оценено уровней', statAvg:'Средний балл', statLikes:'Получено лайков', statSince:'На сайте с',
     chartCat:'Профиль по категориям', chartCatSub:'Средний балл по каждой оси оценки', chartDist:'Распределение оценок', chartDistSub:'Сколько рецензий в каждом диапазоне',
-    achBoardTitle:'Доска достижений', achBoardSub:'Ваши вехи на GD Review', achDone:'Получено',
-    achShowcaseTitle:'Витрина достижений', achShowcaseSub:'Трофеи, заработанные на GD Review', achShowcaseEmpty:'Пока нет трофеев на витрине', achOpenBoard:'Открыть доску', achCloseBoard:'Закрыть доску', achProgressTitle:'Полный прогресс', achPublicPreview:'Публичная витрина — именно так её видят другие', achUnlockedCount:'Получено: {n} из {total}', achTierCommon:'Обычная', achTierUncommon:'Необычная', achTierRare:'Редкая', achTierEpic:'Эпическая', achTierLegendary:'Легендарная',
-    achRate10:'Первые шаги', achRate10D:'Оцените 10 уровней', achRate50:'Судья уровней', achRate50D:'Оцените 50 уровней', achRate150:'Машина оценок', achRate150D:'Оцените 150 уровней', achRate400:'Арбитр', achRate400D:'Оцените 400 уровней',
-    achRateDays30:'Постоянный критик', achRateDays30D:'Оценивайте уровни в 30 разных дней',
-    achRev10:'Опытный критик', achRev10D:'Напишите 10 рецензий', achRev50:'Строитель архива', achRev50D:'Напишите 50 рецензий', achRev100:'Критик столетия', achRev100D:'Напишите 100 рецензий', achRev250:'Великий архивариус', achRev250D:'Напишите 250 рецензий',
-    achLikes25:'Признание', achLikes25D:'Получите 25 лайков на рецензиях', achLikes100:'Любимец публики', achLikes100D:'Получите 100 лайков на рецензиях', achLikes500:'Легенда сообщества', achLikes500D:'Получите 500 лайков на рецензиях',
-    achHelpful:'Полезная рецензия', achHelpfulD:'Соберите 10 лайков на одной рецензии', achFeatured:'Звёздная рецензия', achFeaturedD:'Соберите 25 лайков на одной рецензии', achBest50:'Выдающаяся рецензия', achBest50D:'Соберите 50 лайков на одной рецензии', achTrusted:'Надёжный автор', achTrustedD:'10 рецензий с 5+ лайками каждая',
-    achStarred:'Коллекционер звёзд', achStarredD:'Отрецензируйте 25 уровней со звёздами', achDiffs8:'Картограф', achDiffs8D:'Отрецензируйте уровни 8 разных сложностей', achDemon25:'Охотник на демонов', achDemon25D:'Отрецензируйте 25 демон-уровней', achExtreme5:'Вершина критики', achExtreme5D:'Отрецензируйте 5 экстрим-демонов',
-    achEssay:'Эссеист', achEssayD:'Напишите 10 подробных рецензий от 300 символов', achSpecialist:'Специалист категории', achSpecialistD:'Напишите 25 рецензий в одной сложности',
-    achCatRating:'Путь оценщика', achCatReviews:'Путь рецензента', achCatCommunity:'Сообщество', achCatHelpful:'Полезные рецензии', achCatExplorer:'Исследование',
     archiveTitle:'Мои рецензии', archiveTheirTitle:'Рецензии {user}', archiveSearch:'Поиск по названию, заголовку или ID…',
     emptyArchiveTitle:'Пока нет рецензий', emptyArchiveSub:'Найдите уровень во вкладке «Создать» и опубликуйте первую.', emptyTheirArchive:'У этого пользователя пока нет рецензий.',
     emptyStatsTitle:'Нечего анализировать', emptyStatsSub:'Опубликуйте хотя бы одну рецензию, чтобы увидеть статистику.',
@@ -1796,6 +1873,23 @@ const i18n = {
     setPass:'Пароль', setPassSub:'Минимум 8 символов.', newPass:'Новый пароль', btnUpdatePass:'Обновить пароль', passChanged:'Пароль обновлён',
     btnLogout:'Выйти', logoutText:'Вы уверены, что хотите выйти?',
     setDanger:'Опасная зона', setDangerSub:'Удаление аккаунта навсегда сотрёт все ваши рецензии.', btnDeleteAcc:'Удалить аккаунт', deleteTitle:'Удалить аккаунт?', deleteText:'Действие необратимо. Все рецензии будут удалены. Введите пароль для подтверждения.', accDeleted:'Аккаунт удалён',
+    footerSupport:'Сообщить о проблеме',
+    supportEyebrow:'Центр поддержки', supportTitle:'Чем помочь?', supportSub:'Сообщайте о багах, проблемах с аккаунтом или запросите верификацию — мы ответим прямо здесь.',
+    supportNewTicket:'Новое обращение', supportNewSub:'Опишите проблему — чем больше деталей, тем быстрее мы поможем.',
+    supportCategory:'Категория', supportSubject:'Тема', supportMessage:'Сообщение', supportExtra:'Дополнительная информация (необязательно)', supportExtraPh:'Устройство, браузер, ID уровня — всё, что поможет',
+    supportSubmit:'Отправить', supportSent:'Обращение отправлено! Ответ появится здесь, в Поддержке.',
+    supportMyTickets:'Мои обращения', supportMySub:'Ваши открытые и прошлые обращения. Нажмите, чтобы прочитать ответ.',
+    supportEmpty:'Обращений пока нет', supportLoginFirst:'Войдите, чтобы обращение было привязано к вашему аккаунту.',
+    supportReply:'Ответить', supportReplyPh:'Напишите ответ…', supportReplySent:'Ответ отправлен',
+    catBug:'Сообщение об ошибке', catAccount:'Проблема с аккаунтом', catVerification:'Запрос верификации', catOther:'Другое',
+    tsOpen:'Открыт', tsInProgress:'В работе', tsCompleted:'Завершён',
+    ticketReplies:'{n} ответов', ticketBy:'от', ticketOpened:'Открыт',
+    vSubjectLen:'Тема должна быть от 3 до 120 символов', vMessageLen:'Сообщение должно быть не короче 10 символов',
+    err_ticket_subject_invalid:'Тема должна быть от 3 до 120 символов', err_ticket_message_invalid:'Сообщение должно быть от 10 до 3000 символов',
+    adminTicketsTitle:'Обращения в поддержку', adminTicketSearchPh:'Поиск по номеру, теме или пользователю…', adminTicketsEmpty:'Обращений нет', adminTicketStatusChanged:'Статус обращения обновлён',
+    atAll:'Все', adminVerifyTitle:'Верифицированные пользователи', adminVerifySub:'Выдавайте или снимайте синюю галочку. Значок появляется везде, где показывается имя пользователя.',
+    adminVerifyPh:'Имя пользователя…', adminVerifyGrant:'Верифицировать', adminVerifyGranted:'Верификация выдана', adminVerifyRevoked:'Верификация снята', adminVerifyEmpty:'Пока нет верифицированных пользователей',
+    adminVerifyGrantBtn:'Выдать верификацию', adminVerifyRevokeBtn:'Снять верификацию', verifiedBadgeTitle:'Верифицирован',
     detailSummary:'Рецензия', detailNoSummary:'Без текстового описания.', madeBy:'сделано', ok:'ОК',
     reviewRules:'Правила рецензий: без оскорблений, без рекламы, без внешних ссылок. Каждая публикация автоматически проверяется перед размещением.',
     modRejectedTitle:'Отклонено модерацией', modRetryHint:'Отредактируйте контент и попробуйте опубликовать снова.',
@@ -1906,30 +2000,70 @@ function injectEyes(){
 }
 
 /* ================= CURSOR ================= */
+/* GD-inspired custom cursor: a sharp monochrome arrow with hover, press and
+   text-editing states. Only initialised on hover-capable (non-touch) devices —
+   touch users keep native behavior and pay zero cost. */
 (function(){
-  const dot = $('cursor-dot'), ring = $('cursor-ring'), glow = $('bg-glow');
-  let mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my;
-  window.addEventListener('mousemove', function(e){ mx=e.clientX; my=e.clientY; dot.style.left=mx+'px'; dot.style.top=my+'px'; if(glow) glow.style.background = 'radial-gradient(600px circle at '+mx+'px '+my+'px, rgba(255,255,255,0.06), transparent 70%)'; });
-  (function animateRing(){ rx += (mx-rx)*0.18; ry += (my-ry)*0.18; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animateRing); })();
-  const hoverSel = 'button, input, textarea, select, a, .tab-btn, .delete-btn, .seg, .review-bar, .modal-close, .audio-waveform, .eye-btn, .chip, .like-btn, .feed-card, .level-card, .lang-opt, .back-btn, .fc-level, .fc-user, .fc-ava, .user-menu-btn, .user-dd-item, .frame-option, .discover-banner, .sf-diff-opt, .sf-seg-opt, .sf-switch, .spin-btn, .spin-mode-opt, .cw-item, .cw-result';
-  document.addEventListener('mouseover', function(e){ if(e.target.closest(hoverSel)) document.body.classList.add('cursor-hover'); });
-  document.addEventListener('mouseout', function(e){ if(e.target.closest(hoverSel)) document.body.classList.remove('cursor-hover'); });
+  if(matchMedia('(hover: none)').matches) return;
+  const cur = $('cursor-gd'), ring = $('cursor-ring'), glow = $('bg-glow');
+  let mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my, glowQueued = false;
+  window.addEventListener('mousemove', function(e){
+    mx = e.clientX; my = e.clientY;
+    cur.style.transform = 'translate3d('+(mx-6)+'px,'+(my-4)+'px,0)';
+    /* Glow repaint is rAF-throttled: one background update per frame max. */
+    if(glow && !glowQueued){ glowQueued = true; requestAnimationFrame(function(){ glowQueued = false; glow.style.background = 'radial-gradient(600px circle at '+mx+'px '+my+'px, rgba(255,255,255,0.06), transparent 70%)'; }); }
+  }, { passive:true });
+  (function animateRing(){ rx += (mx-rx)*0.18; ry += (my-ry)*0.18; ring.style.left = rx+'px'; ring.style.top = ry+'px'; requestAnimationFrame(animateRing); })();
+  const hoverSel = 'button, a, select, .tab-btn, .delete-btn, .seg, .review-bar, .modal-close, .eye-btn, .chip, .like-btn, .feed-card, .level-card, .rank-card, .lb-row, .user-result-card, .lang-opt, .back-btn, .fc-level, .fc-user, .fc-ava, .user-menu-btn, .user-dd-item, .frame-option, .discover-banner, .sf-diff-opt, .sf-seg-opt, .sf-switch, .spin-btn, .spin-mode-opt, .cw-item, .cw-result, .diff-opt, .ticket-row, .admin-ticket-row, .support-cat, .tk-status-opt, .footer-support-link, .wt-icon-btn';
+  const textSel = 'input[type="text"], input[type="email"], input[type="password"], input[type="search"], input:not([type]), textarea';
+  document.addEventListener('mouseover', function(e){
+    if(e.target.closest(textSel)){ document.body.classList.add('cursor-text'); document.body.classList.remove('cursor-hover'); return; }
+    if(e.target.closest(hoverSel)) document.body.classList.add('cursor-hover');
+  });
+  document.addEventListener('mouseout', function(e){
+    if(e.target.closest(textSel)) document.body.classList.remove('cursor-text');
+    if(e.target.closest(hoverSel)) document.body.classList.remove('cursor-hover');
+  });
+  document.addEventListener('mousedown', function(){ document.body.classList.add('cursor-down'); });
+  document.addEventListener('mouseup', function(){ document.body.classList.remove('cursor-down'); });
+  window.addEventListener('blur', function(){ document.body.classList.remove('cursor-down'); });
 })();
 
 /* ================= STARFIELD (auth) ================= */
+/* Alive even without input: every star drifts slowly on its own vector and
+   twinkles; depth (z) scales size, speed and mouse parallax so nearer stars
+   move more — a calm, deep space feel. Mouse interaction is preserved. */
 function initStars(){
   const cv = $('stars-canvas'); if(!cv) return;
   const ctx = cv.getContext('2d');
-  let W, H, stars = [], px = 0, py = 0, tx = 0, ty = 0;
-  function resize(){ W = cv.width = innerWidth; H = cv.height = innerHeight; const n = Math.min(240, Math.floor(W*H/8000)); stars = []; for(let i=0;i<n;i++){ stars.push({ x: Math.random()*W, y: Math.random()*H, z: 0.25 + Math.random()*0.75, r: 0.4 + Math.random()*1.3, tw: Math.random()*Math.PI*2 }); } }
+  let W, H, stars = [], px = 0, py = 0, tx = 0, ty = 0, lastTs = 0;
+  function resize(){
+    W = cv.width = innerWidth; H = cv.height = innerHeight;
+    const n = Math.min(240, Math.floor(W*H/8000)); stars = [];
+    for(let i=0;i<n;i++){
+      const z = 0.25 + Math.random()*0.75;
+      const a = Math.random()*Math.PI*2, sp = (2.4 + Math.random()*4.2) * z; /* px per second */
+      stars.push({ x: Math.random()*W, y: Math.random()*H, z: z, r: 0.4 + Math.random()*1.3, tw: Math.random()*Math.PI*2, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp, bob: Math.random()*Math.PI*2 });
+    }
+  }
   resize(); window.addEventListener('resize', resize);
-  window.addEventListener('mousemove', function(e){ tx = (e.clientX/W - 0.5)*2; ty = (e.clientY/H - 0.5)*2; });
+  window.addEventListener('mousemove', function(e){ tx = (e.clientX/W - 0.5)*2; ty = (e.clientY/H - 0.5)*2; }, { passive:true });
   (function loop(ts){
     requestAnimationFrame(loop);
-    if($('auth-overlay').classList.contains('hidden')) return;
+    if($('auth-overlay').classList.contains('hidden')){ lastTs = ts; return; }
+    const dt = Math.min(0.05, (ts - lastTs)/1000 || 0.016); lastTs = ts;
     px += (tx-px)*0.045; py += (ty-py)*0.045;
     ctx.clearRect(0,0,W,H);
-    for(let i=0;i<stars.length;i++){ const s = stars[i]; const a = Math.max(0.04, 0.18 + 0.3*s.z + Math.sin(ts/1500 + s.tw)*0.1); ctx.globalAlpha = a; ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(s.x - px*16*s.z, s.y - py*16*s.z, s.r*s.z + 0.3, 0, 6.3); ctx.fill(); }
+    for(let i=0;i<stars.length;i++){
+      const s = stars[i];
+      /* independent drift + a gentle floating bob, wrapped at the edges */
+      s.x += s.vx*dt; s.y += s.vy*dt + Math.sin(ts/2400 + s.bob)*0.05*s.z;
+      if(s.x < -4) s.x = W+4; else if(s.x > W+4) s.x = -4;
+      if(s.y < -4) s.y = H+4; else if(s.y > H+4) s.y = -4;
+      const a = Math.max(0.04, 0.18 + 0.3*s.z + Math.sin(ts/1500 + s.tw)*0.1);
+      ctx.globalAlpha = a; ctx.fillStyle = '#fff'; ctx.beginPath();
+      ctx.arc(s.x - px*22*s.z, s.y - py*22*s.z, s.r*s.z + 0.3, 0, 6.3); ctx.fill();
+    }
     ctx.globalAlpha = 1;
   })(0);
 }
@@ -1946,7 +2080,7 @@ function mapReview(r){
     finalScore: parseFloat(r.final_score), title: r.title || '', text: r.review_text || '', savedAt: r.saved_at,
     /* Rating-only entries carry no written content (NULLs in the DB). */
     isRatingOnly: !(r.title || r.review_text),
-    username: r.username || '', avatar: r.avatar || '', frame: r.frame || 'frame-default', likes: r.likes || 0, liked: !!r.liked_by_me };
+    username: r.username || '', verified: !!r.user_verified, avatar: r.avatar || '', frame: r.frame || 'frame-default', likes: r.likes || 0, liked: !!r.liked_by_me };
 }
 
 /* ================= ROUTER / HISTORY ================= */
@@ -1954,15 +2088,10 @@ function mapReview(r){
    pushes a hash-based history entry, Back always returns to the previous
    in-site state, and the site is only left when there is genuinely no
    previous entry. */
-const SCREENS = ['home','level','create','profile','settings','admin','spin'];
+const SCREENS = ['home','level','create','profile','settings','admin','spin','support'];
 let currentScreen = 'home', navDepth = 0, transitionBusy = false;
 function applyScreen(name){
   const wasSpin = currentScreen === 'spin';
-  /* Leaving the level page removes any playing inline walkthrough iframe. */
-  if(currentScreen === 'level' && name !== 'level'){
-    const wtBox = $('lvl-walkthrough');
-    if(wtBox && wtBox.querySelector('iframe')){ wtBox.hidden = true; wtBox.innerHTML = ''; }
-  }
   currentScreen = name;
   SCREENS.forEach(function(s){ $('screen-'+s).classList.toggle('active', s===name); });
   qsa('nav.tabs .tab-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.tab===name); });
@@ -2013,7 +2142,8 @@ function renderRoute(st){
       if(currentLevel){ showScreen('create'); return; }
       break;
     case 'settings': showScreen('settings'); fillSettings(); return;
-    case 'admin': showScreen('admin'); loadAdminQueue(); loadForbiddenWords(); return;
+    case 'admin': showScreen('admin'); loadAdminTickets(); loadAdminQueue(); loadForbiddenWords(); loadVerifiedUsers(); return;
+    case 'support': showScreen('support'); initSupportPage(); return;
     case 'spin': showScreen('spin'); return;
   }
   showScreen('home'); ensureDashboard();
@@ -2232,7 +2362,7 @@ function renderReviewCard(r, i, opts){
   const sc = scoreColors(r.finalScore);
   const lvlLine = opts.hideLevel ? '' : '<button class="fc-level" data-level="'+escapeHTML(r.id)+'">'+diffFaceImg(r.difficultyFace)+'<span>'+escapeHTML(r.name || ('#'+r.id))+'</span><span class="fc-level-sub">#'+escapeHTML(r.id)+(r.author?' · by '+escapeHTML(r.author):'')+'</span></button>';
   return '<article class="feed-card" data-detail="'+r.uid+'" style="animation-delay:'+(Math.min(i,12)*0.045)+'s">'
-    + '<div class="fc-head"><img class="fc-ava" data-user="'+escapeHTML(r.username)+'" src="'+escapeHTML(r.avatar || DEFAULT_AVATAR)+'" alt="" loading="lazy"><span class="fc-user" data-user="'+escapeHTML(r.username)+'">'+escapeHTML(r.username)+'</span><span class="fc-time">'+timeAgo(r.savedAt)+'</span></div>'
+    + '<div class="fc-head"><img class="fc-ava" data-user="'+escapeHTML(r.username)+'" src="'+escapeHTML(r.avatar || DEFAULT_AVATAR)+'" alt="" loading="lazy"><span class="fc-user" data-user="'+escapeHTML(r.username)+'">'+userNameHTML(r.username, r.verified)+'</span><span class="fc-time">'+timeAgo(r.savedAt)+'</span></div>'
     + lvlLine
     + (r.title ? '<h3 class="fc-title">'+escapeHTML(r.title)+'</h3>' : '')
     + (r.isRatingOnly
@@ -2307,15 +2437,15 @@ function diffOptionIcon(o){ return o.face ? '<img src="https://gdbrowser.com/ass
    filter, collapses the tray and transforms the button into
    "[icon] Difficulty Name". Clicking outside closes the tray. */
 const DIFF_DD_ARROW = '<svg class="diff-dd-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>';
-function diffTrayOpen(){ return $('diff-tray').classList.contains('open'); }
+function diffTrayOpen(){ return $('diff-inline').classList.contains('open'); }
 function openDiffTray(){
-  $('diff-tray').classList.add('open');
+  $('diff-inline').classList.add('open');
   $('diff-btn').setAttribute('aria-expanded','true');
   /* Stagger the icon entrance every time the tray opens. */
   qsa('.diff-opt').forEach(function(it, i){ it.style.animation = 'none'; void it.offsetWidth; it.style.animation = ''; it.style.animationDelay = (0.03 + i * 0.016) + 's'; });
 }
 function closeDiffTray(){
-  $('diff-tray').classList.remove('open');
+  $('diff-inline').classList.remove('open');
   $('diff-btn').setAttribute('aria-expanded','false');
 }
 function buildDiffTray(){
@@ -2387,7 +2517,7 @@ async function loadCommunity(){
     + '<div class="dash-stat"><div class="dash-stat-num">'+(s.total_users||0)+'</div><div class="dash-stat-label">'+escapeHTML(t('statTotalUsers'))+'</div></div>';
   const lb = r.data.leaderboard || [];
   $('dash-leaderboard').innerHTML = lb.length ? lb.map(function(u,i){
-    return '<div class="lb-row'+(i===0?' lb-gold':i===1?' lb-silver':i===2?' lb-bronze':'')+'" data-user="'+escapeHTML(u.username)+'" style="animation-delay:'+(i*0.04)+'s"><span class="lb-rank'+(i<3?' lb-top':'')+'">'+(i+1)+'</span><img class="fc-ava" src="'+escapeHTML(u.avatar || DEFAULT_AVATAR)+'" alt="" loading="lazy"><span class="lb-name">'+escapeHTML(u.username)+'</span><span class="lb-likes">♥ '+(u.likes_received||0)+'</span><span class="lb-reviews">'+(u.review_count||0)+' '+escapeHTML(t('rankReviews'))+'</span></div>';
+    return '<div class="lb-row'+(i===0?' lb-gold':i===1?' lb-silver':i===2?' lb-bronze':'')+'" data-user="'+escapeHTML(u.username)+'" style="animation-delay:'+(i*0.04)+'s"><span class="lb-rank'+(i<3?' lb-top':'')+'">'+(i+1)+'</span><img class="fc-ava" src="'+escapeHTML(u.avatar || DEFAULT_AVATAR)+'" alt="" loading="lazy"><span class="lb-name">'+userNameHTML(u.username, u.user_verified)+'</span><span class="lb-likes">♥ '+(u.likes_received||0)+'</span><span class="lb-reviews">'+(u.review_count||0)+' '+escapeHTML(t('rankReviews'))+'</span></div>';
   }).join('') : '<div class="rank-empty">'+escapeHTML(t('lbEmpty'))+'</div>';
 }
 
@@ -2437,7 +2567,7 @@ function ensureDashboard(){ if(!dashLoaded) loadDashboard(); }
    both GD levels and user profiles, shown in Levels | Profiles result tabs. */
 let searchTab = 'levels', searchSeq = 0;
 function renderUserResultCard(u, i){
-  return '<div class="user-result-card" data-user="'+escapeHTML(u.username)+'" style="animation-delay:'+(i*0.05)+'s"><img class="urc-ava" src="'+escapeHTML(u.avatar || DEFAULT_AVATAR)+'" alt="" loading="lazy"><span class="urc-name">'+escapeHTML(u.username)+'</span><span class="urc-meta"><span>♥ '+(u.likes_received||0)+'</span><span>'+(u.review_count||0)+' '+escapeHTML(t('rankReviews'))+'</span></span></div>';
+  return '<div class="user-result-card" data-user="'+escapeHTML(u.username)+'" style="animation-delay:'+(i*0.05)+'s"><img class="urc-ava" src="'+escapeHTML(u.avatar || DEFAULT_AVATAR)+'" alt="" loading="lazy"><span class="urc-name">'+userNameHTML(u.username, u.user_verified)+'</span><span class="urc-meta"><span>♥ '+(u.likes_received||0)+'</span><span>'+(u.review_count||0)+' '+escapeHTML(t('rankReviews'))+'</span></span></div>';
 }
 function renderSearchResults(q, levels, users){
   const box = $('home-search-results');
@@ -2506,7 +2636,8 @@ async function openLevelPage(id, push){
   if(push !== false) pushNav({ screen:'level', id:String(id) });
   showScreen('level');
   levelPage = { id: String(id), reviews: [], info: null };
-  $('lvl-hero').innerHTML = '<div class="feed-loading">'+t('loading')+'</div>';
+  $('lvl-wt-play').hidden = true;
+  $('lvl-hero-body').innerHTML = '<div class="feed-loading">'+t('loading')+'</div>';
   $('lvl-dist').innerHTML = ''; $('lvl-reviews').innerHTML = ''; $('lvl-avg').textContent = '–'; $('lvl-avg-sub').textContent = '';
   const results = await Promise.all([
     fetch('https://gdbrowser.com/api/level/'+encodeURIComponent(id)).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }),
@@ -2525,7 +2656,7 @@ async function openLevelPage(id, push){
   const face = info ? info.difficultyFace : first.difficultyFace;
   const diff = info ? info.difficulty : first.difficulty;
   const thumb = 'https://levelthumbs.prevter.me/thumbnail/'+encodeURIComponent(id)+'/small';
-  $('lvl-hero').innerHTML = '<div class="level-banner" style="background-image:url(\''+thumb+'\')"></div>'
+  $('lvl-hero-body').innerHTML = '<div class="level-banner" style="background-image:url(\''+thumb+'\')"></div>'
     + '<div class="level-content"><div class="eyebrow">'+t('lvlEyebrow')+' #'+escapeHTML(String(id))+'</div>'
     + '<div class="level-header-row"><div class="level-name">'+escapeHTML(name)+'</div>'+(face ? '<img class="diff-face show" src="https://gdbrowser.com/assets/difficulties/'+encodeURIComponent(face)+'.png" alt="">' : '')+'</div>'
     + '<div class="level-author">by <b>'+escapeHTML(author)+'</b>'+(stars ? '<span class="level-stars">★ '+stars+'</span>' : '')+(diff ? '<span class="level-stars">· '+escapeHTML(diff)+'</span>' : '')+'</div>'
@@ -2533,22 +2664,11 @@ async function openLevelPage(id, push){
     + '</div>';
   renderLevelWalkthrough(); renderLevelStats(); renderLevelReviews();
 }
-/* Inline walkthrough player — a primary element of the level page. Shows the
-   video cover at full content width; the iframe is only created on demand. */
-const WT_PLAY_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+/* Walkthrough entry point: a YouTube icon button pinned to the top-right of
+   the level banner. It appears only when an approved walkthrough exists and
+   opens the large modal player on click — nothing is embedded until then. */
 function renderLevelWalkthrough(){
-  const box = $('lvl-walkthrough');
-  const wt = levelPage.walkthrough;
-  const vid = wt ? ((wt.video_id && /^[A-Za-z0-9_-]{11}$/.test(wt.video_id)) ? wt.video_id : parseYouTubeIdClient(wt.youtube_url)) : null;
-  if(!vid){ box.hidden = true; box.innerHTML = ''; return; }
-  box.hidden = false;
-  box.innerHTML = '<div class="lvl-wt-head"><div class="section-label">'+escapeHTML(t('wtSectionTitle'))+'</div></div>'
-    + '<div class="lvl-wt-frame"><button class="lvl-wt-cover" id="lvl-wt-cover" aria-label="'+escapeHTML(t('wtWatch'))+'">'
-    + '<img src="https://i.ytimg.com/vi/'+encodeURIComponent(vid)+'/maxresdefault.jpg" alt="" loading="lazy" onerror="this.onerror=null;this.src=\'https://i.ytimg.com/vi/'+encodeURIComponent(vid)+'/hqdefault.jpg\';">'
-    + '<span class="lvl-wt-play">'+WT_PLAY_ICON+'</span></button></div>';
-  $('lvl-wt-cover').addEventListener('click', function(){
-    box.querySelector('.lvl-wt-frame').innerHTML = '<iframe src="https://www.youtube.com/embed/'+encodeURIComponent(vid)+'?autoplay=1&rel=0" title="Walkthrough" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';
-  });
+  $('lvl-wt-play').hidden = !levelPage.walkthrough;
 }
 function renderLevelStats(){
   const rs = levelPage.reviews;
@@ -2612,6 +2732,8 @@ wtPlayerModal.addEventListener('click', function(e){ if(e.target === wtPlayerMod
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && wtPlayerModal.classList.contains('show')) closeWalkthroughPlayer(); });
 $('create-wt-play').innerHTML = YT_ICON;
 $('create-wt-play').addEventListener('click', function(){ if(currentLevel && currentLevel.walkthrough) openWalkthroughPlayer(currentLevel.walkthrough); });
+$('lvl-wt-play').innerHTML = YT_ICON;
+$('lvl-wt-play').addEventListener('click', function(){ if(levelPage.walkthrough) openWalkthroughPlayer(levelPage.walkthrough); });
 
 /* ================= WALKTHROUGHS ================= */
 const wtModal = $('walkthrough-modal');
@@ -2705,6 +2827,222 @@ $('screen-admin').addEventListener('click', async function(e){
   if(!$('admin-queue-content').querySelector('.admin-wt-card')) loadAdminQueue();
 });
 
+/* ================= SUPPORT CENTER ================= */
+/* Full ticket system: users file categorized requests, follow the thread and
+   reply; admins manage every ticket from the Admin panel. */
+const TICKET_CATS = [
+  { v:'bug', i18nKey:'catBug', icon:'<svg viewBox="0 0 24 24"><path d="M20 8h-2.81a5.985 5.985 0 0 0-1.82-1.96L17 4.41 15.59 3l-2.17 2.17C12.96 5.06 12.49 5 12 5s-.96.06-1.41.17L8.41 3 7 4.41l1.62 1.63C7.88 6.55 7.26 7.22 6.81 8H4v2h2.09c-.05.33-.09.66-.09 1v1H4v2h2v1c0 .34.04.67.09 1H4v2h2.81c1.04 1.79 2.97 3 5.19 3s4.15-1.21 5.19-3H20v-2h-2.09c.05-.33.09-.66.09-1v-1h2v-2h-2v-1c0-.34-.04-.67-.09-1H20V8zm-6 8h-4v-2h4v2zm0-4h-4v-2h4v2z"/></svg>' },
+  { v:'account', i18nKey:'catAccount', icon:'<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>' },
+  { v:'verification', i18nKey:'catVerification', icon:'<svg viewBox="0 0 24 24"><path d="M23 12l-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.69 3.1 5.5l.34 3.7L1 12l2.44 2.79-.34 3.7 3.61.82L8.6 22.5l3.4-1.47 3.4 1.46 1.89-3.19 3.61-.82-.34-3.69L23 12zm-12.91 4.72l-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48-7.33 7.35z"/></svg>' },
+  { v:'other', i18nKey:'catOther', icon:'<svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>' }
+];
+let ticketCategory = 'bug';
+const TICKET_STATUS_KEY = { open:'tsOpen', in_progress:'tsInProgress', completed:'tsCompleted' };
+function ticketStatusChip(st){ return '<span class="ticket-status-chip ts-'+escapeHTML(st)+'">'+escapeHTML(t(TICKET_STATUS_KEY[st] || 'tsOpen'))+'</span>'; }
+function ticketCatLabel(c){ const o = TICKET_CATS.find(function(x){ return x.v === c; }); return o ? t(o.i18nKey) : c; }
+function buildSupportCats(){
+  $('support-cats').innerHTML = TICKET_CATS.map(function(c){
+    return '<button type="button" class="support-cat'+(ticketCategory === c.v ? ' on' : '')+'" data-cat="'+c.v+'">'+c.icon+'<span>'+escapeHTML(t(c.i18nKey))+'</span></button>';
+  }).join('');
+}
+$('support-cats').addEventListener('click', function(e){
+  const b = e.target.closest('.support-cat'); if(!b) return;
+  ticketCategory = b.dataset.cat;
+  qsa('#support-cats .support-cat').forEach(function(x){ x.classList.toggle('on', x === b); });
+});
+function initSupportPage(){ buildSupportCats(); loadMyTickets(); }
+async function loadMyTickets(){
+  const box = $('my-tickets');
+  if(!me){ box.innerHTML = '<div class="ticket-empty">'+escapeHTML(t('supportLoginFirst'))+'</div>'; return; }
+  box.innerHTML = '<div class="feed-loading">'+t('loading')+'</div>';
+  const r = await api('/support/tickets');
+  if(!r.ok){ box.innerHTML = '<div class="ticket-empty">'+escapeHTML(ERR(r.data.error))+'</div>'; return; }
+  box.innerHTML = r.data.length ? r.data.map(function(tk, i){
+    return '<div class="ticket-row" data-ref="'+escapeHTML(tk.ref)+'" style="animation-delay:'+(Math.min(i,12)*0.04)+'s">'
+      + '<div class="ticket-row-main"><div class="ticket-row-subject">'+escapeHTML(tk.subject)+'</div>'
+      + '<div class="ticket-row-meta">'+escapeHTML(tk.ref)+' · '+escapeHTML(ticketCatLabel(tk.category))+' · '+timeAgo(tk.updated_at)+'</div></div>'
+      + ticketStatusChip(tk.status) + '</div>';
+  }).join('') : '<div class="ticket-empty">'+escapeHTML(t('supportEmpty'))+'</div>';
+}
+$('my-tickets').addEventListener('click', function(e){
+  const row = e.target.closest('.ticket-row'); if(row) openTicket(row.dataset.ref);
+});
+$('ticket-submit').addEventListener('click', async function(){
+  const btn = this; if(btn.disabled) return;
+  if(!requireAuth()) return;
+  const subject = $('ticket-subject').value.trim();
+  const message = $('ticket-message').value.trim();
+  const extra = $('ticket-extra').value.trim();
+  if(subject.length < 3 || subject.length > 120){ toast(t('vSubjectLen'), 'error'); $('ticket-subject').focus(); return; }
+  if(message.length < 10){ toast(t('vMessageLen'), 'error'); $('ticket-message').focus(); return; }
+  setBusy(btn, true);
+  const r = await api('/support/tickets', { method:'POST', body:{ category: ticketCategory, subject: subject, message: message, extra: extra } });
+  setBusy(btn, false);
+  if(!r.ok){ toast(ERR(r.data.error), 'error'); return; }
+  $('ticket-subject').value = ''; $('ticket-message').value = ''; $('ticket-extra').value = '';
+  refreshTextCounters();
+  toast(t('supportSent'), 'ok');
+  loadMyTickets();
+});
+
+/* ---- Ticket conversation modal (shared by users and admins) ---- */
+const ticketModalEl = $('ticket-modal');
+let ticketView = null;
+function renderTicketModal(data){
+  ticketView = data.ticket;
+  const tk = data.ticket;
+  $('tk-ref').textContent = tk.ref;
+  $('tk-status').outerHTML = '<div id="tk-status">'+ticketStatusChip(tk.status)+'</div>';
+  $('tk-subject').textContent = tk.subject;
+  $('tk-meta').innerHTML = escapeHTML(ticketCatLabel(tk.category))+' · '+escapeHTML(t('ticketBy'))+' <b>'+userNameHTML(tk.username || '—', tk.user_verified)+'</b> · '+escapeHTML(t('ticketOpened'))+' '+timeAgo(tk.created_at);
+  const opening = '<div class="tk-msg user"><div class="tk-msg-head"><span class="tk-msg-author">'+escapeHTML(tk.username || '—')+'</span><span class="tk-msg-time">'+timeAgo(tk.created_at)+'</span></div>'
+    + escapeHTML(tk.message)
+    + (tk.extra ? '<div style="margin-top:8px;font-size:11.5px;color:var(--dim);">'+escapeHTML(t('supportExtra'))+': '+escapeHTML(tk.extra)+'</div>' : '')
+    + '</div>';
+  $('tk-thread').innerHTML = opening + (data.messages || []).map(function(m, i){
+    return '<div class="tk-msg '+(m.is_admin ? 'admin' : 'user')+'" style="animation-delay:'+(Math.min(i,14)*0.03)+'s"><div class="tk-msg-head"><span class="tk-msg-author">'+escapeHTML(m.username || '—')+(m.is_admin ? ' · GD/REVIEW' : '')+'</span><span class="tk-msg-time">'+timeAgo(m.created_at)+'</span></div>'+escapeHTML(m.message)+'</div>';
+  }).join('');
+  const isAdmin = !!(me && me.is_admin);
+  $('tk-admin-tools').hidden = !isAdmin;
+  if(isAdmin){
+    $('tk-status-row').innerHTML = ['open','in_progress','completed'].map(function(st){
+      return '<button class="tk-status-opt'+(tk.status === st ? ' on' : '')+'" data-status="'+st+'">'+escapeHTML(t(TICKET_STATUS_KEY[st]))+'</button>';
+    }).join('');
+    const vb = $('tk-verify-btn');
+    if(tk.category === 'verification' && tk.username){
+      vb.hidden = false;
+      vb.textContent = t(tk.user_verified ? 'adminVerifyRevokeBtn' : 'adminVerifyGrantBtn');
+    } else vb.hidden = true;
+  }
+  const th = $('tk-thread'); th.scrollTop = th.scrollHeight;
+}
+async function openTicket(ref){
+  const r = await api('/support/tickets/'+encodeURIComponent(ref));
+  if(!r.ok){ toast(ERR(r.data.error), 'error'); return; }
+  renderTicketModal(r.data);
+  $('tk-reply').value = '';
+  openModalOverlay(ticketModalEl);
+  requestAnimationFrame(function(){ const th = $('tk-thread'); th.scrollTop = th.scrollHeight; });
+}
+function closeTicketModal(){ closeModalOverlay(ticketModalEl); ticketView = null; }
+$('ticket-close').addEventListener('click', closeTicketModal);
+ticketModalEl.addEventListener('click', function(e){ if(e.target === ticketModalEl) closeTicketModal(); });
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && ticketModalEl.classList.contains('show')) closeTicketModal(); });
+$('tk-reply-btn').addEventListener('click', async function(){
+  const btn = this; if(btn.disabled || !ticketView) return;
+  const msg = $('tk-reply').value.trim();
+  if(!msg){ $('tk-reply').focus(); return; }
+  setBusy(btn, true);
+  const r = await api('/support/tickets/'+encodeURIComponent(ticketView.ref)+'/messages', { method:'POST', body:{ message: msg } });
+  setBusy(btn, false);
+  if(!r.ok){ toast(ERR(r.data.error), 'error'); return; }
+  $('tk-reply').value = '';
+  toast(t('supportReplySent'), 'ok');
+  const rr = await api('/support/tickets/'+encodeURIComponent(ticketView.ref));
+  if(rr.ok) renderTicketModal(rr.data);
+  if(me && me.is_admin && currentScreen === 'admin') loadAdminTickets();
+  if(currentScreen === 'support') loadMyTickets();
+});
+$('tk-admin-tools').addEventListener('click', async function(e){
+  if(!ticketView || !(me && me.is_admin)) return;
+  const stBtn = e.target.closest('.tk-status-opt');
+  if(stBtn && !stBtn.classList.contains('on')){
+    const r = await api('/admin/tickets/'+ticketView.id+'/status', { method:'POST', body:{ status: stBtn.dataset.status } });
+    if(!r.ok){ toast(ERR(r.data.error), 'error'); return; }
+    toast(t('adminTicketStatusChanged'), 'ok');
+    ticketView.status = stBtn.dataset.status;
+    $('tk-status').innerHTML = ticketStatusChip(ticketView.status);
+    qsa('#tk-status-row .tk-status-opt').forEach(function(b){ b.classList.toggle('on', b === stBtn); });
+    if(currentScreen === 'admin') loadAdminTickets();
+    return;
+  }
+  if(e.target.closest('#tk-verify-btn')){
+    const action = ticketView.user_verified ? 'revoke' : 'grant';
+    const r = await api('/admin/verification', { method:'POST', body:{ username: ticketView.username, action: action } });
+    if(!r.ok){ toast(ERR(r.data.error), 'error'); return; }
+    ticketView.user_verified = r.data.verified;
+    $('tk-verify-btn').textContent = t(ticketView.user_verified ? 'adminVerifyRevokeBtn' : 'adminVerifyGrantBtn');
+    toast(t(ticketView.user_verified ? 'adminVerifyGranted' : 'adminVerifyRevoked'), 'ok');
+    loadVerifiedUsers();
+  }
+});
+
+/* ================= ADMIN: SUPPORT TICKETS ================= */
+let atStatus = '', atQuery = '', atSearchTO = 0;
+function buildAtChips(){
+  const opts = [ ['', 'atAll'], ['open','tsOpen'], ['in_progress','tsInProgress'], ['completed','tsCompleted'] ];
+  $('at-status-chips').innerHTML = opts.map(function(o){
+    return '<button class="chip'+(atStatus === o[0] ? ' active' : '')+'" data-at-status="'+o[0]+'">'+escapeHTML(t(o[1]))+'</button>';
+  }).join('');
+}
+$('at-status-chips').addEventListener('click', function(e){
+  const c = e.target.closest('[data-at-status]'); if(!c) return;
+  atStatus = c.dataset.atStatus;
+  buildAtChips(); loadAdminTickets();
+});
+$('at-search').addEventListener('input', function(){
+  clearTimeout(atSearchTO);
+  const v = this.value.trim();
+  atSearchTO = setTimeout(function(){ if(v !== atQuery){ atQuery = v; loadAdminTickets(); } }, 300);
+});
+async function loadAdminTickets(){
+  buildAtChips();
+  const box = $('admin-tickets');
+  box.innerHTML = '<div class="feed-loading">'+t('loading')+'</div>';
+  const params = [];
+  if(atStatus) params.push('status='+encodeURIComponent(atStatus));
+  if(atQuery) params.push('q='+encodeURIComponent(atQuery));
+  const r = await api('/admin/tickets'+(params.length ? '?'+params.join('&') : ''));
+  if(!r.ok){ box.innerHTML = '<div class="ticket-empty">'+escapeHTML(ERR(r.data.error))+'</div>'; return; }
+  box.innerHTML = r.data.length ? r.data.map(function(tk, i){
+    return '<div class="admin-ticket-row" data-ref="'+escapeHTML(tk.ref)+'" style="animation-delay:'+(Math.min(i,14)*0.03)+'s">'
+      + '<img class="fc-ava" src="'+escapeHTML(tk.avatar || DEFAULT_AVATAR)+'" alt="" loading="lazy">'
+      + '<div class="ticket-row-main"><div class="ticket-row-subject">'+escapeHTML(tk.subject)+'</div>'
+      + '<div class="ticket-row-meta">'+escapeHTML(tk.ref)+' · '+escapeHTML(tk.username || '—')+' · '+timeAgo(tk.updated_at)+' · '+escapeHTML(t('ticketReplies').replace('{n}', tk.reply_count || 0))+'</div></div>'
+      + '<span class="at-cat">'+escapeHTML(ticketCatLabel(tk.category))+'</span>'
+      + ticketStatusChip(tk.status) + '</div>';
+  }).join('') : '<div class="ticket-empty">'+escapeHTML(t('adminTicketsEmpty'))+'</div>';
+}
+$('admin-tickets').addEventListener('click', function(e){
+  const row = e.target.closest('.admin-ticket-row'); if(row) openTicket(row.dataset.ref);
+});
+
+/* ================= ADMIN: VERIFIED USERS ================= */
+async function loadVerifiedUsers(){
+  const box = $('verified-list');
+  box.innerHTML = '<div class="feed-loading">'+t('loading')+'</div>';
+  const r = await api('/admin/verified-users');
+  if(!r.ok){ box.innerHTML = '<div class="fw-empty">'+escapeHTML(ERR(r.data.error))+'</div>'; return; }
+  box.innerHTML = r.data.length ? r.data.map(function(u, i){
+    return '<span class="fw-chip" style="animation-delay:'+(Math.min(i,20)*0.02)+'s">'+userNameHTML(u.username, true)+'<button class="fw-chip-x" data-unverify="'+escapeHTML(u.username)+'" aria-label="Remove">&times;</button></span>';
+  }).join('') : '<div class="fw-empty">'+escapeHTML(t('adminVerifyEmpty'))+'</div>';
+}
+async function setVerification(username, action){
+  const r = await api('/admin/verification', { method:'POST', body:{ username: username, action: action } });
+  if(!r.ok){ toast(ERR(r.data.error), 'error'); return false; }
+  toast(t(action === 'grant' ? 'adminVerifyGranted' : 'adminVerifyRevoked'), 'ok');
+  loadVerifiedUsers();
+  return true;
+}
+$('verify-grant-btn').addEventListener('click', async function(){
+  const input = $('verify-input');
+  const name = input.value.trim();
+  if(!name){ input.focus(); return; }
+  setBusy(this, true);
+  const ok = await setVerification(name, 'grant');
+  setBusy(this, false);
+  if(ok) input.value = '';
+});
+$('verify-input').addEventListener('keydown', function(e){ if(e.key === 'Enter') $('verify-grant-btn').click(); });
+$('verified-list').addEventListener('click', function(e){
+  const x = e.target.closest('[data-unverify]');
+  if(x && !x.disabled){ x.disabled = true; setVerification(x.dataset.unverify, 'revoke'); }
+});
+
+/* Footer support link + back button */
+$('footer-support').addEventListener('click', function(){ if(currentScreen !== 'support') navigateTo({ screen:'support' }); });
+$('support-back').addEventListener('click', goBack);
+
 /* ================= LIKES ================= */
 const likeBusy = new Set();
 async function toggleLike(uid){
@@ -2744,7 +3082,7 @@ function renderCriteriaGuide(){ const body = $('criteria-guide-body'); if(!body)
 function openDetailReview(r){
   detailReview = r;
   $('detail-user-ava').src = r.avatar || DEFAULT_AVATAR; $('detail-user-ava').dataset.user = r.username || '';
-  $('detail-user-name').textContent = r.username || ''; $('detail-user-name').dataset.user = r.username || '';
+  $('detail-user-name').innerHTML = userNameHTML(r.username, r.verified); $('detail-user-name').dataset.user = r.username || '';
   $('detail-time').textContent = timeAgo(r.savedAt);
   $('detail-title').textContent = r.title || r.name || '';
   const lvlBtn = $('detail-level-link'); lvlBtn.dataset.level = r.id;
@@ -2905,40 +3243,6 @@ function playSaveAnimation(score){ if(score < 2) playTierFail(); else if(score <
 const FRAMES = ['frame-default','frame-circle','frame-hex','frame-tech'];
 const FRAME_LABEL = { 'frame-default':'Default', 'frame-circle':'Circle', 'frame-hex':'Hex', 'frame-tech':'Tech' };
 
-/* ================= ACHIEVEMENTS ================= */
-/* Prestige progression: fewer, harder, memorable. Four rarity levels —
-   common / rare / epic / legendary — each with increasing collectible detail.
-   No trivial one-action unlocks. */
-const ACHIEVEMENTS = [
-  /* Rating path — earned through rating activity (any published rating) */
-  { cat:'achCatRating', metric:'ratings', goal:10,  tier:'common',    art:'cube', pal:'bronze',  color:'#c9855a', nameKey:'achRate10',  descKey:'achRate10D' },
-  { cat:'achCatRating', metric:'ratings', goal:50,  tier:'rare',      art:'cube', pal:'silver',  color:'#aeb6c2', nameKey:'achRate50',  descKey:'achRate50D' },
-  { cat:'achCatRating', metric:'ratings', goal:150, tier:'epic',      art:'cube', pal:'gold',    color:'#ffcf4d', nameKey:'achRate150', descKey:'achRate150D' },
-  { cat:'achCatRating', metric:'ratings', goal:400, tier:'legendary', art:'cube', pal:'prism',   color:'#c061ff', nameKey:'achRate400', descKey:'achRate400D' },
-  { cat:'achCatRating', metric:'ratingDays', goal:30, tier:'epic',    art:'orb',  pal:'emerald', color:'#3ddc84', nameKey:'achRateDays30', descKey:'achRateDays30D' },
-  /* Review path — written reviews only; rating-only submissions never count */
-  { cat:'achCatReviews', metric:'reviews', goal:10,  tier:'common',    art:'coin', pal:'bronze',   color:'#c9855a', nameKey:'achRev10',  descKey:'achRev10D' },
-  { cat:'achCatReviews', metric:'reviews', goal:50,  tier:'rare',      art:'coin', pal:'sapphire', color:'#4ea1ff', nameKey:'achRev50',  descKey:'achRev50D' },
-  { cat:'achCatReviews', metric:'reviews', goal:100, tier:'epic',      art:'coin', pal:'gold',     color:'#ffcf4d', nameKey:'achRev100', descKey:'achRev100D' },
-  { cat:'achCatReviews', metric:'reviews', goal:250, tier:'legendary', art:'coin', pal:'prism',    color:'#c061ff', nameKey:'achRev250', descKey:'achRev250D' },
-  { cat:'achCatReviews', metric:'essays',     goal:10, tier:'rare', art:'coin', pal:'amethyst', color:'#c061ff', nameKey:'achEssay',      descKey:'achEssayD' },
-  { cat:'achCatReviews', metric:'specialist', goal:25, tier:'rare', art:'key',  pal:'emerald',  color:'#3ddc84', nameKey:'achSpecialist', descKey:'achSpecialistD' },
-  /* Community recognition — likes received on written reviews */
-  { cat:'achCatCommunity', metric:'likes', goal:25,  tier:'common',    art:'orb', pal:'silver', color:'#aeb6c2', nameKey:'achLikes25',  descKey:'achLikes25D' },
-  { cat:'achCatCommunity', metric:'likes', goal:100, tier:'rare',      art:'orb', pal:'ruby',   color:'#ff5f7a', nameKey:'achLikes100', descKey:'achLikes100D' },
-  { cat:'achCatCommunity', metric:'likes', goal:500, tier:'legendary', art:'orb', pal:'gold',   color:'#ffcf4d', nameKey:'achLikes500', descKey:'achLikes500D' },
-  /* Helpful reviews — single-review recognition */
-  { cat:'achCatHelpful', metric:'best',    goal:10, tier:'rare', art:'shard', pal:'sapphire', color:'#4ea1ff', nameKey:'achHelpful',  descKey:'achHelpfulD' },
-  { cat:'achCatHelpful', metric:'best',    goal:25, tier:'rare', art:'shard', pal:'gold',     color:'#ffcf4d', nameKey:'achFeatured', descKey:'achFeaturedD' },
-  { cat:'achCatHelpful', metric:'best',    goal:50, tier:'epic', art:'shard', pal:'amethyst', color:'#c061ff', nameKey:'achBest50',   descKey:'achBest50D' },
-  { cat:'achCatHelpful', metric:'trusted', goal:10, tier:'epic', art:'key',   pal:'sapphire', color:'#4ea1ff', nameKey:'achTrusted',  descKey:'achTrustedD' },
-  /* Exploration — reviewing across the difficulty spectrum */
-  { cat:'achCatExplorer', metric:'starred',  goal:25, tier:'rare',      art:'star',  pal:'gold',     color:'#ffcf4d', nameKey:'achStarred',  descKey:'achStarredD' },
-  { cat:'achCatExplorer', metric:'diffs',    goal:8,  tier:'rare',      art:'star',  pal:'amethyst', color:'#c061ff', nameKey:'achDiffs8',   descKey:'achDiffs8D' },
-  { cat:'achCatExplorer', metric:'demons',   goal:25, tier:'epic',      art:'sigil', pal:'ruby',     color:'#e05555', nameKey:'achDemon25',  descKey:'achDemon25D' },
-  { cat:'achCatExplorer', metric:'extremes', goal:5,  tier:'legendary', art:'sigil', pal:'obsidian', color:'#8b93a3', nameKey:'achExtreme5', descKey:'achExtreme5D' }
-];
-
 /* ================= SOCIALS ================= */
 /* Simplified to the essentials: Twitch and YouTube. */
 const SOCIAL_PLATFORMS = [ { key:'twitch', label:'Twitch', abbr:'TTV', domains:['twitch.tv'], placeholder:'https://twitch.tv/handle' }, { key:'youtube', label:'YouTube', abbr:'YT', domains:['youtube.com','youtu.be'], placeholder:'https://youtube.com/@handle' } ];
@@ -2982,7 +3286,7 @@ function renderProfile(){
   $('prof-banner').style.backgroundImage = u.banner ? 'url(\''+u.banner+'\')' : '';
   $('prof-avatar').src = u.avatar || DEFAULT_AVATAR;
   $('prof-frame-wrap').className = 'profile-avatar-wrap ' + (u.frame || 'frame-default');
-  $('prof-name').textContent = u.username || '';
+  $('prof-name').innerHTML = userNameHTML(u.username, u.user_verified);
   renderSocialIcons(u);
   $('prof-desc').textContent = u.description || t('defaultDesc');
   $('archive-title').textContent = own ? t('archiveTitle') : t('archiveTheirTitle').replace('{user}', u.username || '');
@@ -2991,7 +3295,7 @@ function renderProfile(){
 }
 $('profile-back').addEventListener('click', goBack);
 
-/* ---- Charts & achievements board ---- */
+/* ---- Charts ---- */
 /* Category Profile: five-axis radar (pentagon) chart — scaled to its card,
    responsive via viewBox, with grid rings, spokes and per-axis values. */
 function buildCategoryRadar(categoryAverages){
@@ -3022,141 +3326,6 @@ function buildCategoryRadar(categoryAverages){
 function buildHistogram(reviews){ const buckets=[{label:'0–2',min:0,max:2},{label:'2–4',min:2,max:4},{label:'4–6',min:4,max:6},{label:'6–8',min:6,max:8},{label:'8–10',min:8,max:10.001}].map(function(b){ b.count=0; return b; }); reviews.forEach(function(r){ const b=buckets.find(function(b){ return r.finalScore>=b.min && r.finalScore<b.max; }); if(b) b.count++; }); const w=320,h=200,padB=26,padT=14,gap=14; const barW=(w-gap*(buckets.length-1))/buckets.length; const maxCount=Math.max(1, Math.max.apply(null, buckets.map(function(b){ return b.count; }))); const usableH=h-padB-padT; const bars=buckets.map(function(b,i){ const x=i*(barW+gap); const barH=(b.count/maxCount)*usableH; const y=h-padB-barH; return '<rect class="hist-track" x="'+x+'" y="'+padT+'" width="'+barW+'" height="'+usableH+'" rx="4"/><rect class="hist-bar" x="'+x+'" y="'+y+'" width="'+barW+'" height="'+Math.max(barH,2)+'" rx="4" style="animation-delay:'+(0.2+i*0.08)+'s"></rect><text class="hist-count" x="'+(x+barW/2)+'" y="'+(y-8)+'" text-anchor="middle" style="animation-delay:'+(0.5+i*0.08)+'s">'+b.count+'</text><text class="hist-label" x="'+(x+barW/2)+'" y="'+(h-6)+'" text-anchor="middle">'+b.label+'</text>'; }).join(''); return '<svg viewBox="0 0 '+w+' '+h+'"><line class="hist-axis" x1="0" y1="'+(h-padB)+'" x2="'+w+'" y2="'+(h-padB)+'"/>'+bars+'</svg>'; }
 /* Exact registration date — full "Day Month Year" format. */
 function memberSinceLabel(user){ if(!(user && user.created_at)) return '—'; return new Date(user.created_at).toLocaleDateString(lang==='ru'?'ru-RU':'en-US', { day:'numeric', month:'long', year:'numeric' }); }
-function achievementValues(reviews, user){
-  /* Rating achievements count every published rating; review achievements
-     only ever count WRITTEN reviews. */
-  const written = reviews.filter(function(r){ return !r.isRatingOnly; });
-  const likes = (user && user.likes_received != null) ? user.likes_received : written.reduce(function(a,r){ return a + (r.likes||0); }, 0);
-  const diffCounts = {};
-  written.forEach(function(r){ const d = String(r.difficulty||'').toLowerCase(); if(d) diffCounts[d] = (diffCounts[d]||0) + 1; });
-  const rateDays = {};
-  reviews.forEach(function(r){ if(r.savedAt) rateDays[String(r.savedAt).slice(0,10)] = 1; });
-  return {
-    ratings: reviews.length,
-    ratingDays: Object.keys(rateDays).length,
-    reviews: written.length,
-    likes: likes,
-    best: written.reduce(function(a,r){ return Math.max(a, r.likes||0); }, 0),
-    trusted: written.filter(function(r){ return (r.likes||0) >= 5; }).length,
-    diffs: Object.keys(diffCounts).length,
-    specialist: Object.keys(diffCounts).reduce(function(m,k){ return Math.max(m, diffCounts[k]); }, 0),
-    demons: written.filter(function(r){ return String(r.difficulty||'').toLowerCase().indexOf('demon') !== -1; }).length,
-    extremes: written.filter(function(r){ return String(r.difficulty||'').toLowerCase() === 'extreme demon'; }).length,
-    essays: written.filter(function(r){ return (r.text||'').length >= 300; }).length,
-    starred: written.filter(function(r){ return Number(r.stars||0) > 0; }).length
-  };
-}
-/* GD ARTIFACT rewards: each achievement is a 3D collectible object inspired
-   by the Geometry Dash universe — icon cubes, user coins, orbs, crystal
-   shards, creator keys and demon sigils — extruded into depth slices with a
-   lit material face and an engraved glyph. See the matching CSS. */
-function relicGlyph(a){
-  const cube = '<rect class="motif-fill" x="13" y="13" width="38" height="38" rx="3"/><rect class="motif-cut" x="20" y="21" width="8" height="8"/><rect class="motif-cut" x="36" y="21" width="8" height="8"/><path class="motif-cut" d="M21 38h22v6H21z"/>';
-  const coin = '<circle class="motif-line" cx="32" cy="32" r="22"/><path class="motif-fill" d="m32 16 5 11 12 1-9 8 3 12-11-6-11 6 3-12-9-8 12-1z"/>';
-  const orb = '<circle class="motif-line" cx="32" cy="32" r="22"/><circle class="motif-fill" cx="32" cy="32" r="9"/><path class="motif-line" d="M32 4v8M32 52v8M4 32h8M52 32h8"/>';
-  const shard = '<path class="motif-line" d="M32 8 18 28l14 28 14-28z"/><path class="motif-line" d="M18 28h28M32 8v48"/>';
-  const star = '<path class="motif-fill" d="m32 7 7 16 18 2-14 12 4 18-15-9-15 9 4-18L7 25l18-2z"/><circle class="motif-cut" cx="32" cy="32" r="7"/>';
-  const sigil = '<path class="motif-fill" d="M9 18 23 8l9 10L41 8l14 10-5 33H14z"/><path class="motif-cut" d="m18 27 10 5-12 4zm28 0-10 5 12 4zM22 43h20l-4 7H26z"/>';
-  const key = '<circle class="motif-line" cx="32" cy="18" r="10"/><path class="motif-fill" d="M29 27h6v18l6 5-6 4v4h-6z"/>';
-  const bolt = '<path class="motif-fill" d="M36 4 14 36h12l-4 24 24-34H32z"/>';
-  const map = { cube: cube, coin: coin, orb: orb, shard: shard, star: star, sigil: sigil, key: key, prism: bolt };
-  return '<svg viewBox="0 0 64 64" aria-hidden="true">'+(map[a.art] || cube)+'</svg>';
-}
-function relicHTML(a){
-  return '<div class="relic art-'+a.art+' pal-'+a.pal+' rtier-'+a.tier+'">'
-    + '<div class="relic-obj">'
-    + '<span class="relic-d relic-d3"></span><span class="relic-d relic-d2"></span><span class="relic-d relic-d1"></span>'
-    + '<span class="relic-face"></span>'
-    + (a.tier === 'legendary' ? '<span class="relic-ring"></span>' : '')
-    + '<span class="relic-glyph">'+relicGlyph(a)+'</span>'
-    + '<span class="relic-spec"></span><span class="relic-sheen"></span>'
-    + '</div>'
-    + '<span class="relic-halo"></span>'
-    + '</div>';
-}
-function buildAchievementsBoard(reviews, user){
-  const vals = achievementValues(reviews, user);
-  const cats = [], byCat = {};
-  ACHIEVEMENTS.forEach(function(a){ if(!byCat[a.cat]){ byCat[a.cat] = []; cats.push(a.cat); } byCat[a.cat].push(a); });
-  return cats.map(function(c){
-    return '<div class="ach-cat-label">'+escapeHTML(t(c))+'</div><div class="ach-grid">'+byCat[c].map(function(a,i){
-      const v = Math.min(vals[a.metric]||0, a.goal);
-      const done = v >= a.goal;
-      return '<div class="ach-card'+(done?' unlocked':'')+'" style="--ach-color:'+a.color+';animation-delay:'+(Math.min(i,12)*0.04)+'s">'
-        + '<div class="ach-head"><div class="ach-medal">'+relicHTML(a)+'</div><div class="ach-name">'+escapeHTML(t(a.nameKey))+'</div></div>'
-        + '<div class="ach-desc">'+escapeHTML(t(a.descKey))+'</div>'
-        + '<div class="ach-progress"><div class="ach-bar"><div class="ach-fill" style="width:'+((v/a.goal)*100).toFixed(1)+'%"></div></div><span class="ach-count">'+(done ? '✓ '+escapeHTML(t('achDone')) : v+' / '+a.goal)+'</span></div>'
-        + '</div>';
-    }).join('')+'</div>';
-  }).join('');
-}
-/* Rarity ladder — the rarest achievements always display first. */
-const TIER_ORDER = { legendary:0, epic:1, rare:2, common:3 };
-const TIER_LABEL_KEY = { common:'achTierCommon', rare:'achTierRare', epic:'achTierEpic', legendary:'achTierLegendary' };
-function achTierLabel(tier){ return t(TIER_LABEL_KEY[tier] || 'achTierCommon'); }
-/* Public trophy showcase: a collectible display board that shows only the
-   *earned* rewards — no goals, counters or locked achievements leak out.
-   Sorted legendary-first so the most impressive trophies lead the profile. */
-function buildShowcaseBoard(reviews, user){
-  const vals = achievementValues(reviews, user);
-  const earned = ACHIEVEMENTS.filter(function(a){ return (vals[a.metric]||0) >= a.goal; })
-    .sort(function(a,b){ return (TIER_ORDER[a.tier] - TIER_ORDER[b.tier]) || (b.goal - a.goal); });
-  const inner = earned.length
-    ? '<div class="trophy-row">'+earned.map(function(a,i){
-        return '<div class="trophy trophy-'+a.tier+' pal-'+a.pal+'" style="animation-delay:'+(Math.min(i,12)*0.07)+'s" title="'+escapeHTML(t(a.descKey))+'">'
-          + relicHTML(a)
-          + '<div class="trophy-name">'+escapeHTML(t(a.nameKey))+'</div>'
-          + '<div class="trophy-tier">'+escapeHTML(achTierLabel(a.tier))+'</div>'
-          + '</div>';
-      }).join('')+'</div>'
-    : '<div class="showcase-empty">'+escapeHTML(t('achShowcaseEmpty'))+'</div>';
-  return '<div class="showcase-board"><div class="showcase-head"><span class="showcase-title">'+escapeHTML(t('achShowcaseTitle'))+'</span><span class="showcase-sub">'+escapeHTML(t('achShowcaseSub'))+'</span></div>'+inner+'</div>';
-}
-/* Collectible inspection: cursor-driven 3D tilt + dynamic lighting on the
-   showcase rewards. Delegated globally so it survives every board re-render;
-   disabled for touch devices and reduced-motion preferences. */
-(function(){
-  if(matchMedia('(hover: none)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  let active = null;
-  function resetTilt(el){
-    const m = el.querySelector('.relic');
-    if(m){ m.style.removeProperty('--rx'); m.style.removeProperty('--ry'); m.style.setProperty('--lx','50%'); m.style.setProperty('--ly','38%'); }
-  }
-  document.addEventListener('pointermove', function(e){
-    const tr = e.target.closest('.trophy, .ach-card');
-    if(active && active !== tr){ resetTilt(active); active = null; }
-    if(!tr) return;
-    const m = tr.querySelector('.relic'); if(!m) return;
-    active = tr;
-    const r = tr.getBoundingClientRect();
-    const px = Math.max(-0.5, Math.min(0.5, (e.clientX - r.left) / r.width - 0.5));
-    const py = Math.max(-0.5, Math.min(0.5, (e.clientY - r.top) / r.height - 0.5));
-    m.style.setProperty('--rx', (-py * 32).toFixed(1)+'deg');
-    m.style.setProperty('--ry', (px * 36).toFixed(1)+'deg');
-    m.style.setProperty('--lx', (50 + px * 90).toFixed(1)+'%');
-    m.style.setProperty('--ly', (42 + py * 80).toFixed(1)+'%');
-  }, { passive:true });
-  document.addEventListener('pointerout', function(e){
-    if(active && (!e.relatedTarget || !e.relatedTarget.closest || !e.relatedTarget.closest('.trophy, .ach-card'))){ resetTilt(active); active = null; }
-  });
-})();
-/* Owner-only board expander with a premium unfold reveal. */
-function bindAchBoard(){
-  const btn = $('ach-expand-btn'); if(!btn) return;
-  btn.addEventListener('click', function(){
-    const body = $('ach-board-body'); if(!body) return;
-    if(body.hidden){
-      body.hidden = false;
-      body.classList.remove('board-close');
-      body.classList.remove('board-open'); void body.offsetWidth; body.classList.add('board-open');
-      btn.textContent = t('achCloseBoard'); btn.classList.add('open'); btn.setAttribute('aria-expanded','true');
-    } else {
-      body.classList.remove('board-open'); body.classList.add('board-close');
-      btn.textContent = t('achOpenBoard'); btn.classList.remove('open'); btn.setAttribute('aria-expanded','false');
-      setTimeout(function(){ body.hidden = true; body.classList.remove('board-close'); }, 320);
-    }
-  });
-}
 /* Monochrome stat icons — inherit currentColor. */
 const STAT_ICONS = {
   reviews:'<svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>',
@@ -3188,20 +3357,7 @@ function buildScoreTrend(reviews){
 }
 function renderStatsFor(reviews, user){
   const content = $('stats-content');
-  const own = profileView.own;
-  const vals = achievementValues(reviews, user);
-  const unlockedCount = ACHIEVEMENTS.filter(function(a){ return (vals[a.metric]||0) >= a.goal; }).length;
-  /* Privacy: visitors only ever see the public trophy showcase. The personal
-     progress board (locked items, counters, goals) is owner-only and opens on
-     demand with a cinematic unfold — including a preview of the public view. */
-  const achCard = own
-    ? '<div class="chart-card wide" style="animation-delay:.22s"><div class="ach-board-head"><div><div class="chart-title">'+t('achBoardTitle')+'</div><div class="chart-sub" style="margin-bottom:0;">'+escapeHTML(t('achUnlockedCount').replace('{n}', unlockedCount).replace('{total}', ACHIEVEMENTS.length))+'</div></div><button class="ach-expand-btn" id="ach-expand-btn" aria-expanded="false">'+escapeHTML(t('achOpenBoard'))+'</button></div>'
-      + '<div class="ach-board-body" id="ach-board-body" hidden>'
-      + '<div class="ach-sec-label">'+escapeHTML(t('achProgressTitle'))+'</div>'+buildAchievementsBoard(reviews, user)
-      + '<div class="ach-sec-label" style="margin-top:24px;">'+escapeHTML(t('achPublicPreview'))+'</div>'+buildShowcaseBoard(reviews, user)
-      + '</div></div>'
-    : '<div class="chart-card wide" style="animation-delay:.22s">'+buildShowcaseBoard(reviews, user)+'</div>';
-  if(!reviews.length){ content.innerHTML = emptyState(t('emptyStatsTitle'), t('emptyStatsSub')) + '<div class="charts-grid" style="margin-top:20px;">'+achCard+'</div>'; bindAchBoard(); return; }
+  if(!reviews.length){ content.innerHTML = emptyState(t('emptyStatsTitle'), t('emptyStatsSub')); return; }
   /* Written reviews and ratings are separate: the review counter only counts
      real written reviews, while charts cover every published rating. */
   const total = reviews.length;
@@ -3218,8 +3374,7 @@ function renderStatsFor(reviews, user){
     + '</div><div class="charts-grid">'
     + '<div class="chart-card" style="animation-delay:.10s"><div class="chart-title">'+t('chartCat')+'</div><div class="chart-sub">'+t('chartCatSub')+'</div>'+buildCategoryRadar(categoryAverages)+'</div>'
     + '<div class="chart-card" style="animation-delay:.16s"><div class="chart-title">'+t('chartDist')+'</div><div class="chart-sub">'+t('chartDistSub')+'</div>'+buildHistogram(reviews)+'</div>'
-    + achCard + '</div>';
-  bindAchBoard();
+    + '</div>';
 }
 
 /* ---- Archive ---- */
@@ -3459,6 +3614,8 @@ function applyLang(l){
   if($('screen-home').classList.contains('active')) loadDashboard();
   if($('screen-profile').classList.contains('active')) renderProfile();
   if($('screen-level').classList.contains('active') && levelPage.id){ renderLevelStats(); renderLevelReviews(); }
+  if($('screen-support').classList.contains('active')) initSupportPage();
+  if($('screen-admin').classList.contains('active')){ loadAdminTickets(); loadVerifiedUsers(); }
 }
 function setLang(l){
   if(l === lang || langSwapBusy) return;
@@ -4334,7 +4491,9 @@ function stopSpinPage(){
       thumb.style.left = (f * (100 - w)) + '%';
     }
     row.addEventListener('scroll', function(){
-      if(!down && !glide.on && !raf) wrap();
+      /* Always keep the position inside the middle copy — wrapping is
+         idempotent and pixel-identical, so no reset is ever visible. */
+      wrap();
       syncBar();
       bar.classList.add('active');
       clearTimeout(barTO); barTO = setTimeout(function(){ bar.classList.remove('active'); }, 900);
