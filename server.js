@@ -195,6 +195,35 @@ async function initDb() {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
+        // User verification (blue badge). Separate from is_verified, which is
+        // the email-confirmation flag. Only admins can grant/revoke it.
+        await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_user_verified BOOLEAN DEFAULT FALSE;`).catch(() => {});
+        // Support ticket system: tickets + threaded messages.
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS support_tickets (
+                id SERIAL PRIMARY KEY,
+                ref VARCHAR(16) UNIQUE NOT NULL,
+                user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+                category VARCHAR(30) NOT NULL,
+                subject VARCHAR(120) NOT NULL,
+                message TEXT NOT NULL,
+                extra TEXT,
+                status VARCHAR(20) DEFAULT 'open',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE TABLE IF NOT EXISTS support_messages (
+                id SERIAL PRIMARY KEY,
+                ticket_id INTEGER REFERENCES support_tickets(id) ON DELETE CASCADE,
+                user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+                is_admin BOOLEAN DEFAULT FALSE,
+                message TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            CREATE INDEX IF NOT EXISTS idx_tickets_status ON support_tickets(status, updated_at DESC);
+            CREATE INDEX IF NOT EXISTS idx_tickets_user ON support_tickets(user_id, updated_at DESC);
+            CREATE INDEX IF NOT EXISTS idx_support_msgs_ticket ON support_messages(ticket_id, created_at);
+        `);
         // Bootstrap admins from ADMIN_EMAILS (comma-separated) so the first
         // moderators can be promoted without manual SQL.
         const adminEmails = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
@@ -360,7 +389,7 @@ const REVIEW_FIELDS = `
     r.gameplay, r.sync_rhythm AS sync, r.design_deco AS design, r.creativity, r.optimization,
     r.final_score, r.title, r.review_text, r.saved_at`;
 const REVIEW_WITH_USER = `
-    SELECT ${REVIEW_FIELDS}, u.username, u.avatar, u.frame,
+    SELECT ${REVIEW_FIELDS}, u.username, u.avatar, u.frame, u.is_user_verified AS user_verified,
         COUNT(l.id)::int AS likes,
         COALESCE(BOOL_OR(l.user_id = $1), false) AS liked_by_me
     FROM reviews r
@@ -677,7 +706,7 @@ app.delete('/api/account', authenticateToken, async (req, res) => {
 app.get('/api/profile', authenticateToken, async (req, res) => {
     try {
         const result = await pool.query(`
-            SELECT u.username, u.email, u.avatar, u.banner, u.frame, u.description, u.socials, u.created_at, u.is_admin,
+            SELECT u.username, u.email, u.avatar, u.banner, u.frame, u.description, u.socials, u.created_at, u.is_admin, u.is_user_verified AS user_verified,
                 (SELECT COUNT(*)::int FROM reviews r WHERE r.user_id = u.id AND r.review_text IS NOT NULL) AS review_count,
                 (SELECT COUNT(*)::int FROM reviews r WHERE r.user_id = u.id) AS rating_count,
                 (SELECT COUNT(*)::int FROM review_likes l JOIN reviews r ON r.id = l.review_id WHERE r.user_id = u.id AND r.review_text IS NOT NULL) AS likes_received
@@ -719,7 +748,7 @@ app.get('/api/users/search', rateLimit(60, 60000), async (req, res) => {
         if (q.length < 1 || q.length > 100) return res.json({ users: [] });
         const like = '%' + q.replace(/[\\%_]/g, '\\$&') + '%';
         const result = await pool.query(`
-            SELECT u.username, u.avatar,
+            SELECT u.username, u.avatar, u.is_user_verified AS user_verified,
                 (SELECT COUNT(*)::int FROM review_likes l JOIN reviews r ON r.id = l.review_id WHERE r.user_id = u.id AND r.review_text IS NOT NULL) AS likes_received,
                 (SELECT COUNT(*)::int FROM reviews r WHERE r.user_id = u.id AND r.review_text IS NOT NULL) AS review_count
             FROM users u
@@ -733,7 +762,7 @@ app.get('/api/users/search', rateLimit(60, 60000), async (req, res) => {
 app.get('/api/users/:username', optionalAuth, async (req, res) => {
     try {
         const uRes = await pool.query(`
-            SELECT u.id, u.username, u.avatar, u.banner, u.frame, u.description, u.socials, u.created_at,
+            SELECT u.id, u.username, u.avatar, u.banner, u.frame, u.description, u.socials, u.created_at, u.is_user_verified AS user_verified,
                 (SELECT COUNT(*)::int FROM review_likes l JOIN reviews r ON r.id = l.review_id WHERE r.user_id = u.id AND r.review_text IS NOT NULL) AS likes_received
             FROM users u WHERE LOWER(u.username) = LOWER($1) AND u.is_verified = TRUE`, [req.params.username]);
         if (uRes.rows.length === 0) return fail(res, 404, 'not_found');
@@ -992,7 +1021,7 @@ app.get('/api/home/community', async (req, res) => {
            rating-only submissions never influence reviewer rankings. */
         const [lb, stats] = await Promise.all([
             pool.query(`
-                SELECT u.username, u.avatar, u.frame,
+                SELECT u.username, u.avatar, u.frame, u.is_user_verified AS user_verified,
                     COUNT(DISTINCT r.id)::int AS review_count,
                     COUNT(l.id)::int AS likes_received
                 FROM users u
@@ -1106,6 +1135,170 @@ app.delete('/api/admin/forbidden-words/:id', authenticateToken, requireAdmin, as
         await pool.query('DELETE FROM forbidden_words WHERE id = $1', [id]);
         await loadForbiddenWords();
         res.json({ message: 'deleted' });
+    } catch (err) { fail(res, 500, 'server_error'); }
+});
+
+/* ============ SUPPORT TICKETS ============ */
+const TICKET_CATEGORIES = ['bug', 'account', 'verification', 'other'];
+const TICKET_STATUSES = ['open', 'in_progress', 'completed'];
+
+// Public ticket reference, e.g. GDR-4F7K2Q — retried on the (very unlikely)
+// unique-constraint collision.
+function makeTicketRef() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let s = '';
+    for (let i = 0; i < 6; i++) s += chars[Math.floor(Math.random() * chars.length)];
+    return 'GDR-' + s;
+}
+
+const ticketRow = `
+    st.id, st.ref, st.category, st.subject, st.message, st.extra, st.status,
+    st.created_at, st.updated_at, u.username, u.avatar, u.is_user_verified AS user_verified`;
+
+app.post('/api/support/tickets', authenticateToken, rateLimit(8, 600000), async (req, res) => {
+    try {
+        const category = String(req.body.category || '').trim().toLowerCase();
+        const subject = String(req.body.subject || '').trim();
+        const message = String(req.body.message || '').trim();
+        const extra = String(req.body.extra || '').trim();
+        if (!TICKET_CATEGORIES.includes(category)) return fail(res, 400, 'invalid_payload');
+        if (subject.length < 3 || subject.length > 120) return fail(res, 400, 'ticket_subject_invalid');
+        if (message.length < 10 || message.length > 3000) return fail(res, 400, 'ticket_message_invalid');
+        if (extra.length > 1000) return fail(res, 400, 'ticket_message_invalid');
+        for (let attempt = 0; attempt < 5; attempt++) {
+            const ref = makeTicketRef();
+            try {
+                const ins = await pool.query(
+                    `INSERT INTO support_tickets (ref, user_id, category, subject, message, extra)
+                     VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, ref, status, created_at`,
+                    [ref, req.user.userId, category, subject, message, extra || null]);
+                return res.json({ message: 'ticket_created', ticket: ins.rows[0] });
+            } catch (err) {
+                if (err.code !== '23505') throw err; // retry only on ref collision
+            }
+        }
+        fail(res, 500, 'server_error');
+    } catch (err) { console.error(err); fail(res, 500, 'server_error'); }
+});
+
+// The requester's own tickets, newest activity first.
+app.get('/api/support/tickets', authenticateToken, async (req, res) => {
+    try {
+        const r = await pool.query(`
+            SELECT st.id, st.ref, st.category, st.subject, st.status, st.created_at, st.updated_at,
+                (SELECT COUNT(*)::int FROM support_messages m WHERE m.ticket_id = st.id) AS reply_count
+            FROM support_tickets st WHERE st.user_id = $1
+            ORDER BY st.updated_at DESC LIMIT 100`, [req.user.userId]);
+        res.json(r.rows);
+    } catch (err) { fail(res, 500, 'server_error'); }
+});
+
+// Ticket detail + conversation. Owner or admin only.
+async function loadTicketFor(req, res) {
+    const ref = String(req.params.ref || '').trim().toUpperCase();
+    const tr = await pool.query(`
+        SELECT ${ticketRow}, st.user_id
+        FROM support_tickets st LEFT JOIN users u ON u.id = st.user_id
+        WHERE st.ref = $1`, [ref]);
+    if (!tr.rows.length) { fail(res, 404, 'not_found'); return null; }
+    const ticket = tr.rows[0];
+    if (ticket.user_id !== req.user.userId) {
+        const adm = await pool.query('SELECT is_admin FROM users WHERE id = $1', [req.user.userId]);
+        if (!adm.rows.length || !adm.rows[0].is_admin) { fail(res, 403, 'admin_only'); return null; }
+        ticket.viewer_is_admin = true;
+    }
+    return ticket;
+}
+
+app.get('/api/support/tickets/:ref', authenticateToken, async (req, res) => {
+    try {
+        const ticket = await loadTicketFor(req, res);
+        if (!ticket) return;
+        const ms = await pool.query(`
+            SELECT m.id, m.is_admin, m.message, m.created_at, u.username, u.avatar
+            FROM support_messages m LEFT JOIN users u ON u.id = m.user_id
+            WHERE m.ticket_id = $1 ORDER BY m.created_at ASC LIMIT 300`, [ticket.id]);
+        const { user_id, viewer_is_admin, ...publicTicket } = ticket;
+        res.json({ ticket: publicTicket, messages: ms.rows });
+    } catch (err) { fail(res, 500, 'server_error'); }
+});
+
+// Reply in a ticket thread (owner or admin). An admin reply moves an open
+// ticket to in_progress; an owner reply reopens a completed ticket.
+app.post('/api/support/tickets/:ref/messages', authenticateToken, rateLimit(20, 600000), async (req, res) => {
+    try {
+        const ticket = await loadTicketFor(req, res);
+        if (!ticket) return;
+        const message = String(req.body.message || '').trim();
+        if (message.length < 1 || message.length > 3000) return fail(res, 400, 'ticket_message_invalid');
+        const asAdmin = !!ticket.viewer_is_admin;
+        await pool.query('INSERT INTO support_messages (ticket_id, user_id, is_admin, message) VALUES ($1, $2, $3, $4)',
+            [ticket.id, req.user.userId, asAdmin, message]);
+        let status = ticket.status;
+        if (asAdmin && ticket.status === 'open') status = 'in_progress';
+        if (!asAdmin && ticket.status === 'completed') status = 'open';
+        await pool.query('UPDATE support_tickets SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2', [status, ticket.id]);
+        res.json({ message: 'reply_sent', status });
+    } catch (err) { console.error(err); fail(res, 500, 'server_error'); }
+});
+
+/* ============ ADMIN: SUPPORT TICKETS ============ */
+app.get('/api/admin/tickets', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const status = TICKET_STATUSES.includes(String(req.query.status)) ? String(req.query.status) : null;
+        const q = String(req.query.q || '').trim();
+        const params = [];
+        const where = [];
+        if (status) { params.push(status); where.push(`st.status = $${params.length}`); }
+        if (q) {
+            params.push('%' + q.replace(/[\\%_]/g, '\\$&') + '%');
+            where.push(`(st.ref ILIKE $${params.length} OR st.subject ILIKE $${params.length} OR u.username ILIKE $${params.length})`);
+        }
+        const r = await pool.query(`
+            SELECT st.id, st.ref, st.category, st.subject, st.status, st.created_at, st.updated_at,
+                u.username, u.avatar,
+                (SELECT COUNT(*)::int FROM support_messages m WHERE m.ticket_id = st.id) AS reply_count
+            FROM support_tickets st LEFT JOIN users u ON u.id = st.user_id
+            ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
+            ORDER BY (st.status = 'open') DESC, st.updated_at DESC LIMIT 200`, params);
+        res.json(r.rows);
+    } catch (err) { console.error(err); fail(res, 500, 'server_error'); }
+});
+
+app.post('/api/admin/tickets/:id/status', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const id = parseInt(req.params.id, 10);
+        const status = String(req.body.status || '');
+        if (!Number.isInteger(id) || !TICKET_STATUSES.includes(status)) return fail(res, 400, 'invalid_payload');
+        const r = await pool.query('UPDATE support_tickets SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING id', [status, id]);
+        if (!r.rows.length) return fail(res, 404, 'not_found');
+        res.json({ message: 'status_changed', status });
+    } catch (err) { fail(res, 500, 'server_error'); }
+});
+
+/* ============ ADMIN: USER VERIFICATION ============ */
+// Grant or revoke the blue verification badge. Admin-only; every user-facing
+// query reads users.is_user_verified, so the badge applies instantly everywhere.
+app.post('/api/admin/verification', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const username = String(req.body.username || '').trim();
+        const action = String(req.body.action || '');
+        if (!username || !['grant', 'revoke'].includes(action)) return fail(res, 400, 'invalid_payload');
+        const r = await pool.query(
+            'UPDATE users SET is_user_verified = $1 WHERE LOWER(username) = LOWER($2) RETURNING id, username',
+            [action === 'grant', username]);
+        if (!r.rows.length) return fail(res, 404, 'not_found');
+        console.log(`🛡️  Admin ${req.user.userId} ${action}ed verification for ${r.rows[0].username}`);
+        res.json({ message: 'ok', username: r.rows[0].username, verified: action === 'grant' });
+    } catch (err) { fail(res, 500, 'server_error'); }
+});
+
+app.get('/api/admin/verified-users', authenticateToken, requireAdmin, async (req, res) => {
+    try {
+        const r = await pool.query(`
+            SELECT username, avatar, created_at FROM users
+            WHERE is_user_verified = TRUE ORDER BY LOWER(username) LIMIT 500`);
+        res.json(r.rows);
     } catch (err) { fail(res, 500, 'server_error'); }
 });
 
