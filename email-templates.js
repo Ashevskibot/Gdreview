@@ -113,7 +113,12 @@ function buildCodeEmail(opts) {
           <td align="center" class="gd-px" style="padding:40px 32px 28px 32px;">
             <table role="presentation" cellpadding="0" cellspacing="0" border="0">
               <tr>
-                <td style="font-family:'Archivo Black', Arial Black, Arial, sans-serif; font-size:22px; font-weight:900; letter-spacing:1px; color:#f4f4f4; text-transform:uppercase;" class="gd-logo-text">
+                <td align="center" style="padding-bottom:14px;">
+                  <img src="https://gdreview.com/logo.png" width="52" height="52" alt="GD/REVIEW" style="display:block; width:52px; height:52px; border-radius:12px; background-color:#f4f4f4;">
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="font-family:'Archivo Black', Arial Black, Arial, sans-serif; font-size:22px; font-weight:900; letter-spacing:1px; color:#f4f4f4; text-transform:uppercase;" class="gd-logo-text">
                   GD<span style="color:#6b6b6b;">REVIEW</span>
                 </td>
               </tr>
