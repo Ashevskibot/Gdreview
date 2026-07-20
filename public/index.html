@@ -125,7 +125,11 @@
   .wt-icon-btn:hover{ background:var(--white); color:#0a0a0a; transform:translateY(-2px); box-shadow:0 8px 24px rgba(255,255,255,0.18); }
   .wt-icon-btn[hidden]{ display:none; }
   /* Embedded YouTube player modal */
-  .wt-player-box{ max-width:min(1400px, 96vw); width:100%; padding:56px 18px 18px; background:var(--black2); }
+  /* The player box overrides the generic .modal-box width cap (the selector
+     is id-scoped so the later .modal-box rule can never shrink it again).
+     Sized against both viewport axes so the 16:9 video is as large as the
+     screen comfortably allows. */
+  #wt-player-modal .wt-player-box{ max-width:min(1280px, 94vw, calc((92vh - 74px) * 16 / 9)); width:100%; padding:56px 18px 18px; background:var(--black2); }
   #wt-player-modal .modal-box{ transform:translateY(28px) scale(0.93); transition:transform .42s var(--spring), opacity .32s var(--ease); }
   #wt-player-modal.show .modal-box{ transform:none; }
   .wt-video-wrap{ max-height:82vh; margin:0 auto; aspect-ratio:16/9; }
@@ -164,18 +168,27 @@
   @keyframes valPop { 0% { transform: scale(1); } 40% { transform: scale(1.4); color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.6); } 100% { transform: scale(1); } }
   /* Premium rating control: a sculpted 10-notch power bar — angled facets on a
      recessed track with a glowing progress edge and a floating value chip. */
-  .segbar { position:relative; display:flex; gap:5px; padding:14px 10px; margin:0 -10px; user-select:none; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0.004)); border:1px solid var(--line); transition:border-color .25s var(--ease), box-shadow .3s var(--ease); }
-  .segbar:hover{ border-color:var(--line2); box-shadow:0 10px 30px -16px rgba(255,255,255,0.18); }
-  .segbar .seg { position:relative; flex:1; height:30px; background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015)); border:1px solid rgba(255,255,255,0.09); border-radius:6px; clip-path:polygon(22% 0, 100% 0, 78% 100%, 0 100%); transform:scaleY(0.82); overflow:hidden; transition:transform .3s var(--spring), background .25s var(--ease), border-color .25s var(--ease), box-shadow .3s var(--ease); }
-  .segbar .seg::before{ content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(255,255,255,0.35), transparent 46%); opacity:0; transition:opacity .25s ease; }
-  .segbar .seg::after { content: ''; position: absolute; left: -100%; top: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent); transition: left 0.3s; }
-  .segbar .seg.filled { background: linear-gradient(180deg, #ffffff, #cfcfcf); border-color: var(--white); transform:scaleY(1); box-shadow: 0 0 10px rgba(255,255,255,0.28), 0 3px 8px -3px rgba(255,255,255,0.4); }
-  .segbar .seg.filled::before{ opacity:1; }
-  .segbar .seg.preview { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.45); transform:scaleY(0.94); }
-  .segbar .seg:hover { transform:scaleY(1.12) !important; background:var(--white) !important; border-color:var(--white) !important; box-shadow:0 6px 18px rgba(255,255,255,0.35) !important; z-index:2; }
-  .segbar .seg:hover::after { left: 100%; transition: left 0.5s ease; }
-  .seg.pop { animation: popSeg 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-  @keyframes popSeg { 0% { transform: scaleY(1.05); } 40% { transform: scaleY(1.3); box-shadow: 0 0 20px rgba(255,255,255,0.6); } 100% { transform: scaleY(1); } }
+  /* ---- GD-style rating sliders (replaced the old square segments) ----
+     A native range input keeps full keyboard/touch accessibility; the track
+     fill is driven by the --fill custom property, the thumb is a rotated
+     square — a monochrome nod to the GD cube. */
+  .rate-slider{ position:relative; padding:12px 12px; margin:0 -10px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0.004)); border:1px solid var(--line); transition:border-color .25s var(--ease), box-shadow .3s var(--ease); }
+  .rate-slider:hover{ border-color:var(--line2); box-shadow:0 10px 30px -16px rgba(255,255,255,0.18); }
+  .rate-range{ -webkit-appearance:none; appearance:none; display:block; width:100%; height:30px; margin:0; background:transparent; cursor:pointer; outline:none; }
+  .rate-range::-webkit-slider-runnable-track{ height:8px; border-radius:5px; border:1px solid rgba(255,255,255,0.10); background:linear-gradient(90deg, #ffffff 0%, #cfcfcf calc(var(--fill, 50%) - 1%), rgba(255,255,255,0.05) var(--fill, 50%), rgba(255,255,255,0.05) 100%); box-shadow:0 0 12px -2px rgba(255,255,255,0.18) inset; transition:box-shadow .25s var(--ease); }
+  .rate-range::-moz-range-track{ height:8px; border-radius:5px; border:1px solid rgba(255,255,255,0.10); background:rgba(255,255,255,0.05); }
+  .rate-range::-moz-range-progress{ height:8px; border-radius:5px; background:linear-gradient(90deg,#ffffff,#cfcfcf); box-shadow:0 0 10px rgba(255,255,255,0.25); }
+  .rate-range::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:20px; height:20px; margin-top:-7px; border-radius:5px; background:linear-gradient(180deg,#ffffff,#d6d6d6); border:1px solid var(--white); transform:rotate(45deg); box-shadow:0 0 10px rgba(255,255,255,0.35), 0 3px 8px -3px rgba(255,255,255,0.4); transition:transform .22s var(--spring), box-shadow .22s var(--ease); }
+  .rate-range::-moz-range-thumb{ width:20px; height:20px; border-radius:5px; background:linear-gradient(180deg,#ffffff,#d6d6d6); border:1px solid var(--white); transform:rotate(45deg); box-shadow:0 0 10px rgba(255,255,255,0.35), 0 3px 8px -3px rgba(255,255,255,0.4); transition:transform .22s var(--spring), box-shadow .22s var(--ease); }
+  .rate-range:hover::-webkit-slider-thumb{ transform:rotate(45deg) scale(1.14); box-shadow:0 0 16px rgba(255,255,255,0.55), 0 4px 12px -3px rgba(255,255,255,0.5); }
+  .rate-range:hover::-moz-range-thumb{ transform:rotate(45deg) scale(1.14); box-shadow:0 0 16px rgba(255,255,255,0.55), 0 4px 12px -3px rgba(255,255,255,0.5); }
+  .rate-range:active::-webkit-slider-thumb{ transform:rotate(45deg) scale(0.92); }
+  .rate-range:active::-moz-range-thumb{ transform:rotate(45deg) scale(0.92); }
+  .rate-range:focus-visible{ outline:none; }
+  .rate-range:focus-visible::-webkit-slider-thumb{ box-shadow:0 0 0 4px rgba(255,255,255,0.22), 0 0 14px rgba(255,255,255,0.5); }
+  .rate-range:focus-visible::-moz-range-thumb{ box-shadow:0 0 0 4px rgba(255,255,255,0.22), 0 0 14px rgba(255,255,255,0.5); }
+  .rate-ticks{ display:flex; justify-content:space-between; padding:4px 9px 0; pointer-events:none; }
+  .rate-ticks i{ width:1px; height:5px; background:rgba(255,255,255,0.16); border-radius:1px; }
 
   /* ---------- CRITERIA GUIDE ---------- */
   .criteria-guide{ margin:-16px 0 44px; border:1px solid var(--line); border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.005)); overflow:hidden; transition:border-color .25s var(--ease), box-shadow .25s var(--ease); }
@@ -285,7 +298,7 @@
   .modal-overlay.show{opacity:1;pointer-events:auto;}
   .modal-box{ position:relative; width:100%; max-width:400px; background:var(--panel); border:1px solid var(--line2); border-radius:16px; padding:36px 32px 28px; text-align:center; box-shadow:0 30px 80px -20px rgba(0,0,0,0.7), 0 0 40px rgba(255,255,255,0.04); transform:translateY(20px) scale(0.95); opacity:0; transition:transform .4s var(--spring), opacity .32s var(--ease); }
   .modal-overlay.show .modal-box{transform:translateY(0) scale(1);opacity:1;}
-  .modal-box-tall{ max-height:82vh; display:flex; flex-direction:column; padding-bottom:24px; overscroll-behavior:contain; }
+  .modal-box-tall{ max-height:88vh; display:flex; flex-direction:column; padding-bottom:24px; overscroll-behavior:contain; }
   .modal-scroll-body{ overflow-y:auto; overscroll-behavior:contain; padding-right:6px; margin-right:-6px; flex:1 1 auto; min-height:0; text-align:left; }
   .modal-title{ font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:20px; letter-spacing:-0.01em; margin-bottom:10px; }
   .modal-text{ font-size:13px; line-height:1.6; color:var(--dim); margin-bottom:28px; }
@@ -299,6 +312,10 @@
   .modal-input { display: block; width: 100%; background: var(--black); border: 1px solid var(--line2); border-radius: 8px; color: var(--white); padding: 12px; margin-bottom: 20px; font-size: 13px; text-align: left; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
   .modal-input:focus { border-color: var(--white); box-shadow:0 0 0 3px rgba(255,255,255,0.08); }
   .modal-input-label { display: block; text-align: left; font-size: 11px; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; letter-spacing: 0.1em; }
+  /* ---- Hitbox layer: small controls get an invisible enlarged hit area so
+     the entire visible button (and a small halo around it) is clickable. ---- */
+  .fw-chip-x, .footer-support-link, .lang-opt, .back-btn, .like-btn, .user-menu-btn, .tk-status-opt, .chip{ position:relative; }
+  .modal-close::after, .eye-btn::after, .wt-icon-btn::after, .fw-chip-x::after, .footer-support-link::after, .back-btn::after, .like-btn::after, .tk-status-opt::after{ content:''; position:absolute; inset:-8px; border-radius:inherit; }
   .modal-close{ position:absolute; top:16px;right:16px; width:32px;height:32px; display:flex;align-items:center;justify-content:center; background:var(--black2); border:1px solid var(--line); border-radius:8px; color:var(--dim); font-size:18px; line-height:1; cursor:pointer; transition:all .2s var(--ease); z-index:2; }
   .modal-close:hover{color:var(--white);border-color:var(--line2);background:rgba(255,255,255,0.06);}
 
@@ -341,6 +358,11 @@
   .hist-count{ font-family:'Space Mono',monospace; font-size:11px; font-weight:700; fill:var(--white); opacity:0; animation:fadeInSlow .4s ease forwards .5s; }
   .hist-label{ font-family:'Space Mono',monospace; font-size:10px; fill:var(--dim); text-transform:uppercase; } .hist-axis{stroke:var(--line);stroke-width:1;}
   .limited-field{ position:relative; display:flex; flex-direction:column; gap:6px; }
+  /* Inputs inside a limited-field must not add their own bottom margin —
+     otherwise the character counter floats too far below the field. */
+  .limited-field .title-input, .limited-field textarea{ margin-bottom:0; }
+  .limited-field{ margin-bottom:20px; }
+  .limited-field .char-count{ margin-top:-2px; }
   .char-count{ align-self:flex-end; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.08em; color:var(--dim2); transition:color .2s ease; }
   .limited-field.limit-near .char-count{ color:var(--dim); }
   .limited-field.limit-invalid .char-count{ color:#e05555; }
@@ -471,6 +493,8 @@
   #dash-rankings{ display:flex; flex-direction:column; gap:32px; transition:opacity .3s var(--ease), transform .3s var(--ease); }
   #dash-rankings.dash-fade{ opacity:0.2; transform:translateY(5px); pointer-events:none; }
   .dash-sec-head{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+  /* GD-style square-cut monochrome section icon (globe next to Global Statistics) */
+  .dash-sec-ico{ width:clamp(22px,2.6vw,28px); height:clamp(22px,2.6vw,28px); flex-shrink:0; color:var(--white); opacity:0.92; filter:drop-shadow(0 0 8px rgba(255,255,255,0.25)); }
   .dash-sec-title{ font-family:'Archivo Black',sans-serif; font-size:clamp(19px,2.6vw,26px); line-height:1.1; text-transform:uppercase; letter-spacing:0.02em; color:var(--white); }
   /* ---- Category marquee headers: endless advertising-style ticker.
      Two identical groups tile seamlessly while the track slides -50%. ---- */
@@ -625,7 +649,11 @@
   .wheel-empty[hidden]{ display:none; }
 
   /* ---------- RANDOM LEVEL: CONTROLS & FILTERS ---------- */
-  .spin-controls{ display:flex; justify-content:center; margin-bottom:36px; }
+  .spin-controls{ position:relative; display:flex; justify-content:center; align-items:center; gap:14px; margin-bottom:36px; }
+  .sfx-toggle{ width:46px; height:46px; display:flex; align-items:center; justify-content:center; background:var(--panel); border:1px solid var(--line); border-radius:50%; color:var(--dim); cursor:pointer; transition:all .22s var(--spring); }
+  .sfx-toggle:hover{ color:var(--white); border-color:var(--line2); transform:translateY(-1px); }
+  .sfx-toggle.muted{ opacity:0.55; }
+  .sfx-toggle svg{ width:20px; height:20px; }
   .spin-btn{ position:relative; min-width:230px; background:var(--white); color:#0a0a0a; border:none; border-radius:999px; font-family:'Archivo Black',sans-serif; font-size:15px; letter-spacing:0.22em; text-transform:uppercase; padding:19px 48px; cursor:pointer; overflow:hidden; box-shadow:0 12px 44px -12px rgba(255,255,255,0.4); transition:transform .22s var(--spring), box-shadow .3s var(--ease), opacity .2s ease; }
   .spin-btn::after{ content:''; position:absolute; top:0; bottom:0; width:64px; left:-90px; background:linear-gradient(100deg, transparent, rgba(0,0,0,0.15), transparent); animation:discSweep 3.4s var(--ease) infinite; }
   .spin-btn:hover{ transform:translateY(-2px) scale(1.02); box-shadow:0 18px 54px -12px rgba(255,255,255,0.55); }
@@ -969,12 +997,12 @@
   .ts-completed{ color:var(--dim); border-color:var(--line2); background:rgba(255,255,255,0.03); }
   .ticket-empty{ padding:26px 12px; text-align:center; border:1px dashed var(--line); border-radius:12px; font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--dim2); }
   /* Ticket modal (conversation) */
-  .ticket-box{ max-width:640px; text-align:left; padding:30px 28px 22px; }
+  .ticket-box{ max-width:min(860px, 96vw); text-align:left; padding:30px 28px 22px; }
   .ticket-head{ display:flex; align-items:center; gap:12px; margin-bottom:10px; padding-right:44px; }
   .ticket-ref{ font-family:'Space Mono',monospace; font-size:12px; font-weight:700; letter-spacing:0.1em; color:var(--dim); background:var(--black2); border:1px solid var(--line); border-radius:7px; padding:5px 10px; }
   .ticket-meta{ font-size:11.5px; color:var(--dim2); margin-bottom:16px; }
   .ticket-meta b{ color:var(--dim); }
-  .ticket-thread{ display:flex; flex-direction:column; gap:10px; padding:14px 2px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); max-height:44vh; }
+  .ticket-thread{ display:flex; flex-direction:column; gap:10px; padding:14px 2px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); max-height:58vh; min-height:180px; }
   .tk-msg{ max-width:88%; padding:11px 14px; border-radius:12px; font-size:13px; line-height:1.6; white-space:pre-wrap; word-break:break-word; animation:fadeSlideIn .3s var(--ease) backwards; }
   .tk-msg.user{ align-self:flex-start; background:var(--black2); border:1px solid var(--line); color:var(--white); border-bottom-left-radius:4px; }
   .tk-msg.admin{ align-self:flex-end; background:rgba(255,255,255,0.09); border:1px solid var(--line2); color:var(--white); border-bottom-right-radius:4px; }
@@ -983,7 +1011,7 @@
   .tk-msg.admin .tk-msg-author{ color:#a8ccff; }
   .tk-msg-time{ font-family:'Space Mono',monospace; font-size:9.5px; color:var(--dim2); }
   .ticket-reply-row{ display:flex; gap:10px; align-items:flex-end; margin-top:14px; }
-  .ticket-reply-row .support-textarea{ min-height:52px; }
+  .ticket-reply-row .support-textarea{ min-height:64px; }
   .ticket-admin-tools{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding-top:14px; }
   .ticket-admin-tools[hidden]{ display:none; }
   .ticket-status-row{ display:flex; gap:6px; flex-wrap:wrap; }
@@ -1228,7 +1256,7 @@
         </div>
 
         <div class="dash-section">
-          <div class="dash-sec-head"><span class="dash-sec-title" data-i18n="secCommunity">Global Statistics &amp; Top Reviewers</span></div>
+          <div class="dash-sec-head"><svg class="dash-sec-ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="square"><circle cx="12" cy="12" r="9.2"/><ellipse cx="12" cy="12" rx="4.2" ry="9.2"/><path d="M3.4 8.6h17.2M3.4 15.4h17.2"/></svg><span class="dash-sec-title" data-i18n="secCommunity">Global Statistics &amp; Top Reviewers</span></div>
           <div class="dash-community">
             <div class="chart-card">
               <div class="chart-title" data-i18n="dashStatsTitle">Global Statistics</div>
@@ -1483,6 +1511,7 @@
 
       <div class="spin-controls">
         <button class="spin-btn" id="spin-btn">Spin</button>
+        <button class="sfx-toggle" id="sfx-toggle" type="button" aria-pressed="false" data-i18n-title="sfxToggle" title="Sound effects"></button>
       </div>
 
       <div class="spin-filters" id="spin-filters">
@@ -1562,8 +1591,8 @@
     </section>
 
     <footer>
-      <div class="site-copyright">© <span id="footer-year"></span> GD Review — <span data-i18n="madeBy">made by</span> <strong>Crxz</strong></div>
-      <button class="footer-support-link" id="footer-support" data-i18n="footerSupport">Report a problem</button>
+      <div class="site-copyright">© <span id="footer-year"></span> GD Review</div>
+      <button class="footer-support-link" id="footer-support" data-i18n="footerSupport">Contact Support</button>
     </footer>
   </div>
 </div>
@@ -1779,7 +1808,7 @@ const i18n = {
     setPass:'Password', setPassSub:'At least 8 characters.', newPass:'New password', btnUpdatePass:'Update Password', passChanged:'Password updated',
     btnLogout:'Log Out', logoutText:'Are you sure you want to log out?',
     setDanger:'Danger Zone', setDangerSub:'Deleting your account removes all your reviews permanently.', btnDeleteAcc:'Delete Account', deleteTitle:'Delete account?', deleteText:'This action is permanent. All your reviews will be removed. Enter your password to confirm.', accDeleted:'Account deleted',
-    footerSupport:'Report a problem',
+    footerSupport:'Contact Support',
     supportEyebrow:'Support Center', supportTitle:'How can we help?', supportSub:'Report bugs, account problems or request verification — we reply right here.',
     supportNewTicket:'New Request', supportNewSub:'Describe the problem — the more detail, the faster we can help.',
     supportCategory:'Category', supportSubject:'Subject', supportMessage:'Message', supportExtra:'Additional information (optional)', supportExtraPh:'Device, browser, level ID — anything that helps',
@@ -1793,10 +1822,10 @@ const i18n = {
     vSubjectLen:'Subject must be 3–120 characters', vMessageLen:'Message must be at least 10 characters',
     err_ticket_subject_invalid:'Subject must be 3–120 characters', err_ticket_message_invalid:'Message must be 10–3000 characters',
     adminTicketsTitle:'Support Tickets', adminTicketSearchPh:'Search by ticket, subject or user…', adminTicketsEmpty:'No tickets here', adminTicketStatusChanged:'Ticket status updated',
-    atAll:'All', adminVerifyTitle:'Verified Users', adminVerifySub:'Grant or remove the blue verification badge. The badge appears everywhere the username is shown.',
+    atAll:'All', atActive:'Active', atArchive:'Archive', sfxToggle:'Sound effects', adminVerifyTitle:'Verified Users', adminVerifySub:'Grant or remove the blue verification badge. The badge appears everywhere the username is shown.',
     adminVerifyPh:'Username…', adminVerifyGrant:'Verify', adminVerifyGranted:'Verification granted', adminVerifyRevoked:'Verification removed', adminVerifyEmpty:'No verified users yet',
     adminVerifyGrantBtn:'Grant verification', adminVerifyRevokeBtn:'Remove verification', verifiedBadgeTitle:'Verified',
-    detailSummary:'Review', detailNoSummary:'No written summary provided.', madeBy:'made by', ok:'OK',
+    detailSummary:'Review', detailNoSummary:'No written summary provided.', ok:'OK',
     reviewRules:'Review rules: no abusive insults, no advertising, no external links. Every submission is checked automatically before it is published.',
     modRejectedTitle:'Rejected by moderation', modRetryHint:'Edit the content and try publishing again.',
     modReason_toxicity:'The text contains insults or toxic language.', modReason_forbidden_words:'The text contains words that are not allowed on this platform.', modReason_links:'External links are not allowed.', modReason_advertising:'Advertising or self-promotion is not allowed.', modReason_image:'The image contains prohibited content.', modReason_unavailable:'The moderation service is temporarily unavailable — nothing was published.',
@@ -1873,7 +1902,7 @@ const i18n = {
     setPass:'Пароль', setPassSub:'Минимум 8 символов.', newPass:'Новый пароль', btnUpdatePass:'Обновить пароль', passChanged:'Пароль обновлён',
     btnLogout:'Выйти', logoutText:'Вы уверены, что хотите выйти?',
     setDanger:'Опасная зона', setDangerSub:'Удаление аккаунта навсегда сотрёт все ваши рецензии.', btnDeleteAcc:'Удалить аккаунт', deleteTitle:'Удалить аккаунт?', deleteText:'Действие необратимо. Все рецензии будут удалены. Введите пароль для подтверждения.', accDeleted:'Аккаунт удалён',
-    footerSupport:'Сообщить о проблеме',
+    footerSupport:'Связаться с поддержкой',
     supportEyebrow:'Центр поддержки', supportTitle:'Чем помочь?', supportSub:'Сообщайте о багах, проблемах с аккаунтом или запросите верификацию — мы ответим прямо здесь.',
     supportNewTicket:'Новое обращение', supportNewSub:'Опишите проблему — чем больше деталей, тем быстрее мы поможем.',
     supportCategory:'Категория', supportSubject:'Тема', supportMessage:'Сообщение', supportExtra:'Дополнительная информация (необязательно)', supportExtraPh:'Устройство, браузер, ID уровня — всё, что поможет',
@@ -1887,10 +1916,10 @@ const i18n = {
     vSubjectLen:'Тема должна быть от 3 до 120 символов', vMessageLen:'Сообщение должно быть не короче 10 символов',
     err_ticket_subject_invalid:'Тема должна быть от 3 до 120 символов', err_ticket_message_invalid:'Сообщение должно быть от 10 до 3000 символов',
     adminTicketsTitle:'Обращения в поддержку', adminTicketSearchPh:'Поиск по номеру, теме или пользователю…', adminTicketsEmpty:'Обращений нет', adminTicketStatusChanged:'Статус обращения обновлён',
-    atAll:'Все', adminVerifyTitle:'Верифицированные пользователи', adminVerifySub:'Выдавайте или снимайте синюю галочку. Значок появляется везде, где показывается имя пользователя.',
+    atAll:'Все', atActive:'Активные', atArchive:'Архив', sfxToggle:'Звуковые эффекты', adminVerifyTitle:'Верифицированные пользователи', adminVerifySub:'Выдавайте или снимайте синюю галочку. Значок появляется везде, где показывается имя пользователя.',
     adminVerifyPh:'Имя пользователя…', adminVerifyGrant:'Верифицировать', adminVerifyGranted:'Верификация выдана', adminVerifyRevoked:'Верификация снята', adminVerifyEmpty:'Пока нет верифицированных пользователей',
     adminVerifyGrantBtn:'Выдать верификацию', adminVerifyRevokeBtn:'Снять верификацию', verifiedBadgeTitle:'Верифицирован',
-    detailSummary:'Рецензия', detailNoSummary:'Без текстового описания.', madeBy:'сделано', ok:'ОК',
+    detailSummary:'Рецензия', detailNoSummary:'Без текстового описания.', ok:'ОК',
     reviewRules:'Правила рецензий: без оскорблений, без рекламы, без внешних ссылок. Каждая публикация автоматически проверяется перед размещением.',
     modRejectedTitle:'Отклонено модерацией', modRetryHint:'Отредактируйте контент и попробуйте опубликовать снова.',
     modReason_toxicity:'Текст содержит оскорбления или токсичные выражения.', modReason_forbidden_words:'Текст содержит слова, запрещённые на платформе.', modReason_links:'Внешние ссылки запрещены.', modReason_advertising:'Реклама и самопиар запрещены.', modReason_image:'Изображение содержит запрещённый контент.', modReason_unavailable:'Сервис модерации временно недоступен — ничего не опубликовано.',
@@ -1912,6 +1941,7 @@ function isModerationError(code){ return code === 'content_rejected' || code ===
 function applyI18n(){
   qsa('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
   qsa('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.getAttribute('data-i18n-ph')); });
+  qsa('[data-i18n-title]').forEach(el => { el.title = t(el.getAttribute('data-i18n-title')); });
   updatePublishLabel();
   buildSectionMarquees();
 }
@@ -1960,9 +1990,16 @@ function toast(msg, type){
   c.appendChild(el); requestAnimationFrame(() => el.classList.add('show'));
   setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 450); }, 3400);
 }
-let modalLockCount = 0;
-function openModalOverlay(el){ el.classList.add('show'); modalLockCount++; document.documentElement.style.overflow='hidden'; document.body.style.overflow='hidden'; }
-function closeModalOverlay(el){ if(!el.classList.contains('show')) return; el.classList.remove('show'); modalLockCount = Math.max(0, modalLockCount-1); if(modalLockCount===0){ document.documentElement.style.overflow=''; document.body.style.overflow=''; } }
+/* Scroll locking is derived from the DOM (how many overlays are visible)
+   rather than a counter — double open/close calls can therefore never leave
+   the page stuck with a hidden overflow. */
+function syncScrollLock(){
+  const anyOpen = document.querySelector('.modal-overlay.show') !== null;
+  document.documentElement.style.overflow = anyOpen ? 'hidden' : '';
+  document.body.style.overflow = anyOpen ? 'hidden' : '';
+}
+function openModalOverlay(el){ el.classList.add('show'); syncScrollLock(); }
+function closeModalOverlay(el){ if(!el.classList.contains('show')) return; el.classList.remove('show'); syncScrollLock(); }
 function confirmDialog(opts){
   return new Promise(function(resolve){
     const m = $('confirm-modal');
@@ -1983,6 +2020,25 @@ function confirmDialog(opts){
     if(opts.input) setTimeout(function(){ inp.focus(); }, 100);
   });
 }
+/* ---- Global keyboard support for the remaining dialogs ----
+   ESC cancels the confirm dialog, the image cropper and the walkthrough
+   submission modal; ENTER confirms the confirm dialog. Other modals already
+   have their own ESC handlers next to their logic. */
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape'){
+    const cm = $('confirm-modal');
+    if(cm.classList.contains('show')){ const c = $('confirm-cancel'); if(c.onclick) c.onclick(); return; }
+    if($('crop-modal').classList.contains('show')){ $('crop-cancel-btn').click(); return; }
+    const wm = $('walkthrough-modal');
+    if(wm.classList.contains('show')){ closeModalOverlay(wm); return; }
+  }
+  if(e.key === 'Enter' && !e.shiftKey){
+    const cm = $('confirm-modal');
+    if(cm.classList.contains('show') && e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'BUTTON'){
+      e.preventDefault(); const ok = $('confirm-ok'); if(ok.onclick) ok.onclick(); return;
+    }
+  }
+});
 function setBusy(btn, busy){
   if(busy){ btn.dataset.origText = btn.textContent; btn.classList.add('btn-loading'); btn.disabled = true; }
   else { btn.classList.remove('btn-loading'); btn.disabled = false; if(btn.dataset.origText){ btn.textContent = btn.dataset.origText; delete btn.dataset.origText; } }
@@ -2014,7 +2070,7 @@ function injectEyes(){
     if(glow && !glowQueued){ glowQueued = true; requestAnimationFrame(function(){ glowQueued = false; glow.style.background = 'radial-gradient(600px circle at '+mx+'px '+my+'px, rgba(255,255,255,0.06), transparent 70%)'; }); }
   }, { passive:true });
   (function animateRing(){ rx += (mx-rx)*0.18; ry += (my-ry)*0.18; ring.style.left = rx+'px'; ring.style.top = ry+'px'; requestAnimationFrame(animateRing); })();
-  const hoverSel = 'button, a, select, .tab-btn, .delete-btn, .seg, .review-bar, .modal-close, .eye-btn, .chip, .like-btn, .feed-card, .level-card, .rank-card, .lb-row, .user-result-card, .lang-opt, .back-btn, .fc-level, .fc-user, .fc-ava, .user-menu-btn, .user-dd-item, .frame-option, .discover-banner, .sf-diff-opt, .sf-seg-opt, .sf-switch, .spin-btn, .spin-mode-opt, .cw-item, .cw-result, .diff-opt, .ticket-row, .admin-ticket-row, .support-cat, .tk-status-opt, .footer-support-link, .wt-icon-btn';
+  const hoverSel = 'button, a, select, .tab-btn, .delete-btn, .rate-range, .review-bar, .modal-close, .eye-btn, .chip, .like-btn, .feed-card, .level-card, .rank-card, .lb-row, .user-result-card, .lang-opt, .back-btn, .fc-level, .fc-user, .fc-ava, .user-menu-btn, .user-dd-item, .frame-option, .discover-banner, .sf-diff-opt, .sf-seg-opt, .sf-switch, .spin-btn, .spin-mode-opt, .cw-item, .cw-result, .diff-opt, .ticket-row, .admin-ticket-row, .support-cat, .tk-status-opt, .footer-support-link, .wt-icon-btn';
   const textSel = 'input[type="text"], input[type="email"], input[type="password"], input[type="search"], input:not([type]), textarea';
   document.addEventListener('mouseover', function(e){
     if(e.target.closest(textSel)){ document.body.classList.add('cursor-text'); document.body.classList.remove('cursor-hover'); return; }
@@ -2970,7 +3026,9 @@ $('tk-admin-tools').addEventListener('click', async function(e){
 /* ================= ADMIN: SUPPORT TICKETS ================= */
 let atStatus = '', atQuery = '', atSearchTO = 0;
 function buildAtChips(){
-  const opts = [ ['', 'atAll'], ['open','tsOpen'], ['in_progress','tsInProgress'], ['completed','tsCompleted'] ];
+  /* '' = active tickets only (server hides completed by default);
+     'completed' = the archive; 'all' shows everything including archived. */
+  const opts = [ ['', 'atActive'], ['open','tsOpen'], ['in_progress','tsInProgress'], ['completed','atArchive'], ['all','atAll'] ];
   $('at-status-chips').innerHTML = opts.map(function(o){
     return '<button class="chip'+(atStatus === o[0] ? ' active' : '')+'" data-at-status="'+o[0]+'">'+escapeHTML(t(o[1]))+'</button>';
   }).join('');
@@ -3113,27 +3171,36 @@ document.addEventListener('click', function(e){
   const det = e.target.closest('[data-detail]');
   if(det){ openDetailByUid(det.dataset.detail); }
 });
-/* ================= CREATE: RATING GRID ================= */
+/* ================= CREATE: RATING SLIDERS ================= */
+/* GD-styled sliders (native range inputs) — same 1–10 integer scoring model
+   as before, with full keyboard (arrow keys) and touch support built in. */
 const ratingValues = {};
 (function buildRatingGrid(){
   const gridEl = $('grid-ratings');
+  let ticks = ''; for(let i=0;i<10;i++) ticks += '<i></i>';
   CATEGORIES.forEach(function(cat){
     ratingValues[cat.key] = 5;
     const wrap = document.createElement('div'); wrap.className = 'rate-item';
-    let segs = ''; for(let i=1;i<=10;i++){ segs += '<div class="seg'+(i<=5?' filled':'')+'" data-v="'+i+'"></div>'; }
-    wrap.innerHTML = '<label><span id="label-text-'+cat.key+'">'+t(cat.i18nKey)+'</span> <span class="val" id="val-'+cat.key+'">5</span></label><div class="segbar" id="segbar-'+cat.key+'" data-key="'+cat.key+'">'+segs+'</div>';
+    wrap.innerHTML = '<label><span id="label-text-'+cat.key+'">'+t(cat.i18nKey)+'</span> <span class="val" id="val-'+cat.key+'">5</span></label>'
+      + '<div class="rate-slider"><input type="range" class="rate-range" id="slider-'+cat.key+'" min="1" max="10" step="1" value="5" aria-labelledby="label-text-'+cat.key+'"><div class="rate-ticks" aria-hidden="true">'+ticks+'</div></div>';
     gridEl.appendChild(wrap);
   });
 })();
-function paintSegbar(key, value, previewValue){ qsa('#segbar-'+key+' .seg').forEach(function(seg){ const v = parseInt(seg.dataset.v,10); seg.classList.toggle('filled', v <= value); seg.classList.toggle('preview', previewValue != null && v <= previewValue && v > value); }); }
-let isDraggingRating = false;
-document.addEventListener('mouseup', function(){ isDraggingRating = false; });
+function paintSlider(key, value){
+  const inp = $('slider-'+key); if(!inp) return;
+  /* Track fill percentage: value 1..10 mapped onto the track width. */
+  inp.style.setProperty('--fill', ((value - 1) / 9 * 100) + '%');
+}
 CATEGORIES.forEach(function(cat){
-  const bar = $('segbar-'+cat.key), valEl = $('val-'+cat.key);
-  function updateVal(seg){ const v = parseInt(seg.dataset.v,10); if(ratingValues[cat.key] !== v){ ratingValues[cat.key] = v; valEl.textContent = v; paintSegbar(cat.key, v); recalcFinal(); seg.classList.remove('pop'); void seg.offsetWidth; seg.classList.add('pop'); valEl.classList.remove('val-pop'); void valEl.offsetWidth; valEl.classList.add('val-pop'); } }
-  bar.addEventListener('mousedown', function(e){ isDraggingRating = true; const seg = e.target.closest('.seg'); if(seg) updateVal(seg); });
-  bar.addEventListener('mousemove', function(e){ const seg = e.target.closest('.seg'); if(!seg) return; if(isDraggingRating) updateVal(seg); else paintSegbar(cat.key, ratingValues[cat.key], parseInt(seg.dataset.v,10)); });
-  bar.addEventListener('mouseleave', function(){ paintSegbar(cat.key, ratingValues[cat.key]); });
+  const inp = $('slider-'+cat.key), valEl = $('val-'+cat.key);
+  paintSlider(cat.key, 5);
+  inp.addEventListener('input', function(){
+    const v = parseInt(inp.value, 10);
+    if(ratingValues[cat.key] === v) return;
+    ratingValues[cat.key] = v; valEl.textContent = v;
+    paintSlider(cat.key, v); recalcFinal();
+    valEl.classList.remove('val-pop'); void valEl.offsetWidth; valEl.classList.add('val-pop');
+  });
 });
 function applyScoreTheme(score){ const sc = scoreColors(score); const el = $('final-score'); el.style.setProperty('--score-color', sc.color); el.style.setProperty('--score-glow', sc.glow); }
 function recalcFinal(){ const sum = CATEGORIES.reduce(function(a,c){ return a + ratingValues[c.key]; }, 0); const avg = sum / CATEGORIES.length; $('final-score').innerHTML = avg.toFixed(1)+'<span>/10</span>'; applyScoreTheme(avg); return avg; }
@@ -3504,9 +3571,13 @@ function openCropper(file, type){
         const coverScale = Math.max(wrapperW/img.width, wrapperH/img.height);
         cropperState.minScale = coverScale; cropperState.scale = coverScale;
         cropperState.x = (wrapperW - img.width*coverScale)/2; cropperState.y = (wrapperH - img.height*coverScale)/2;
-        cropperState.aspectLocked = (type === 'avatar');
+        /* Both targets keep a fixed aspect while resizing: avatars stay square
+           and banners stay at the ratio they are displayed at (~16:5). A crop
+           that matches the display ratio can never look stretched or cut off. */
+        cropperState.aspectLocked = true;
+        cropperState.aspect = (type === 'avatar') ? 1 : (16 / 5);
         if(type === 'avatar'){ const size = Math.min(wrapperW, wrapperH)*0.62; cropperState.guideW = size; cropperState.guideH = size; cropperState.guideLeft = (wrapperW-size)/2; cropperState.guideTop = (wrapperH-size)/2; cropGuide.className = 'crop-overlay-guide' + (((settingsFrame || (me && me.frame)) === 'frame-circle') ? ' is-circle' : ''); }
-        else { cropperState.guideW = wrapperW*0.9; cropperState.guideH = wrapperH*0.5; cropperState.guideLeft = (wrapperW-cropperState.guideW)/2; cropperState.guideTop = (wrapperH-cropperState.guideH)/2; cropGuide.className = 'crop-overlay-guide'; }
+        else { let gw = wrapperW*0.9, gh = gw/cropperState.aspect; if(gh > wrapperH*0.9){ gh = wrapperH*0.9; gw = gh*cropperState.aspect; } cropperState.guideW = gw; cropperState.guideH = gh; cropperState.guideLeft = (wrapperW-gw)/2; cropperState.guideTop = (wrapperH-gh)/2; cropGuide.className = 'crop-overlay-guide'; }
         updateGuideVisual(); updateCropVisual();
       });
     };
@@ -3522,7 +3593,7 @@ cropArea.addEventListener('wheel', function(e){ e.preventDefault(); const rect =
 cropArea.addEventListener('pointerdown', function(e){ cropperState.dragMode = 'pan'; cropperState.startX = e.clientX - cropperState.x; cropperState.startY = e.clientY - cropperState.y; });
 cropGuide.addEventListener('pointerdown', function(e){ if(e.target === cropResizeHandle) return; e.stopPropagation(); cropperState.dragMode = 'move-guide'; cropperState.startX = e.clientX; cropperState.startY = e.clientY; cropperState.startGuideLeft = cropperState.guideLeft; cropperState.startGuideTop = cropperState.guideTop; });
 cropResizeHandle.addEventListener('pointerdown', function(e){ e.stopPropagation(); cropperState.dragMode = 'resize-guide'; cropperState.startX = e.clientX; cropperState.startY = e.clientY; cropperState.startGuideW = cropperState.guideW; cropperState.startGuideH = cropperState.guideH; });
-document.addEventListener('pointermove', function(e){ if(!cropperState.dragMode) return; const wrapperW = cropArea.clientWidth, wrapperH = cropArea.clientHeight; if(cropperState.dragMode === 'pan'){ cropperState.x = e.clientX - cropperState.startX; cropperState.y = e.clientY - cropperState.startY; clampPan(); updateCropVisual(); } else if(cropperState.dragMode === 'move-guide'){ cropperState.guideLeft = cropperState.startGuideLeft + (e.clientX - cropperState.startX); cropperState.guideTop = cropperState.startGuideTop + (e.clientY - cropperState.startY); clampGuidePosition(); updateGuideVisual(); } else if(cropperState.dragMode === 'resize-guide'){ const dx = e.clientX - cropperState.startX, dy = e.clientY - cropperState.startY; const maxW = wrapperW - cropperState.guideLeft, maxH = wrapperH - cropperState.guideTop; if(cropperState.aspectLocked){ const d = Math.max(dx, dy); const size = clamp(cropperState.startGuideW + d, MIN_GUIDE, Math.min(maxW, maxH)); cropperState.guideW = size; cropperState.guideH = size; } else { cropperState.guideW = clamp(cropperState.startGuideW + dx, MIN_GUIDE, maxW); cropperState.guideH = clamp(cropperState.startGuideH + dy, MIN_GUIDE, maxH); } updateGuideVisual(); } });
+document.addEventListener('pointermove', function(e){ if(!cropperState.dragMode) return; const wrapperW = cropArea.clientWidth, wrapperH = cropArea.clientHeight; if(cropperState.dragMode === 'pan'){ cropperState.x = e.clientX - cropperState.startX; cropperState.y = e.clientY - cropperState.startY; clampPan(); updateCropVisual(); } else if(cropperState.dragMode === 'move-guide'){ cropperState.guideLeft = cropperState.startGuideLeft + (e.clientX - cropperState.startX); cropperState.guideTop = cropperState.startGuideTop + (e.clientY - cropperState.startY); clampGuidePosition(); updateGuideVisual(); } else if(cropperState.dragMode === 'resize-guide'){ const dx = e.clientX - cropperState.startX, dy = e.clientY - cropperState.startY; const maxW = wrapperW - cropperState.guideLeft, maxH = wrapperH - cropperState.guideTop; const ar = cropperState.aspect || 1; const d = Math.max(dx, dy * ar); const w = clamp(cropperState.startGuideW + d, Math.max(MIN_GUIDE, MIN_GUIDE * ar), Math.min(maxW, maxH * ar)); cropperState.guideW = w; cropperState.guideH = w / ar; updateGuideVisual(); } });
 document.addEventListener('pointerup', function(){ cropperState.dragMode = null; });
 document.addEventListener('pointercancel', function(){ cropperState.dragMode = null; });
 $('crop-save-btn').addEventListener('click', function(){
@@ -3690,9 +3761,46 @@ $('btn-delete-account').addEventListener('click', async function(){
    accelerates dramatically on Spin, decelerates along a long physical curve
    and settles back with a small overshoot before the reveal. */
 
-/* Sound-ready hooks: every key beat of the spin is routed through these
-   no-ops, so real audio can be added later without touching animation code. */
-const SFX = { tick:function(){}, spinStart:function(){}, slowdown:function(){}, reveal:function(){} };
+/* ---- Spin sound effects ----
+   Everything is synthesized with the Web Audio API — no audio files, no
+   network requests, near-zero CPU. The AudioContext is created lazily on the
+   first spin (a user gesture, so autoplay policies are satisfied) and the
+   whole thing can be muted with the speaker toggle (persisted). */
+const SFX = (function(){
+  let ctx = null, muted = localStorage.getItem('gd_sfx_muted') === '1';
+  function ac(){
+    if(muted) return null;
+    if(!ctx){ try{ ctx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ return null; } }
+    if(ctx.state === 'suspended') ctx.resume().catch(function(){});
+    return ctx;
+  }
+  /* One short percussive blip — the building block for every effect. */
+  function blip(freq, dur, gain, type, when, slide){
+    const c = ac(); if(!c) return;
+    const t = c.currentTime + (when || 0);
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = type || 'square'; o.frequency.setValueAtTime(freq, t);
+    if(slide) o.frequency.exponentialRampToValueAtTime(Math.max(40, slide), t + dur);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(gain, t + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(t); o.stop(t + dur + 0.02);
+  }
+  let lastTick = 0;
+  return {
+    get muted(){ return muted; },
+    toggleMute(){ muted = !muted; localStorage.setItem('gd_sfx_muted', muted ? '1' : '0'); return muted; },
+    /* Wheel pointer tick — rate-limited so fast spins stay subtle. */
+    tick(){ const now = performance.now(); if(now - lastTick < 45) return; lastTick = now; blip(1660, 0.035, 0.045, 'square'); },
+    /* Rising sweep as the wheel accelerates. */
+    spinStart(){ blip(220, 0.38, 0.06, 'triangle', 0, 880); },
+    /* Soft descending cue as it starts settling. */
+    slowdown(){ blip(660, 0.3, 0.045, 'triangle', 0, 330); },
+    /* Reveal: tiny GD-ish major arpeggio. */
+    reveal(){ blip(523.25, 0.16, 0.06, 'triangle'); blip(659.25, 0.16, 0.06, 'triangle', 0.09); blip(783.99, 0.28, 0.07, 'triangle', 0.18); }
+  };
+})();
 
 const WHEEL_STEP = 248; /* card width 232px + 16px gap — keep in sync with CSS */
 const SPIN_CATS = [ ['recent','spinCatAll'], ['awarded','popRated'], ['featured','popFeatured'], ['magic','popMagic'], ['trending','popTrending'] ];
@@ -4422,7 +4530,8 @@ function stopSpinPage(){
    whenever it drifts out of the middle copy — the user never sees a start
    or an end. Movement is fully manual: drag with momentum (the cursor is
    hidden while dragging), the slim scrollbar, or native touch scrolling.
-   Mouse-wheel horizontal scrolling is intentionally not supported. */
+   Horizontal wheel/touchpad deltas scroll the strip; vertical wheel
+   scrolling keeps moving the page. */
 (function(){
   const CARD_STEP = 244; /* card width 230 + 14 gap */
 
@@ -4477,18 +4586,36 @@ function stopSpinPage(){
     /* ---- custom slim scrollbar (loop-aware: shows progress in one copy) ---- */
     const bar = document.createElement('div');
     bar.className = 'row-scroll';
-    bar.innerHTML = '<div class="row-scroll-thumb"></div>';
+    bar.innerHTML = '<div class="row-scroll-thumb"></div><div class="row-scroll-thumb row-scroll-thumb-b"></div>';
     row.insertAdjacentElement('afterend', bar);
-    const thumb = bar.firstChild;
+    const thumb = bar.firstChild, thumbB = bar.lastChild;
     let barTO = 0;
     function syncBar(){
       const span = period || maxScroll();
       if(span <= 4){ bar.classList.add('hidden'); return; }
       bar.classList.remove('hidden');
       const w = Math.max(10, Math.min(90, row.clientWidth / (period || row.scrollWidth) * 100));
-      thumb.style.width = w + '%';
-      const f = period ? ((row.scrollLeft % period) / period) : (row.scrollLeft / span);
-      thumb.style.left = (f * (100 - w)) + '%';
+      if(!period){
+        /* Finite strip: classic thumb travel. */
+        thumbB.style.display = 'none';
+        thumb.style.width = w + '%';
+        thumb.style.left = ((row.scrollLeft / span) * (100 - w)) + '%';
+        return;
+      }
+      /* Infinite loop: the bar is circular. The thumb glides continuously and
+         wraps around the end — when it crosses the edge it is drawn as two
+         segments, so there is never a visible jump back to the start. */
+      let f = (row.scrollLeft % period) / period; if(f < 0) f += 1;
+      const startPct = f * 100;
+      if(startPct + w <= 100){
+        thumbB.style.display = 'none';
+        thumb.style.width = w + '%';
+        thumb.style.left = startPct + '%';
+      } else {
+        const wA = 100 - startPct, wB = (startPct + w) - 100;
+        thumb.style.width = wA + '%'; thumb.style.left = startPct + '%';
+        thumbB.style.display = ''; thumbB.style.width = wB + '%'; thumbB.style.left = '0%';
+      }
     }
     row.addEventListener('scroll', function(){
       /* Always keep the position inside the middle copy — wrapping is
@@ -4515,7 +4642,7 @@ function stopSpinPage(){
       stopAnim();
       const rect = bar.getBoundingClientRect(), tw = thumb.getBoundingClientRect().width;
       const move = function(x){
-        const f = Math.max(0, Math.min(1, (x - rect.left - tw / 2) / (rect.width - tw)));
+        const f = Math.max(0, Math.min(1, (x - rect.left - tw / 2) / Math.max(1, rect.width - tw)));
         row.scrollLeft = period ? (period + f * period) : (f * span);
         wrap();
       };
@@ -4572,32 +4699,51 @@ function stopSpinPage(){
       raf = requestAnimationFrame(step);
     }
 
-    /* ---- drag with velocity tracking; cursor hidden while dragging ---- */
+    /* ---- drag with velocity tracking ----
+       While dragging, the pointer is locked (Pointer Lock API): the cursor is
+       hidden, cannot leave the row, and the OS restores it to the exact same
+       position on release. Movement comes from e.movementX while locked. If
+       pointer lock is unavailable the classic clientX drag still works. */
+    let dragX = 0, locked = false;
+    function lockedHere(){ return document.pointerLockElement === row; }
+    document.addEventListener('pointerlockchange', function(){
+      if(lockedHere()){ locked = true; }
+      else if(locked){ locked = false; if(down) release(); }
+    });
     row.addEventListener('pointerdown', function(e){
       if(e.pointerType !== 'mouse' || e.button !== 0) return;
-      down = true; dragged = false; startX = e.clientX; startScroll = row.scrollLeft; pid = e.pointerId;
+      down = true; dragged = false; startX = e.clientX; dragX = e.clientX; startScroll = row.scrollLeft; pid = e.pointerId;
       lastX = e.clientX; lastT = performance.now(); vel = 0;
       stopAnim();
     });
     row.addEventListener('pointermove', function(e){
       if(!down) return;
-      const dx = e.clientX - startX;
+      const cx = locked ? (dragX + e.movementX) : e.clientX;
+      dragX = cx;
+      const dx = cx - startX;
       if(!dragged && Math.abs(dx) > 6){
         dragged = true;
         row.classList.add('dragging');
         document.body.classList.add('carousel-drag');
         try{ row.setPointerCapture(pid); }catch(err){}
+        /* unadjustedMovement = raw deltas without OS acceleration; falls back
+           silently where unsupported. Any failure keeps the classic drag. */
+        try{
+          const p = row.requestPointerLock({ unadjustedMovement: true });
+          if(p && p.catch) p.catch(function(){ try{ row.requestPointerLock(); }catch(e2){} });
+        }catch(err){ try{ row.requestPointerLock(); }catch(e2){} }
       }
       if(dragged){
         row.scrollLeft = startScroll - dx;
         wrap();
         const now = performance.now(), dt = now - lastT;
-        if(dt > 0){ vel = -(e.clientX - lastX) / dt * 15; lastX = e.clientX; lastT = now; }
+        if(dt > 0){ vel = -(cx - lastX) / dt * 15; lastX = cx; lastT = now; }
       }
     });
     function release(){
       if(!down) return;
       down = false;
+      if(lockedHere()){ try{ document.exitPointerLock(); }catch(err){} }
       if(dragged){
         row.classList.remove('dragging');
         document.body.classList.remove('carousel-drag');
@@ -4609,6 +4755,18 @@ function stopSpinPage(){
     row.addEventListener('pointerup', release);
     row.addEventListener('pointercancel', release);
     row.addEventListener('click', function(e){ if(dragged){ e.stopPropagation(); e.preventDefault(); } }, true);
+
+    /* ---- wheel / touchpad: horizontal intent scrolls the strip, vertical
+       wheel keeps scrolling the page as usual ---- */
+    row.addEventListener('wheel', function(e){
+      if(Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return; /* vertical → page scroll */
+      e.preventDefault();
+      stopAnim();
+      row.scrollLeft += e.deltaX;
+      wrap();
+      clearTimeout(row._wheelTO);
+      row._wheelTO = setTimeout(function(){ glideTo(snapTarget(row.scrollLeft)); }, 140);
+    }, { passive: false });
 
     /* ---- touch: native scroll (wrapped live), then a gentle snap ---- */
     let settleIV = 0;
@@ -4626,6 +4784,16 @@ function stopSpinPage(){
   }
 
   qsa('.rank-row').forEach(setupCarousel);
+})();
+
+/* ---- SFX mute toggle (spin page) ---- */
+(function(){
+  const btn = $('sfx-toggle'); if(!btn) return;
+  const ICON_ON = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>';
+  const ICON_OFF = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4 9.91 6.09 12 8.18V4z"/></svg>';
+  function paint(){ btn.innerHTML = SFX.muted ? ICON_OFF : ICON_ON; btn.classList.toggle('muted', SFX.muted); btn.setAttribute('aria-pressed', String(!SFX.muted)); }
+  btn.addEventListener('click', function(){ SFX.toggleMute(); paint(); });
+  paint();
 })();
 
 /* ================= INIT ================= */
