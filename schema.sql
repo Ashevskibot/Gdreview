@@ -136,3 +136,36 @@ CREATE TABLE IF NOT EXISTS forbidden_words (
     added_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- ============================================================
+-- Верификация пользователей (синяя галочка) и тикеты поддержки
+-- (server.js применяет эти миграции автоматически при старте)
+-- ============================================================
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_user_verified BOOLEAN DEFAULT FALSE;
+
+CREATE TABLE IF NOT EXISTS support_tickets (
+    id SERIAL PRIMARY KEY,
+    ref VARCHAR(16) UNIQUE NOT NULL,            -- публичный номер тикета, напр. GDR-4F7K2Q
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    category VARCHAR(30) NOT NULL,              -- bug | account | verification | other
+    subject VARCHAR(120) NOT NULL,
+    message TEXT NOT NULL,
+    extra TEXT,                                 -- необязательная доп. информация
+    status VARCHAR(20) DEFAULT 'open',          -- open | in_progress | completed
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS support_messages (
+    id SERIAL PRIMARY KEY,
+    ticket_id INTEGER REFERENCES support_tickets(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    is_admin BOOLEAN DEFAULT FALSE,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_tickets_status ON support_tickets(status, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_tickets_user ON support_tickets(user_id, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_support_msgs_ticket ON support_messages(ticket_id, created_at);
