@@ -55,9 +55,13 @@ const corsOptions = {
     credentials: true,
     maxAge: 86400,
 };
-app.use(cors(corsOptions));
+// Scope CORS enforcement to the API only. Static assets (fonts, images) are
+// same-origin, but <link rel="preload" as="font" crossorigin> sends an Origin
+// header — running the allowlist on those requests would 403 the site's own
+// fonts on any domain not in CORS_ORIGINS.
+app.use('/api', cors(corsOptions));
 // Express 5 / recent path-to-regexp reject bare '*' — match all paths via regex instead.
-app.options(/.*/, cors(corsOptions));
+app.options(/^\/api\/.*/, cors(corsOptions));
 
 // Surface CORS rejections as clean 403s instead of a raw Express error page.
 app.use((err, req, res, next) => {
@@ -1354,7 +1358,20 @@ app.get('/api/admin/verified-users', authenticateToken, requireAdmin, async (req
 
 /* Unknown API routes return a JSON 404 instead of the SPA shell. */
 app.use('/api', (req, res) => fail(res, 404, 'not_found'));
-app.get('*', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'index.html')); });
+/* ---- SPA fallback (History API routing) ----
+   Every unknown non-API GET returns the app shell so clean URLs like
+   /level/12345, /profile/Crxz, /settings or /review/10565740 load correctly
+   on deep links and refreshes. Requests that look like missing static assets
+   (a file extension in the last path segment) get a real 404 instead, so a
+   broken image URL never silently receives an HTML document. The shell is
+   served with no-cache — deep-linked pages always revalidate after deploys. */
+app.get('*', (req, res) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD') return fail(res, 404, 'not_found');
+    const lastSegment = req.path.split('/').pop();
+    if (lastSegment.includes('.')) return fail(res, 404, 'not_found');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 /* Final safety net: malformed JSON, oversized payloads and unexpected
    middleware errors become clean JSON responses. No stack traces or
