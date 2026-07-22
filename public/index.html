@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -13,7 +13,8 @@
 <meta property="og:title" content="GD/REVIEW">
 <meta property="og:description" content="Rate, review, and share Geometry Dash levels.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://gdreview.com">
+<meta property="og:url" content="https://gdreview.com/">
+<link rel="canonical" id="canonical-link" href="https://gdreview.com/">
 <meta property="og:image" content="https://gdreview.com/logo.png">
 
 <!-- Twitter Card (Оптимизация превью для X/Twitter и Discord) -->
@@ -28,12 +29,23 @@
 <link rel="preconnect" href="https://levelthumbs.prevter.me" crossorigin>
 <link rel="preconnect" href="https://i.ytimg.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preload" href="/fonts/Pusab.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+  /* ---- Geometry Dash identity fonts (self-hosted, woff2, from gdcolon.com/gdfont) ----
+     Pusab: the classic GD title font — branding, section titles, hero headings.
+     Oxygene2: the GD HUD font — big numeric displays only (its letterforms are
+     decorative glyphs, so it is never used for words).
+     Neither font has Cyrillic, so Archivo Black stays in the stack as the
+     fallback — Russian titles render exactly as before. Body text remains Inter. */
+  @font-face{ font-family:'Pusab'; src:url('/fonts/Pusab.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
+  @font-face{ font-family:'Oxygene2'; src:url('/fonts/Oxygene2.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; unicode-range:U+0030-0039, U+002E, U+002C, U+0025, U+002B, U+002D, U+002F, U+0023; }
   :root{
     --black:#0a0a0a; --black2:#0e0e0e; --panel:#141414; --panel2:#191919;
     --line:#2b2b2b; --line2:#3a3a3a; --white:#f4f4f4; --dim:#8f8f8f;
     --dim2:#5a5a5a; --accent:#ffffff; --red:#e05555; --ease:cubic-bezier(.22,1,.36,1);
     --spring:cubic-bezier(.34,1.56,.64,1);
+    --font-display:'Pusab','Archivo Black',sans-serif;
+    --font-numeric:'Oxygene2','Archivo Black',sans-serif;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
@@ -76,7 +88,7 @@
 
   #global-loader { position: fixed; inset: 0; z-index: 9999999; background: var(--black); display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); }
   .loader-logo{ width:72px; height:72px; border-radius:18px; background:#f4f4f4; padding:6px; box-sizing:border-box; margin-bottom:18px; animation:pulse 1.5s infinite; }
-  .loader-brand { font-family: 'Archivo Black', sans-serif; font-size: 32px; color: var(--white); letter-spacing: 2px; margin-bottom: 20px; animation: pulse 1.5s infinite; } .loader-brand span { color: var(--dim2); }
+  .loader-brand { font-family:var(--font-display); font-size: 32px; color: var(--white); letter-spacing: 2px; margin-bottom: 20px; animation: pulse 1.5s infinite; } .loader-brand span { color: var(--dim2); }
   .loader-progress { width: 150px; height: 2px; background: var(--line); position: relative; overflow: hidden; } .loader-progress::after { content: ''; position: absolute; left: -50%; top: 0; height: 100%; width: 50%; background: var(--white); animation: loadSweep 1.5s infinite var(--ease); }
   @keyframes loadSweep { to { left: 150%; } } @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
   body.loaded #global-loader { opacity: 0; pointer-events: none; transform: translateY(-20px); }
@@ -89,7 +101,7 @@
   .brand{ display:inline-flex; align-items:center; gap:11px; }
   .brand-logo{ width:34px; height:34px; border-radius:9px; background:#f4f4f4; padding:3px; box-sizing:border-box; display:block; transition:transform .25s var(--spring); }
   .brand:hover .brand-logo{ transform:rotate(-6deg) scale(1.06); }
-  .brand{ font-family:'Archivo Black',sans-serif; font-size:20px; letter-spacing:-0.02em; text-transform:uppercase; color:var(--white); background:none; border:none; padding:0; cursor:pointer; transition:text-shadow .25s var(--ease), transform .18s var(--spring); }
+  .brand{ font-family:var(--font-display); font-size:20px; letter-spacing:-0.02em; text-transform:uppercase; color:var(--white); background:none; border:none; padding:0; cursor:pointer; transition:text-shadow .25s var(--ease), transform .18s var(--spring); }
   .brand span{color:var(--dim2); transition:color .25s var(--ease);}
   .brand:hover{ text-shadow:0 0 18px rgba(255,255,255,0.35); transform:translateY(-1px); }
   .brand:hover span{ color:var(--white); }
@@ -125,7 +137,7 @@
   .level-banner { position: absolute; right: 0; top: 0; bottom: 0; width: 60%; background-size: cover; background-position: center; -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,0.9) 0%, transparent 100%); mask-image: linear-gradient(to left, rgba(0,0,0,0.9) 0%, transparent 100%); z-index: 0; opacity: 0.5; }
   .level-content { position: relative; z-index: 1; }
   .eyebrow{ font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--dim); margin-bottom:14px; }
-  .level-name{ font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:clamp(36px, 7vw, 58px); line-height:0.92; letter-spacing:-0.02em; word-break:break-word; color:var(--white); filter:drop-shadow(0 0 26px rgba(0,0,0,0.6)); }
+  .level-name{ font-family:var(--font-display); text-transform:uppercase; font-size:clamp(36px, 7vw, 58px); line-height:0.92; letter-spacing:-0.02em; word-break:break-word; color:var(--white); filter:drop-shadow(0 0 26px rgba(0,0,0,0.6)); }
   .level-header-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
   .diff-face{ width:56px;height:56px; border-radius:12px; background:rgba(20,20,20,0.7); border:1px solid var(--line); padding:8px; object-fit:contain; display:none; animation:popIn .4s var(--spring); }
   .diff-face.show{display:block;}
@@ -224,7 +236,7 @@
 
   .final-score-row{ display:flex; align-items:flex-end; justify-content:space-between; gap:32px; padding:36px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin-bottom:40px; flex-wrap:wrap; }
   .final-score-label{ font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--dim); }
-  .final-score-num{ font-family:'Archivo Black',sans-serif; font-size:clamp(56px,10vw,140px); line-height:0.85; letter-spacing:-0.03em; color:var(--score-color, var(--white)); text-shadow:0 0 40px var(--score-glow, transparent); transition:all .3s; }
+  .final-score-num{ font-family:var(--font-display); font-size:clamp(56px,10vw,140px); line-height:0.85; letter-spacing:-0.03em; color:var(--score-color, var(--white)); text-shadow:0 0 40px var(--score-glow, transparent); transition:all .3s; }
   .final-score-num span{ font-size:0.32em; color:var(--dim); font-family:'Space Mono',monospace; letter-spacing:0; }
   textarea{ width:100%; background:var(--panel); border:1px solid var(--line); border-radius:10px; color:var(--white); font-size:14px; line-height:1.7; padding:20px; resize:vertical; min-height:140px; outline:none; transition:all .25s; margin-bottom:24px; }
   textarea:focus{border-color:var(--white);box-shadow:0 0 0 3px rgba(255,255,255,0.1);}
@@ -272,7 +284,7 @@
   .frame-option-label { font-size: 10px; font-family: 'Space Mono', monospace; text-transform: uppercase; color: var(--white); }
 
   .profile-details { flex: 1 1 250px; min-width: 0; }
-  .profile-name { font-family: 'Archivo Black', sans-serif; font-size: clamp(24px, 4.5vw, 32px); color: var(--white); letter-spacing: -0.02em; text-shadow: 0 4px 10px rgba(0,0,0,0.5); word-break: break-word; overflow-wrap: anywhere; min-width: 0; }
+  .profile-name { font-family:var(--font-display); font-size: clamp(24px, 4.5vw, 32px); color: var(--white); letter-spacing: -0.02em; text-shadow: 0 4px 10px rgba(0,0,0,0.5); word-break: break-word; overflow-wrap: anywhere; min-width: 0; }
   .profile-name-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; min-width: 0; }
   .profile-name-socials { display: flex; align-items: center; gap: 6px; flex-shrink: 0; } .profile-name-socials a { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; opacity: 0.9; transition: transform 0.2s var(--spring), opacity 0.2s ease; }
   .profile-name-socials a:hover { opacity: 1; transform: translateY(-2px) scale(1.12); } .profile-name-socials svg { width: 100%; height: 100%; display: block; }
@@ -306,7 +318,7 @@
   @media(max-width:640px){ .bar-content{flex-wrap:wrap;} .bar-icon{flex:0 0 72px;} .bar-right{flex:1 1 100%;padding:16px;} }
 
   .empty-state{ padding:70px 20px; text-align:center; border:1px solid var(--line); border-radius:14px; color:var(--dim2); animation:fadeIn .5s var(--ease); }
-  .empty-state .em-title{ font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:26px; color:var(--dim); margin-bottom:10px; }
+  .empty-state .em-title{ font-family:var(--font-display); text-transform:uppercase; font-size:26px; color:var(--dim); margin-bottom:10px; }
   .empty-state .em-sub{ font-size:13px; }
   .feed-loading{ padding:60px 20px; text-align:center; font-family:'Space Mono',monospace; font-size:12px; color:var(--dim2); text-transform:uppercase; letter-spacing:0.15em; animation:pulse 1.4s infinite; }
 
@@ -348,7 +360,7 @@
   .stat-card{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:28px 26px; opacity:0; transform:translateY(14px); animation:barIn .5s var(--ease) forwards; transition:border-color .25s var(--ease), transform .25s var(--ease); }
   .stat-card:hover{border-color:var(--line2);transform:translateY(-3px);}
   .stat-label{ font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--dim); margin-bottom:14px; }
-  .stat-number{ font-family:'Archivo Black',sans-serif; font-size:clamp(38px,6vw,58px); line-height:0.95; letter-spacing:-0.02em; color:var(--white); }
+  .stat-number{ font-family:var(--font-numeric); font-size:clamp(38px,6vw,58px); line-height:0.95; letter-spacing:-0.02em; color:var(--white); }
   .stat-number small{ font-size:0.34em; color:var(--dim); font-family:'Space Mono',monospace; margin-left:4px; }
   .stat-number.stat-date{font-size:clamp(16px,2.4vw,24px);line-height:1.3;padding-top:12px;text-transform:uppercase;word-break:break-word;}
   .stats-hero{ display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:20px; }
@@ -411,6 +423,13 @@
 
   footer{ margin-top:50px; padding-top:24px; border-top:1px solid var(--line); font-family:'Space Mono',monospace; font-size:11px; color:var(--dim2); letter-spacing:0.05em; text-transform:uppercase; min-height:1px; text-align:center; }
   .site-copyright strong{ color:var(--dim); font-weight:700; }
+  /* ---- Footer credits: quiet, small, respectful ---- */
+  .footer-credits{ margin-top:8px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:4px 10px; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim2); }
+  .footer-credits b{ color:var(--dim); font-weight:700; }
+  .fcr-sep{ color:var(--dim2); opacity:0.7; }
+  .fcr-link{ color:var(--dim); text-decoration:underline; text-underline-offset:3px; transition:color .2s ease; position:relative; }
+  .fcr-link::after{ content:''; position:absolute; inset:-8px; }
+  .fcr-link:hover{ color:var(--white); }
   .footer-support-link{ margin-top:10px; background:none; border:none; color:var(--dim); font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; text-decoration:underline; text-underline-offset:3px; cursor:pointer; transition:color .2s ease; }
   .footer-support-link:hover{ color:var(--white); }
 
@@ -423,7 +442,7 @@
   .detail-box{ max-width:540px; text-align:left; padding:32px 30px 28px; max-height:82vh; overflow-y:auto; }
   .detail-user-row{ display:flex; align-items:center; gap:10px; margin-bottom:16px; padding-right:44px; }
   .detail-header{ padding-right:40px; margin-bottom:14px; }
-  .detail-title{ font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:24px; line-height:1.15; color:var(--white); word-break:break-word; }
+  .detail-title{ font-family:var(--font-display); text-transform:uppercase; font-size:24px; line-height:1.15; color:var(--white); word-break:break-word; }
   .detail-score-row{ display:flex; align-items:baseline; gap:10px; padding:16px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin:18px 0 20px; }
   .detail-score-label{ font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:0.1em; flex:1; }
   .detail-score{ font-family:'Space Mono',monospace; font-weight:700; font-size:34px; color:var(--score-color,var(--white)); text-shadow:0 0 24px var(--score-color,transparent); }
@@ -445,7 +464,7 @@
   .auth-box { position:relative; z-index:2; width: 100%; max-width: 400px; padding: 42px 34px 28px; background: rgba(17,17,17,0.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 30px 80px rgba(0,0,0,0.75); text-align: center; animation:authIn .8s var(--spring); }
   @keyframes authIn{from{opacity:0;transform:translateY(26px) scale(.965);}to{opacity:1;transform:none;}}
   .auth-logo{ width:58px; height:58px; border-radius:14px; background:#f4f4f4; padding:5px; box-sizing:border-box; margin:0 auto 12px; display:block; box-shadow:0 8px 26px rgba(0,0,0,0.55); }
-  .auth-box .brand { margin-bottom: 8px; font-size: 24px; font-family: 'Archivo Black', sans-serif; color: var(--white); }
+  .auth-box .brand { margin-bottom: 8px; font-size: 24px; font-family:var(--font-display); color: var(--white); }
   .auth-sub{ font-family:'Space Mono',monospace; font-size:10.5px; color:var(--dim); text-transform:uppercase; letter-spacing:0.18em; margin-bottom:26px; min-height:14px; }
   .auth-tabs { display: flex; gap: 4px; background: var(--black2); padding: 4px; border-radius: 8px; margin-bottom: 22px; }
   .auth-tab { flex: 1; padding: 10px; background: transparent; border: none; color: var(--dim); font-size: 11px; text-transform: uppercase; font-weight: 700; cursor: pointer; border-radius: 6px; transition: 0.22s var(--ease); }
@@ -496,7 +515,7 @@
   .dash-community{ display:grid; grid-template-columns:260px 1fr; gap:20px; align-items:stretch; }
   @media(max-width:760px){ .dash-community{ grid-template-columns:1fr; } }
   .dash-stats-grid{ display:flex; flex-direction:column; gap:20px; margin-top:16px; }
-  .dash-stat-num{ font-family:'Archivo Black',sans-serif; font-size:clamp(34px,5vw,46px); line-height:1; color:var(--white); }
+  .dash-stat-num{ font-family:var(--font-numeric); font-size:clamp(34px,5vw,46px); line-height:1; color:var(--white); }
   .dash-stat-label{ font-family:'Space Mono',monospace; font-size:10.5px; letter-spacing:0.16em; text-transform:uppercase; color:var(--dim); margin-top:6px; }
   .lb-row{ display:flex; align-items:center; gap:12px; padding:9px 10px; border:1px solid transparent; border-radius:10px; cursor:pointer; animation:barInF .45s var(--ease) backwards; transition:background .2s var(--ease), border-color .2s var(--ease), transform .2s var(--ease); }
   .lb-row:hover{ background:rgba(255,255,255,0.04); border-color:var(--line); transform:translateX(3px); }
@@ -511,13 +530,13 @@
   .dash-sec-head{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
   /* GD-style square-cut monochrome section icon (globe next to Global Statistics) */
   .dash-sec-ico{ width:clamp(22px,2.6vw,28px); height:clamp(22px,2.6vw,28px); flex-shrink:0; color:var(--white); opacity:0.92; filter:drop-shadow(0 0 8px rgba(255,255,255,0.25)); }
-  .dash-sec-title{ font-family:'Archivo Black',sans-serif; font-size:clamp(19px,2.6vw,26px); line-height:1.1; text-transform:uppercase; letter-spacing:0.02em; color:var(--white); }
+  .dash-sec-title{ font-family:var(--font-display); font-size:clamp(19px,2.6vw,26px); line-height:1.1; text-transform:uppercase; letter-spacing:0.02em; color:var(--white); }
   /* ---- Category marquee headers: endless advertising-style ticker.
      Two identical groups tile seamlessly while the track slides -50%. ---- */
   .sec-marquee{ position:relative; overflow:hidden; margin:0 calc(50% - 50vw) 14px; -webkit-mask-image:linear-gradient(to right, transparent 0, #000 clamp(28px,6vw,90px), #000 calc(100% - clamp(28px,6vw,90px)), transparent 100%); mask-image:linear-gradient(to right, transparent 0, #000 clamp(28px,6vw,90px), #000 calc(100% - clamp(28px,6vw,90px)), transparent 100%); }
   .mq-track{ display:inline-flex; white-space:nowrap; will-change:transform; animation:mqSlide var(--mq-dur, 30s) linear infinite; }
   .mq-group{ display:inline-flex; flex-shrink:0; }
-  .mq-unit{ display:inline-flex; align-items:baseline; font-family:'Archivo Black',sans-serif; font-size:clamp(19px,2.6vw,26px); line-height:1.15; text-transform:uppercase; letter-spacing:0.02em; color:var(--dim); }
+  .mq-unit{ display:inline-flex; align-items:baseline; font-family:var(--font-display); font-size:clamp(19px,2.6vw,26px); line-height:1.15; text-transform:uppercase; letter-spacing:0.02em; color:var(--dim); }
   .mq-unit em{ font-style:normal; color:var(--white); margin-left:0.45em; text-shadow:0 0 22px rgba(255,255,255,0.22); }
   .mq-dot{ color:var(--dim2); margin:0 clamp(16px,2.4vw,30px); font-size:0.72em; align-self:center; }
   @keyframes mqSlide{ from{ transform:translate3d(0,0,0); } to{ transform:translate3d(-50%,0,0); } }
@@ -615,7 +634,7 @@
   #page-transition.reveal .pt-b{ animation:ptOut .62s cubic-bezier(.7,0,.2,1) forwards; }
   @keyframes ptIn{ from{ transform:translateX(-120%) skewX(-8deg); } to{ transform:translateX(0) skewX(-8deg); } }
   @keyframes ptOut{ from{ transform:translateX(0) skewX(-8deg); } to{ transform:translateX(120%) skewX(-8deg); } }
-  .pt-mark{ position:absolute; top:50%; left:50%; z-index:3; transform:translate(-50%,-50%); font-family:'Archivo Black',sans-serif; font-size:clamp(18px,3.4vw,30px); letter-spacing:0.16em; color:var(--white); opacity:0; }
+  .pt-mark{ position:absolute; top:50%; left:50%; z-index:3; transform:translate(-50%,-50%); font-family:var(--font-display); font-size:clamp(18px,3.4vw,30px); letter-spacing:0.16em; color:var(--white); opacity:0; }
   .pt-mark span{ color:var(--dim2); }
   #page-transition.cover .pt-mark{ animation:ptMarkIn .45s var(--ease) .28s forwards; }
   #page-transition.reveal .pt-mark{ animation:ptMarkOut .28s var(--ease) forwards; }
@@ -625,7 +644,7 @@
   /* ---------- RANDOM LEVEL: PAGE ---------- */
   .spin-head{ text-align:center; margin-bottom:26px; }
   .spin-eyebrow{ font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:var(--dim); margin-bottom:10px; }
-  .spin-title{ font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:clamp(28px,6vw,46px); letter-spacing:-0.02em; line-height:1; }
+  .spin-title{ font-family:var(--font-display); text-transform:uppercase; font-size:clamp(28px,6vw,46px); letter-spacing:-0.02em; line-height:1; }
   .spin-sub{ font-family:'Space Mono',monospace; font-size:11px; color:var(--dim2); letter-spacing:0.12em; text-transform:uppercase; margin-top:12px; min-height:15px; transition:color .3s ease; }
 
   /* ---------- RANDOM LEVEL: WHEEL ---------- */
@@ -728,7 +747,7 @@
   @keyframes srHeroIn{ from{ transform:scale(1.16); filter:brightness(2.1) blur(12px); } to{ transform:scale(1); filter:brightness(1) blur(0); } }
   .sr-hero::after{ content:''; position:absolute; inset:0; background:linear-gradient(to top, var(--panel), transparent 55%); pointer-events:none; }
   .sr-eyebrow{ position:absolute; top:16px; left:18px; z-index:2; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.26em; text-transform:uppercase; color:rgba(255,255,255,0.9); background:rgba(6,6,6,0.55); border:1px solid rgba(255,255,255,0.2); border-radius:999px; padding:6px 12px; backdrop-filter:blur(4px); animation:riseIn .5s var(--ease) .25s both; }
-  .sr-name{ position:absolute; left:22px; right:22px; bottom:12px; z-index:2; font-family:'Archivo Black',sans-serif; text-transform:uppercase; font-size:clamp(24px,4.6vw,36px); line-height:0.95; word-break:break-word; text-shadow:0 6px 24px rgba(0,0,0,0.9); animation:riseIn .55s var(--ease) .32s both; }
+  .sr-name{ position:absolute; left:22px; right:22px; bottom:12px; z-index:2; font-family:var(--font-display); text-transform:uppercase; font-size:clamp(24px,4.6vw,36px); line-height:0.95; word-break:break-word; text-shadow:0 6px 24px rgba(0,0,0,0.9); animation:riseIn .55s var(--ease) .32s both; }
   .sr-body{ padding:20px 22px 22px; display:flex; flex-direction:column; gap:16px; }
   .sr-meta{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; animation:riseIn .5s var(--ease) .44s both; }
   .sr-diff{ display:inline-flex; align-items:center; gap:8px; background:var(--black2); border:1px solid var(--line2); border-radius:999px; padding:6px 14px 6px 8px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; }
@@ -929,7 +948,7 @@
   .level-stats-grid{ display:grid; grid-template-columns:220px 1fr; gap:16px; margin-bottom:36px; }
   @media(max-width:640px){.level-stats-grid{grid-template-columns:1fr;}}
   .level-avg-card{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:24px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; }
-  .lvl-avg-num{ font-family:'Archivo Black',sans-serif; font-size:56px; line-height:1; color:var(--score-color,#fff); text-shadow:0 0 30px var(--score-glow,transparent); }
+  .lvl-avg-num{ font-family:var(--font-numeric); font-size:56px; line-height:1; color:var(--score-color,#fff); text-shadow:0 0 30px var(--score-glow,transparent); }
   .lvl-avg-sub{ font-family:'Space Mono',monospace; font-size:11px; color:var(--dim); text-transform:uppercase; letter-spacing:0.1em; margin-top:10px; }
   .level-dist-card{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px 24px; display:flex; flex-direction:column; gap:8px; justify-content:center; }
   .dist-row{ display:grid; grid-template-columns:44px 1fr 30px; align-items:center; gap:12px; }
@@ -1058,24 +1077,18 @@
   /* ---------- SAVE FX ---------- */
   .fx-shake{animation:fxShake .5s cubic-bezier(.36,.07,.19,.97) both;} @keyframes fxShake{ 10%,90%{transform:translate3d(-2px,0,0) rotate(-0.3deg);} 20%,80%{transform:translate3d(4px,0,0) rotate(0.3deg);} 30%,50%,70%{transform:translate3d(-7px,0,0) rotate(-0.6deg);} 40%,60%{transform:translate3d(7px,0,0) rotate(0.6deg);} }
   .fx-thud{animation:fxThud .7s var(--ease) both;} @keyframes fxThud{ 0%{transform:scale(1);} 35%{transform:scale(0.98);} 100%{transform:scale(1);} }
-  .fx-wobble{animation:fxWobble .6s ease-in-out both;} @keyframes fxWobble{ 0%,100%{transform:rotate(0deg);} 25%{transform:rotate(-1.5deg);} 75%{transform:rotate(1.5deg);} }
   .fx-bounce{animation:fxBounce .5s var(--ease) both;} @keyframes fxBounce{ 0%{transform:scale(1);} 40%{transform:scale(1.02);} 100%{transform:scale(1);} }
   .fx-flash{position:fixed;inset:0;z-index:99997;pointer-events:none;opacity:0;}
-  .fx-flash-fail{background:radial-gradient(circle at 50% 50%, rgba(150,10,10,0.6), rgba(15,0,0,0.8));animation:fxFlashFail .65s ease-out forwards;} @keyframes fxFlashFail{ 0%{opacity:0;} 14%{opacity:1;} 28%{opacity:0.85;transform:translate(3px,0);} 100%{opacity:0;transform:translate(0,0);} }
-  .fx-shard{ position:fixed;top:-40px; width:0;height:0; border-left:9px solid transparent; border-right:9px solid transparent; border-bottom:16px solid var(--shard-color,#888); z-index:99998; pointer-events:none; animation:fxShardFall linear forwards; opacity:0.9; } @keyframes fxShardFall{to{transform:translateY(112vh) rotate(var(--shard-rot,360deg));opacity:0;}}
   .fx-flash-low{background:rgba(120,120,120,0.25);animation:fxFlashLow .55s ease-out forwards;} @keyframes fxFlashLow{0%{opacity:0;}22%{opacity:1;}100%{opacity:0;}}
   .fx-dust{ position:fixed; width:4px;height:4px; background:rgba(180,180,180,0.55); border-radius:50%; z-index:99998; pointer-events:none; animation:fxDustFall ease-in forwards; } @keyframes fxDustFall{to{transform:translateY(58vh);opacity:0;}}
-  .fx-flash-meh{background:rgba(180,120,50,0.2);animation:fxFlashMeh .5s ease-out forwards;} @keyframes fxFlashMeh{0%{opacity:0;}20%{opacity:1;}100%{opacity:0;}}
-  .fx-line{ position:fixed; height:2px; background:rgba(255,255,255,0.4); z-index:99998; pointer-events:none; animation:fxLineShoot linear forwards; } @keyframes fxLineShoot{ 0%{transform:translateX(-100vw);opacity:1;} 100%{transform:translateX(100vw);opacity:0;} }
   .fx-flash-mid{background:rgba(255,255,255,0.5);animation:fxFlashMid .4s ease-out forwards;} @keyframes fxFlashMid{0%{opacity:0;}16%{opacity:1;}100%{opacity:0;}}
   .fx-sq{ position:fixed; width:10px;height:10px; background:#fff; border-radius:2px; z-index:99998; pointer-events:none; animation:fxSqOut .8s cubic-bezier(.22,1,.36,1) forwards; } @keyframes fxSqOut{ 0%{transform:translate(0,0) scale(1) rotate(0deg);opacity:1;} 100%{transform:translate(var(--sq-x,0),var(--sq-y,0)) scale(0.3) rotate(90deg);opacity:0;} }
   .fx-flash-high{background:radial-gradient(circle, rgba(255,255,255,0.9), rgba(255,255,255,0.12) 55%, transparent 78%);animation:fxFlashHigh .55s ease-out forwards;} @keyframes fxFlashHigh{0%{opacity:0;}12%{opacity:1;}100%{opacity:0;}}
   .fx-rays{ position:fixed;inset:-50%; z-index:99996; pointer-events:none; background:conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,0.14) 8deg, transparent 18deg, transparent 42deg, rgba(255,255,255,0.11) 50deg, transparent 60deg, transparent 92deg, rgba(255,255,255,0.14) 100deg, transparent 110deg, transparent 142deg, rgba(255,255,255,0.10) 150deg, transparent 160deg, transparent 192deg, rgba(255,255,255,0.14) 200deg, transparent 210deg, transparent 262deg, rgba(255,255,255,0.11) 270deg, transparent 280deg, transparent 322deg, rgba(255,255,255,0.14) 330deg, transparent 340deg); animation:fxRaysSpin 2.2s linear forwards, fxRaysFade 2.2s ease-out forwards; opacity:0; } @keyframes fxRaysSpin{from{transform:rotate(0deg);}to{transform:rotate(130deg);}} @keyframes fxRaysFade{0%{opacity:0;}15%{opacity:1;}78%{opacity:1;}100%{opacity:0;}}
   .fx-shape{ position:fixed; z-index:99998; pointer-events:none; background:#fff; filter:drop-shadow(0 0 10px rgba(255,255,255,0.85)); animation:fxShapeShoot .9s cubic-bezier(.16,.84,.44,1) forwards; } @keyframes fxShapeShoot{ 0%{transform:translate(0,0) rotate(0deg) scale(1);opacity:1;} 100%{transform:translate(var(--sh-x,0),var(--sh-y,0)) rotate(var(--sh-rot,180deg)) scale(0.35);opacity:0;} }
-  .fx-flash-max{background:#fff;animation:fxFlashMax 1.1s ease-out forwards;} @keyframes fxFlashMax{0%{opacity:0;}10%{opacity:1;}30%{opacity:0.85;}45%{opacity:0.45;}60%{opacity:0.8;}100%{opacity:0;}}
   .fx-ring{ position:fixed; top:50%;left:50%; width:20px;height:20px; margin:-10px 0 0 -10px; border-radius:50%; border:6px solid rgba(255,255,255,0.9); box-shadow:0 0 30px rgba(255,255,255,0.6); z-index:99998; pointer-events:none; animation:fxRingOut 1s cubic-bezier(.16,.84,.44,1) forwards; } @keyframes fxRingOut{ 0%{width:20px;height:20px;margin:-10px 0 0 -10px;opacity:1;border-width:6px;} 100%{width:1600px;height:1600px;margin:-800px 0 0 -800px;opacity:0;border-width:0px;} }
   .fx-particle{ position:fixed; border-radius:50%; z-index:99998; pointer-events:none; animation:fxParticleBurst cubic-bezier(.16,.84,.44,1) forwards; } @keyframes fxParticleBurst{ 0%{transform:translate(0,0) scale(1);opacity:1;} 100%{transform:translate(var(--p-x,0),var(--p-y,0)) scale(0);opacity:0;} }
-  .fx-score-pulse{animation:fxScorePulse 1s var(--ease);} @keyframes fxScorePulse{ 0%{text-shadow:none;transform:scale(1);} 30%{text-shadow:0 0 20px #fff, 0 0 44px #fff, 0 0 70px rgba(255,214,120,0.85);transform:scale(1.35);} 100%{text-shadow:none;transform:scale(1);} }
+  .fx-score-pulse{animation:fxScorePulse 1s var(--ease);} @keyframes fxScorePulse{ 0%{text-shadow:none;transform:scale(1);} 30%{text-shadow:0 0 20px #fff, 0 0 44px #fff, 0 0 70px rgba(255,255,255,0.6);transform:scale(1.35);} 100%{text-shadow:none;transform:scale(1);} }
 
   /* ---------- LOCALIZATION-STABLE LAYOUT ----------
      Text length varies between languages: every label lives in a flexible
@@ -1126,6 +1139,11 @@
   }
   /* Prevent any accidental horizontal overflow on small screens. */
   @media(max-width:760px){ body{ overflow-x:hidden; } .shell{ max-width:100vw; } }
+  /* Pusab is a wide, rounded face — the tight negative tracking tuned for
+     Archivo Black makes it collide, so display headings get neutral tracking. */
+  .level-name, .detail-title, .profile-name, .em-title{ letter-spacing:0.005em; }
+  .brand, .loader-brand{ letter-spacing:0.04em; }
+  .final-score-num{ letter-spacing:0; }
 </style>
 </head>
 <body>
@@ -1324,7 +1342,7 @@
         <button class="wt-icon-btn" id="create-wt-play" hidden aria-label="Watch Walkthrough" title="Watch Walkthrough"></button>
         <div class="level-banner" id="level-banner"></div>
         <div class="level-content">
-          <div class="eyebrow" data-i18n="nowReviewing">Now Reviewing</div>
+          <div class="eyebrow" id="review-level-id">Level</div>
           <div class="level-header-row">
             <div class="level-name" id="level-name">—</div>
             <img class="diff-face" id="diff-face" alt="difficulty">
@@ -1608,6 +1626,11 @@
 
     <footer>
       <div class="site-copyright">© <span id="footer-year"></span> GD Review</div>
+      <div class="footer-credits">
+        <span class="fcr-item"><span data-i18n="creditsCreatedBy">Created by</span> <b>Crxz</b></span>
+        <span class="fcr-sep" aria-hidden="true">·</span>
+        <span class="fcr-item"><span data-i18n="creditsPoweredBy">Resources powered by</span> <a class="fcr-link" href="https://gdcolon.com" target="_blank" rel="noopener noreferrer">Falcon</a></span>
+      </div>
       <button class="footer-support-link" id="footer-support" data-i18n="footerSupport">Contact Support</button>
     </footer>
   </div>
@@ -1789,7 +1812,7 @@ const i18n = {
     backBtn:'Back', lvlEyebrow:'Level', lvlReviews:'Reviews', lvlNoReviewsTitle:'No reviews yet', lvlNoReviewsSub:'Be the first to review this level.', lvlWrite:'Write a Review',
     sortRecent:'Newest', sortPopular:'Most liked', sortHighest:'Highest score', sortLowest:'Lowest score', sortNewest:'Newest first', sortOldest:'Oldest first',
     ratingsCount:'ratings', lvlNotFound:'Level not found',
-    nowReviewing:'Now Reviewing', rateAxes:'Rate Every Axis',
+    levelHash:'Level', rateAxes:'Rate Every Axis',
     axisGameplay:'Gameplay', axisGameplayAuto:'Direction & Camera', axisSync:'Synchronization / Rhythm', axisDesign:'Design / Decoration', axisCreativity:'Idea / Creativity', axisOpt:'Optimization',
     guideTitle:'How we rate — criteria guide',
     guideGameplayTitle:'Gameplay · Direction & Camera', guideGameplayText:'For normal levels: how fun, fair and readable the gameplay is — click sync, difficulty balance, no blind jumps or unfair traps. For Auto levels this axis becomes Direction & Camera: judge the camera work, pacing and how well the level guides the eye through the action.',
@@ -1838,7 +1861,7 @@ const i18n = {
     vSubjectLen:'Subject must be 3–120 characters', vMessageLen:'Message must be at least 10 characters',
     err_ticket_subject_invalid:'Subject must be 3–120 characters', err_ticket_message_invalid:'Message must be 10–3000 characters',
     adminTicketsTitle:'Support Tickets', adminTicketSearchPh:'Search by ticket, subject or user…', adminTicketsEmpty:'No tickets here', adminTicketStatusChanged:'Ticket status updated',
-    atAll:'All', atActive:'Active', atArchive:'Archive', sfxToggle:'Sound effects', adminVerifyTitle:'Verified Users', adminVerifySub:'Grant or remove the blue verification badge. The badge appears everywhere the username is shown.',
+    atAll:'All', atActive:'Active', atArchive:'Archive', sfxToggle:'Sound effects', creditsCreatedBy:'Created by', creditsPoweredBy:'Resources powered by', adminVerifyTitle:'Verified Users', adminVerifySub:'Grant or remove the blue verification badge. The badge appears everywhere the username is shown.',
     adminVerifyPh:'Username…', adminVerifyGrant:'Verify', adminVerifyGranted:'Verification granted', adminVerifyRevoked:'Verification removed', adminVerifyEmpty:'No verified users yet',
     adminVerifyGrantBtn:'Grant verification', adminVerifyRevokeBtn:'Remove verification', verifiedBadgeTitle:'Verified',
     detailSummary:'Review', detailNoSummary:'No written summary provided.', ok:'OK',
@@ -1883,7 +1906,7 @@ const i18n = {
     backBtn:'Назад', lvlEyebrow:'Уровень', lvlReviews:'Рецензии', lvlNoReviewsTitle:'Рецензий пока нет', lvlNoReviewsSub:'Станьте первым, кто оценит этот уровень.', lvlWrite:'Написать рецензию',
     sortRecent:'Сначала новые', sortPopular:'По лайкам', sortHighest:'Высокий балл', sortLowest:'Низкий балл', sortNewest:'Сначала новые', sortOldest:'Сначала старые',
     ratingsCount:'оценок', lvlNotFound:'Уровень не найден',
-    nowReviewing:'Сейчас оцениваем', rateAxes:'Оценка параметров',
+    levelHash:'Уровень', rateAxes:'Оценка параметров',
     axisGameplay:'Геймплей', axisGameplayAuto:'Режиссура и камера', axisSync:'Синхронизация / Ритм', axisDesign:'Дизайн / Декор', axisCreativity:'Идея / Креативность', axisOpt:'Оптимизация',
     guideTitle:'Как мы оцениваем — гид по критериям',
     guideGameplayTitle:'Геймплей · Режиссура и камера', guideGameplayText:'Для обычных уровней: насколько геймплей увлекателен, честен и читаем — синхронность кликов, баланс сложности, отсутствие «слепых» прыжков и нечестных ловушек. Для Auto-уровней эта ось превращается в «Режиссуру и камеру»: оценивайте работу камеры, темп и то, как уровень ведёт взгляд зрителя.',
@@ -1932,7 +1955,7 @@ const i18n = {
     vSubjectLen:'Тема должна быть от 3 до 120 символов', vMessageLen:'Сообщение должно быть не короче 10 символов',
     err_ticket_subject_invalid:'Тема должна быть от 3 до 120 символов', err_ticket_message_invalid:'Сообщение должно быть от 10 до 3000 символов',
     adminTicketsTitle:'Обращения в поддержку', adminTicketSearchPh:'Поиск по номеру, теме или пользователю…', adminTicketsEmpty:'Обращений нет', adminTicketStatusChanged:'Статус обращения обновлён',
-    atAll:'Все', atActive:'Активные', atArchive:'Архив', sfxToggle:'Звуковые эффекты', adminVerifyTitle:'Верифицированные пользователи', adminVerifySub:'Выдавайте или снимайте синюю галочку. Значок появляется везде, где показывается имя пользователя.',
+    atAll:'Все', atActive:'Активные', atArchive:'Архив', sfxToggle:'Звуковые эффекты', creditsCreatedBy:'Создано', creditsPoweredBy:'Ресурсы предоставлены', adminVerifyTitle:'Верифицированные пользователи', adminVerifySub:'Выдавайте или снимайте синюю галочку. Значок появляется везде, где показывается имя пользователя.',
     adminVerifyPh:'Имя пользователя…', adminVerifyGrant:'Верифицировать', adminVerifyGranted:'Верификация выдана', adminVerifyRevoked:'Верификация снята', adminVerifyEmpty:'Пока нет верифицированных пользователей',
     adminVerifyGrantBtn:'Выдать верификацию', adminVerifyRevokeBtn:'Снять верификацию', verifiedBadgeTitle:'Верифицирован',
     detailSummary:'Рецензия', detailNoSummary:'Без текстового описания.', ok:'ОК',
@@ -1958,6 +1981,8 @@ function applyI18n(){
   qsa('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
   qsa('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.getAttribute('data-i18n-ph')); });
   qsa('[data-i18n-title]').forEach(el => { el.title = t(el.getAttribute('data-i18n-title')); });
+  /* The review-page eyebrow is dynamic ("Level #id") — retranslate it here. */
+  if(currentLevel && currentLevel.id) $('review-level-id').textContent = t('levelHash') + ' #' + currentLevel.id;
   updatePublishLabel();
   buildSectionMarquees();
 }
@@ -2186,21 +2211,47 @@ function runPageTransition(swap){
   setTimeout(function(){ swap(); ov.classList.remove('cover'); ov.classList.add('reveal'); }, 540);
   setTimeout(function(){ ov.classList.remove('reveal'); transitionBusy = false; }, 1300);
 }
-function stateToHash(st){
-  if(st.screen === 'level' && st.id) return '#/level/' + encodeURIComponent(st.id);
-  if(st.screen === 'create' && st.id) return '#/create/' + encodeURIComponent(st.id);
-  if(st.screen === 'user' && st.user) return '#/user/' + encodeURIComponent(st.user);
-  return st.screen === 'home' ? '#/' : '#/' + st.screen;
+/* ---- History API routing (clean URLs, no hashes) ----
+   /               home
+   /level/:id      level page
+   /review/:id     review creation for a level
+   /profile        own profile
+   /profile/:user  another user's profile
+   /settings /admin /spin /support   static screens
+   The server returns index.html for every unknown non-API GET, so deep links
+   and refreshes always load the app. */
+function stateToPath(st){
+  if(st.screen === 'level' && st.id) return '/level/' + encodeURIComponent(st.id);
+  if(st.screen === 'create' && st.id) return '/review/' + encodeURIComponent(st.id);
+  if(st.screen === 'user' && st.user) return '/profile/' + encodeURIComponent(st.user);
+  if(st.screen === 'profile') return '/profile';
+  return st.screen === 'home' ? '/' : '/' + st.screen;
 }
-function parseHash(){
+function parseLocation(){
+  /* Legacy hash deep links (#/level/123) keep working: the fragment wins over
+     the path so old shared URLs land on the right page, then get rewritten. */
   const h = location.hash || '';
-  let m = h.match(/^#\/level\/([^\/?#]+)/); if(m) return { screen:'level', id: decodeURIComponent(m[1]) };
-  m = h.match(/^#\/create\/([^\/?#]+)/); if(m) return { screen:'create', id: decodeURIComponent(m[1]) };
-  m = h.match(/^#\/user\/([^\/?#]+)/); if(m) return { screen:'user', user: decodeURIComponent(m[1]) };
-  m = h.match(/^#\/([a-z]+)/); if(m && SCREENS.indexOf(m[1]) !== -1) return { screen: m[1] };
+  if(h.indexOf('#/') === 0){
+    let m = h.match(/^#\/level\/([^\/?#]+)/); if(m) return { screen:'level', id: decodeURIComponent(m[1]) };
+    m = h.match(/^#\/(?:create|review)\/([^\/?#]+)/); if(m) return { screen:'create', id: decodeURIComponent(m[1]) };
+    m = h.match(/^#\/user\/([^\/?#]+)/); if(m) return { screen:'user', user: decodeURIComponent(m[1]) };
+    m = h.match(/^#\/([a-z]+)/); if(m && SCREENS.indexOf(m[1]) !== -1) return { screen: m[1] };
+    return { screen:'home' };
+  }
+  const p = location.pathname || '/';
+  let m = p.match(/^\/level\/([^\/?#]+)/); if(m) return { screen:'level', id: decodeURIComponent(m[1]) };
+  m = p.match(/^\/(?:review|create)\/([^\/?#]+)/); if(m) return { screen:'create', id: decodeURIComponent(m[1]) };
+  m = p.match(/^\/profile\/([^\/?#]+)/); if(m) return { screen:'user', user: decodeURIComponent(m[1]) };
+  m = p.match(/^\/([a-z]+)\/?$/); if(m && SCREENS.indexOf(m[1]) !== -1) return { screen: m[1] };
   return { screen:'home' };
 }
-function pushNav(st){ navDepth++; history.pushState(Object.assign({ d: navDepth }, st), '', stateToHash(st)); }
+/* Every page keeps a clean canonical URL for social sharing and SEO. */
+function updateCanonical(path){
+  const url = location.origin + path;
+  const canon = document.getElementById('canonical-link'); if(canon) canon.href = url;
+  const og = document.querySelector('meta[property="og:url"]'); if(og) og.content = url;
+}
+function pushNav(st){ navDepth++; const path = stateToPath(st); history.pushState(Object.assign({ d: navDepth }, st), '', path); updateCanonical(path); }
 function renderRoute(st){
   st = st || { screen:'home' };
   switch(st.screen){
@@ -2223,8 +2274,9 @@ function renderRoute(st){
 function navigateTo(st){ pushNav(st); renderRoute(st); }
 function goBack(){ if(navDepth > 0 || (history.state && history.state.d > 0)) history.back(); else navigateTo({ screen:'home' }); }
 window.addEventListener('popstate', function(e){
-  const st = e.state || parseHash();
+  const st = e.state || parseLocation();
   navDepth = (st && st.d) || 0;
+  updateCanonical(stateToPath(st));
   renderRoute(st);
 });
 function renderHeader(){
@@ -2423,7 +2475,7 @@ async function loadMe(withReviews){
 }
 function enterApp(){
   renderHeader(); applyI18n(); fillSettings();
-  renderRoute(history.state || parseHash());
+  renderRoute(history.state && history.state.screen ? history.state : parseLocation());
 }
 /* ================= HOME DASHBOARD ================= */
 function emptyState(title, sub){ return '<div class="empty-state"><div class="em-title">'+escapeHTML(title)+'</div><div class="em-sub">'+escapeHTML(sub||'')+'</div></div>'; }
@@ -3244,6 +3296,8 @@ async function openReviewFor(levelId){
     });
     // Auto levels are rated on Direction & Camera instead of raw gameplay.
     $('label-text-gameplay').textContent = gameplayLabelFor(currentLevel.difficulty);
+    /* The eyebrow shows the concrete level being reviewed: "Level #10565740". */
+    $('review-level-id').textContent = t('levelHash') + ' #' + data.id;
     $('level-name').textContent = data.name;
     const starsHTML = currentLevel.stars > 0 ? '<span class="level-stars">★ '+currentLevel.stars+'</span>' : '';
     $('level-author').innerHTML = 'by <b>'+escapeHTML(data.author || 'Unknown')+'</b>'+starsHTML;
@@ -3314,13 +3368,64 @@ $('save-btn').addEventListener('click', async function(){
 
 /* ================= SAVE FX ================= */
 function spawnFx(className, styles){ const el = document.createElement('div'); el.className = className; if(styles) Object.assign(el.style, styles); document.body.appendChild(el); return el; }
-function playTierFail(){ const shell = document.querySelector('.shell'); shell.classList.add('fx-shake'); setTimeout(function(){ shell.classList.remove('fx-shake'); }, 520); const flash = spawnFx('fx-flash fx-flash-fail'); setTimeout(function(){ flash.remove(); }, 680); const colors = ['#9a9a9a','#6e6e6e','#b23a3a','#7a2424']; for(let i=0;i<26;i++){ const size = 9 + Math.random()*9; const shard = spawnFx('fx-shard', { left:(Math.random()*100)+'vw', borderBottomWidth:size+'px', borderLeftWidth:(size*0.55)+'px', borderRightWidth:(size*0.55)+'px', animationDuration:(0.9+Math.random()*0.6)+'s', animationDelay:(Math.random()*0.25)+'s' }); shard.style.setProperty('--shard-color', colors[Math.floor(Math.random()*colors.length)]); shard.style.setProperty('--shard-rot', (Math.random()*720-360)+'deg'); setTimeout(function(){ shard.remove(); }, 2100); } }
-function playTierLow(){ const shell = document.querySelector('.shell'); shell.classList.add('fx-thud'); setTimeout(function(){ shell.classList.remove('fx-thud'); }, 700); const flash = spawnFx('fx-flash fx-flash-low'); setTimeout(function(){ flash.remove(); }, 600); for(let i=0;i<14;i++){ const dust = spawnFx('fx-dust', { left:(Math.random()*100)+'vw', top:(8+Math.random()*30)+'vh', animationDuration:(1.7+Math.random()*1.1)+'s', animationDelay:(Math.random()*0.4)+'s' }); setTimeout(function(){ dust.remove(); }, 3300); } }
-function playTierMeh(){ const shell = document.querySelector('.shell'); shell.classList.add('fx-wobble'); setTimeout(function(){ shell.classList.remove('fx-wobble'); }, 600); const flash = spawnFx('fx-flash fx-flash-meh'); setTimeout(function(){ flash.remove(); }, 500); for(let i=0;i<8;i++){ const w = 40 + Math.random()*100; const line = spawnFx('fx-line', { top:(15+Math.random()*70)+'vh', width:w+'px', animationDuration:(0.3+Math.random()*0.3)+'s', animationDelay:(Math.random()*0.2)+'s' }); setTimeout(function(){ line.remove(); }, 1000); } }
-function playTierMid(){ const shell = document.querySelector('.shell'); shell.classList.add('fx-bounce'); setTimeout(function(){ shell.classList.remove('fx-bounce'); }, 500); const flash = spawnFx('fx-flash fx-flash-mid'); setTimeout(function(){ flash.remove(); }, 500); for(let i=0;i<18;i++){ const angle = Math.random()*Math.PI*2, dist = 80 + Math.random()*160; const sq = spawnFx('fx-sq', { left:'50vw', top:'40vh', animationDelay:(Math.random()*0.1)+'s' }); sq.style.setProperty('--sq-x', (Math.cos(angle)*dist)+'px'); sq.style.setProperty('--sq-y', (Math.sin(angle)*dist)+'px'); setTimeout(function(){ sq.remove(); }, 1000); } }
-function playTierHigh(){ const flash = spawnFx('fx-flash fx-flash-high'); setTimeout(function(){ flash.remove(); }, 600); const rays = spawnFx('fx-rays'); setTimeout(function(){ rays.remove(); }, 2300); for(let i=0;i<22;i++){ const isDiamond = Math.random() > 0.5; const size = 12 + Math.random()*14; const angle = Math.random()*Math.PI*2, dist = 200 + Math.random()*260; const shape = spawnFx('fx-shape', { width:size+'px', height:size+'px', left:'50vw', top:'42vh', borderRadius:isDiamond?'3px':'50%', animationDelay:(Math.random()*0.15)+'s' }); shape.style.setProperty('--sh-x', (Math.cos(angle)*dist)+'px'); shape.style.setProperty('--sh-y', (Math.sin(angle)*dist)+'px'); shape.style.setProperty('--sh-rot', (Math.random()*360)+'deg'); setTimeout(function(){ shape.remove(); }, 1400); } }
-function playTierMax(){ const flash = spawnFx('fx-flash fx-flash-max'); setTimeout(function(){ flash.remove(); }, 1200); const ring = spawnFx('fx-ring'); setTimeout(function(){ ring.remove(); }, 1050); const goldColors = ['#ffd76a','#ffe9a8','#ffffff','#fff4d0']; for(let i=0;i<60;i++){ const size = 3 + Math.random()*6; const angle = Math.random()*Math.PI*2, dist = 160 + Math.random()*420; const p = spawnFx('fx-particle', { width:size+'px', height:size+'px', left:'50vw', top:'46vh', background:goldColors[Math.floor(Math.random()*goldColors.length)], boxShadow:'0 0 8px rgba(255,220,140,0.8)', animationDelay:(Math.random()*0.2)+'s', animationDuration:(0.8+Math.random()*0.6)+'s' }); p.style.setProperty('--p-x', (Math.cos(angle)*dist)+'px'); p.style.setProperty('--p-y', (Math.sin(angle)*dist)+'px'); setTimeout(function(){ p.remove(); }, 1800); } const el = $('final-score'); el.classList.remove('fx-score-pulse'); void el.offsetWidth; el.classList.add('fx-score-pulse'); setTimeout(function(){ el.classList.remove('fx-score-pulse'); }, 1050); }
-function playSaveAnimation(score){ if(score < 2) playTierFail(); else if(score < 4) playTierLow(); else if(score < 6) playTierMeh(); else if(score < 8) playTierMid(); else if(score < 9.5) playTierHigh(); else playTierMax(); }
+/* Three outcomes, tiered by the final score:
+   low    (< 4)  — subtle, dark, understated: a dim vignette, a muted thud,
+                   slow-falling dust.
+   medium (4-8)  — balanced and neutral: a soft flash, a gentle bounce and a
+                   clean burst of squares.
+   high   (>= 8) — the showpiece: radial burst, rotating light rays, an
+                   expanding shockwave ring, flying GD shapes and a glowing
+                   score pulse. */
+function playResultLow(){
+  const shell = document.querySelector('.shell');
+  shell.classList.add('fx-thud'); setTimeout(function(){ shell.classList.remove('fx-thud'); }, 700);
+  const flash = spawnFx('fx-flash fx-flash-low'); setTimeout(function(){ flash.remove(); }, 650);
+  for(let i=0;i<12;i++){
+    const dust = spawnFx('fx-dust', { left:(Math.random()*100)+'vw', top:(8+Math.random()*30)+'vh', animationDuration:(1.6+Math.random()*1.0)+'s', animationDelay:(Math.random()*0.35)+'s' });
+    setTimeout(function(){ dust.remove(); }, 3100);
+  }
+}
+function playResultMid(){
+  const shell = document.querySelector('.shell');
+  shell.classList.add('fx-bounce'); setTimeout(function(){ shell.classList.remove('fx-bounce'); }, 500);
+  const flash = spawnFx('fx-flash fx-flash-mid'); setTimeout(function(){ flash.remove(); }, 500);
+  for(let i=0;i<18;i++){
+    const angle = (i / 18) * Math.PI * 2 + Math.random()*0.3, dist = 90 + Math.random()*150;
+    const sq = spawnFx('fx-sq', { left:'50vw', top:'40vh', animationDelay:(Math.random()*0.08)+'s' });
+    sq.style.setProperty('--sq-x', (Math.cos(angle)*dist)+'px');
+    sq.style.setProperty('--sq-y', (Math.sin(angle)*dist)+'px');
+    setTimeout(function(){ sq.remove(); }, 1000);
+  }
+}
+function playResultHigh(){
+  const flash = spawnFx('fx-flash fx-flash-high'); setTimeout(function(){ flash.remove(); }, 620);
+  const rays = spawnFx('fx-rays'); setTimeout(function(){ rays.remove(); }, 2000);
+  const ring = spawnFx('fx-ring'); setTimeout(function(){ ring.remove(); }, 1050);
+  /* GD cubes and orbs shooting outward. */
+  for(let i=0;i<24;i++){
+    const isDiamond = Math.random() > 0.45;
+    const size = 10 + Math.random()*14;
+    const angle = Math.random()*Math.PI*2, dist = 190 + Math.random()*280;
+    const shape = spawnFx('fx-shape', { width:size+'px', height:size+'px', left:'50vw', top:'42vh', borderRadius:isDiamond?'3px':'50%', animationDelay:(Math.random()*0.12)+'s' });
+    shape.style.setProperty('--sh-x', (Math.cos(angle)*dist)+'px');
+    shape.style.setProperty('--sh-y', (Math.sin(angle)*dist)+'px');
+    shape.style.setProperty('--sh-rot', (Math.random()*360)+'deg');
+    setTimeout(function(){ shape.remove(); }, 1400);
+  }
+  /* Fine spark shower rounds it off. */
+  for(let i=0;i<36;i++){
+    const size = 3 + Math.random()*5;
+    const angle = Math.random()*Math.PI*2, dist = 150 + Math.random()*380;
+    const p = spawnFx('fx-particle', { width:size+'px', height:size+'px', left:'50vw', top:'44vh', background:'#fff', boxShadow:'0 0 8px rgba(255,255,255,0.8)', animationDelay:(0.1+Math.random()*0.2)+'s', animationDuration:(0.8+Math.random()*0.5)+'s' });
+    p.style.setProperty('--p-x', (Math.cos(angle)*dist)+'px');
+    p.style.setProperty('--p-y', (Math.sin(angle)*dist)+'px');
+    setTimeout(function(){ p.remove(); }, 1800);
+  }
+  const el = $('final-score');
+  el.classList.remove('fx-score-pulse'); void el.offsetWidth; el.classList.add('fx-score-pulse');
+  setTimeout(function(){ el.classList.remove('fx-score-pulse'); }, 1050);
+}
+function playSaveAnimation(score){ if(score < 4) playResultLow(); else if(score < 8) playResultMid(); else playResultHigh(); }
 /* ================= FRAMES ================= */
 /* Every frame is freely selectable — the old review-count unlock system is gone. */
 const FRAMES = ['frame-default','frame-circle','frame-hex','frame-tech'];
@@ -4833,8 +4938,8 @@ window.addEventListener('load', async function(){
   }
   /* Seed the history stack so the Back button always has an in-site state to
      return to; restore the depth counter after reloads on a deep link. */
-  if(history.state && history.state.screen){ navDepth = history.state.d || 0; }
-  else { const initial = Object.assign({ d:0 }, parseHash()); history.replaceState(initial, '', stateToHash(initial)); }
+  if(history.state && history.state.screen){ navDepth = history.state.d || 0; updateCanonical(stateToPath(history.state)); }
+  else { const initial = Object.assign({ d:0 }, parseLocation()); const path = stateToPath(initial); history.replaceState(initial, '', path); updateCanonical(path); }
   /* The homepage is the default landing page — guests browse freely and only
      see the auth overlay when they try an action that needs an account. */
   enterApp();
