@@ -38,14 +38,13 @@
      Neither font has Cyrillic, so Archivo Black stays in the stack as the
      fallback — Russian titles render exactly as before. Body text remains Inter. */
   @font-face{ font-family:'Pusab'; src:url('/fonts/Pusab.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; }
-  @font-face{ font-family:'Oxygene2'; src:url('/fonts/Oxygene2.woff2') format('woff2'); font-weight:400; font-style:normal; font-display:swap; unicode-range:U+0030-0039, U+002E, U+002C, U+0025, U+002B, U+002D, U+002F, U+0023; }
   :root{
     --black:#0a0a0a; --black2:#0e0e0e; --panel:#141414; --panel2:#191919;
     --line:#2b2b2b; --line2:#3a3a3a; --white:#f4f4f4; --dim:#8f8f8f;
     --dim2:#5a5a5a; --accent:#ffffff; --red:#e05555; --ease:cubic-bezier(.22,1,.36,1);
     --spring:cubic-bezier(.34,1.56,.64,1);
     --font-display:'Pusab','Archivo Black',sans-serif;
-    --font-numeric:'Oxygene2','Archivo Black',sans-serif;
+    --font-numeric:'Pusab','Archivo Black',sans-serif;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;}
