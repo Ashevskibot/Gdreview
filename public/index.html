@@ -713,7 +713,7 @@
   .sf-diff-opt:not(.on) img{ filter:grayscale(1); opacity:0.35; }
   .sf-diff-opt.pop{ animation:diffPop .32s var(--spring); }
   .sf-seg{ display:flex; gap:4px; background:var(--black2); border:1px solid var(--line); border-radius:10px; padding:4px; flex-wrap:wrap; }
-  .sf-seg-opt{ flex:1; min-width:62px; background:transparent; border:none; border-radius:7px; color:var(--dim); font-size:10.5px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:10px 8px; cursor:pointer; transition:all .22s var(--spring); }
+  .sf-seg-opt{ flex:1; min-width:62px; background:transparent; border:none; border-radius:7px; color:var(--dim); font-size:10.5px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:10px 8px; cursor:pointer; transition:all .22s var(--spring); text-align: center; overflow: hidden; text-overflow: ellipsis; }
   .sf-seg-opt:hover{ color:var(--white); }
   .sf-seg-opt:active{ transform:scale(0.94); }
   .sf-seg-opt.on{ background:var(--white); color:#0a0a0a; box-shadow:0 0 14px rgba(255,255,255,0.2); }
@@ -1803,10 +1803,10 @@ const i18n = {
     spinBannerTitle:'Random Level', spinBannerSub:'Enter the spin room — a living wheel of levels picks your next one to play & review', spinBannerCta:'Enter →',
     spinEyebrow:'Random Level', spinTitle:'Spin the Wheel', spinBtn:'Spin', spinBtnBusy:'Spinning…', spinFDiff:'Difficulties', spinFCat:'Category', spinFLen:'Length', spinFMinDl:'Minimum downloads', spinFExtra:'Extras', spinFStarred:'Starred levels only', spinDlAny:'Any',
     spinPoolCount:'{n} levels in the wheel', spinPoolEmpty:'No levels match — loosen the filters', spinLoading:'Filling the wheel…', spinSearching:'Searching the archive… {matches}/{target} eligible · {pages} pages scanned', spinSearchPaused:'Archive search paused — check your connection or change a filter', spinDiffLocked:'Keep at least one difficulty on', spinResultEyebrow:'Your level', spinOpen:'Open Level', spinReview:'Write Review', spinAgain:'Spin Again',
-    spinModeGlobal:'Global Random', spinModeCustom:'Custom Wheel', spinCatAll:'Entire Archive', spinPoolStream:'{n} levels discovered — the entire archive is in play',
+    spinModeGlobal:'Global Random', spinModeCustom:'Custom Wheel', spinCatAll:'All', spinPoolStream:'{n} levels discovered — the entire archive is in play',
     spinCustomTitle:'Build your wheel', spinCustomSub:'Search any level, add it to your wheel and drag to reorder — perfect for challenge wheels with friends or community events.', spinCustomCount:'{n} levels in your wheel', spinCustomEmpty:'Your wheel is empty — search and add levels below', spinCustomAdd:'Add', spinCustomAdded:'In wheel', spinCustomRemove:'Remove', spinCustomSearchPh:'Search levels by name or ID…', spinCustomSearchEmpty:'No levels found', spinCustomLimit:'Wheel is full ({n} levels max)',
     spinStatLen:'Length', spinStatDownloads:'Downloads', spinStatLikes:'Likes', spinStatStars:'Stars', spinStatScore:'Community Score', spinNoReviews:'No reviews yet', spinReviewsCount:'{n} reviews',
-    popRated:'Rated', popFeatured:'Featured', popMagic:'Magic', popTrending:'Trending', popDefault:'By category', popDownloads:'Most Downloaded', popLiked:'Most Liked', popRecent:'Recent', lenAny:'Any length',
+    popRated:'Rated', popFeatured:'Featured', popMagic:'Magic', popTrending:'Trending', popDefault:'By category', popDownloads:'Most Downloaded', popLiked:'Most Liked', popRecent:'Recent', lenAny:'Any',
     rateAny:'Any rating', rateLow:'★ 1–3', rateMid:'★ 4–6', rateHigh:'★ 7–9', rateDemon:'★ 10 (Demon)',
     chipRecent:'Recent', chipPopular:'Popular', chipToday:'Top Today', chipWeek:'Top Week', chipAllTime:'All Time', chipDiscussed:'Most Discussed', chipBeautiful:'Most Beautiful', chipEasiest:'Easiest', chipHardest:'Hardest', diffAny:'Any difficulty',
     feedEmptyTitle:'Nothing here yet', feedEmptySub:'Be the first — write a review in the Create tab.',
@@ -1897,10 +1897,10 @@ const i18n = {
     spinBannerTitle:'Случайный уровень', spinBannerSub:'Войдите в спин-зал — живое колесо уровней выберет, что играть и оценивать дальше', spinBannerCta:'Войти →',
     spinEyebrow:'Случайный уровень', spinTitle:'Крутите колесо', spinBtn:'Крутить', spinBtnBusy:'Крутится…', spinFDiff:'Сложности', spinFCat:'Категория', spinFLen:'Длина', spinFMinDl:'Минимум скачиваний', spinFExtra:'Дополнительно', spinFStarred:'Только со звёздами', spinDlAny:'Любое',
     spinPoolCount:'Уровней в колесе: {n}', spinPoolEmpty:'Ничего не подходит — ослабьте фильтры', spinLoading:'Заполняем колесо…', spinSearching:'Ищем в архиве… подходит: {matches}/{target} · страниц: {pages}', spinSearchPaused:'Поиск в архиве приостановлен — проверьте соединение или измените фильтр', spinDiffLocked:'Оставьте хотя бы одну сложность', spinResultEyebrow:'Ваш уровень', spinOpen:'Открыть уровень', spinReview:'Написать рецензию', spinAgain:'Крутить ещё',
-    spinModeGlobal:'Общий рандом', spinModeCustom:'Своё колесо', spinCatAll:'Весь архив', spinPoolStream:'Найдено уровней: {n} — в игре весь архив', 
+    spinModeGlobal:'Общий рандом', spinModeCustom:'Своё колесо', spinCatAll:'Все', spinPoolStream:'Найдено уровней: {n} — в игре весь архив', 
     spinCustomTitle:'Соберите своё колесо', spinCustomSub:'Найдите любой уровень, добавьте его в колесо и перетаскивайте для изменения порядка — идеально для челленджей с друзьями и комьюнити-ивентов.', spinCustomCount:'Уровней в вашем колесе: {n}', spinCustomEmpty:'Колесо пустое — найдите и добавьте уровни ниже', spinCustomAdd:'Добавить', spinCustomAdded:'В колесе', spinCustomRemove:'Убрать', spinCustomSearchPh:'Поиск уровней по названию или ID…', spinCustomSearchEmpty:'Ничего не найдено', spinCustomLimit:'Колесо заполнено (макс. {n})',
     spinStatLen:'Длина', spinStatDownloads:'Скачивания', spinStatLikes:'Лайки', spinStatStars:'Звёзды', spinStatScore:'Оценка сообщества', spinNoReviews:'Пока нет рецензий', spinReviewsCount:'{n} рец.',
-    popRated:'Оценённые', popFeatured:'Featured', popMagic:'Magic', popTrending:'В тренде', popDefault:'По категории', popDownloads:'Самые скачиваемые', popLiked:'Самые залайканные', popRecent:'Новые', lenAny:'Любая длина',
+    popRated:'Оценённые', popFeatured:'Featured', popMagic:'Magic', popTrending:'В тренде', popDefault:'По категории', popDownloads:'Самые скачиваемые', popLiked:'Самые залайканные', popRecent:'Новые', lenAny:'Любая',
     rateAny:'Любой рейтинг', rateLow:'★ 1–3', rateMid:'★ 4–6', rateHigh:'★ 7–9', rateDemon:'★ 10 (демон)',
     chipRecent:'Недавние', chipPopular:'Популярные', chipToday:'Лучшие за день', chipWeek:'Лучшие за неделю', chipAllTime:'За всё время', chipDiscussed:'Обсуждаемые', chipBeautiful:'Самые красивые', chipEasiest:'Лёгкие', chipHardest:'Сложные', diffAny:'Любая сложность',
     feedEmptyTitle:'Пока пусто', feedEmptySub:'Станьте первым — напишите рецензию во вкладке «Создать».',
